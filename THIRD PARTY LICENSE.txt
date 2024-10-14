@@ -1,0 +1,15 @@
+# THIRD-PARTY LICENSES
+
+This application makes use of the following third-party libraries:
+
+---
+
+## Library: Retrofit
+- Version: 2.9.0
+- License: Apache License 2.0
+- URL: https://github.com/square/retrofit
+
+## Photo: vecteezy
+- URL: https://www.vecteezy.com/free-vector/not-available
+- License: Free License
+- Attribution: <a href="https://www.vecteezy.com/free-vector/not-available">Not Available Vectors by Vecteezy</a>

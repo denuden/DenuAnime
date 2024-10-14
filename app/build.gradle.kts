@@ -98,4 +98,14 @@ dependencies {
     implementation(libs.bcrypt)
     implementation(libs.androidx.security)
 
+//    Retrofit
+    implementation(libs.retrofit2)
+    implementation(libs.retrofit2.gson)
+
+//    Coil
+    implementation(libs.coil)
+    implementation(libs.coil.network)
+
+//    Palette
+    implementation(libs.palette)
 }
