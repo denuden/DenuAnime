@@ -55,6 +55,7 @@ androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "androi
 
 #Extended Icons
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
+
 #Fonts downloadable
 androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 
@@ -74,9 +75,11 @@ retrofit2-gson = { group = "com.squareup.retrofit2", name = "converter-gson", ve
 #Coil
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil"}
 coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil"}
+coil-test = { module = "io.coil-kt.coil3:coil-test", version.ref = "coil"}
 
 #Palette Builder
 palette = {module = "androidx.palette:palette", version.ref = "palette"}
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

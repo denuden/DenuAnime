@@ -71,7 +71,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    //    Navigations
+//    Google Font
+    implementation(libs.androidx.ui.text.google.fonts)
+
+//    Navigation
     implementation (libs.androidx.navigation.compose)
 
 //    Hilt
@@ -86,6 +89,7 @@ dependencies {
 
 //    work manager
     implementation(libs.androidx.work)
+
 //    icons extended
     implementation(libs.androidx.material.icons.extended)
 
@@ -105,6 +109,7 @@ dependencies {
 //    Coil
     implementation(libs.coil)
     implementation(libs.coil.network)
+    implementation(libs.coil.test)
 
 //    Palette
     implementation(libs.palette)
