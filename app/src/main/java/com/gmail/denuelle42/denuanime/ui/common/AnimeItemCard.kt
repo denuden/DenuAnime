@@ -2,8 +2,11 @@ package com.gmail.denuelle42.denuanime.ui.common
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.CardDefaults
@@ -23,12 +27,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -64,11 +70,14 @@ fun AnimeItemCard(modifier: Modifier = Modifier, image: Any, title : String, hei
         Color.Transparent,
         Color(0xFF000000)
     )
+
+    var expanded by remember { mutableStateOf(false) }
     OutlinedCard(
         colors = CardDefaults.cardColors(
             containerColor = animatedColor,
         ),
-        border = BorderStroke(1.dp, Color.Black),
+        border = BorderStroke(2.5.dp, Color.Black),
+        shape = RectangleShape,
         modifier = modifier
     ) {
         Box(
@@ -84,7 +93,7 @@ fun AnimeItemCard(modifier: Modifier = Modifier, image: Any, title : String, hei
                     .build(),
                 placeholder = painterResource(R.drawable.baseline_image_24),
                 contentDescription = stringResource(R.string.anime_banner),
-                contentScale = ContentScale.Fit,
+                contentScale = ContentScale.Crop,
                 error = painterResource(R.drawable.baseline_image_not_supported_24),
                 onSuccess = { result ->
                     val bitmap = result.result.image.toBitmap()
@@ -96,7 +105,7 @@ fun AnimeItemCard(modifier: Modifier = Modifier, image: Any, title : String, hei
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(height)
+                    .wrapContentHeight()
             )
             Box(
                 modifier = Modifier
@@ -109,11 +118,14 @@ fun AnimeItemCard(modifier: Modifier = Modifier, image: Any, title : String, hei
             )
 
             Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomStart)
-                    .padding(vertical = 12.dp, horizontal = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(vertical = 12.dp, horizontal = 12.dp)
+                    .clickable {
+                        expanded = !expanded
+                    }
             ){
                 Text(
                     text = title,
@@ -128,14 +140,17 @@ fun AnimeItemCard(modifier: Modifier = Modifier, image: Any, title : String, hei
                 )
             }
         }
-
         Column(
             modifier = Modifier
+                .background(color = MaterialTheme.colorScheme.background)
+                .animateContentSize()
                 .fillMaxWidth()
+                .padding(if(expanded) 8.dp else 0.dp)
         ) {
-
+            if(expanded) {
+                Text("Sample Text", style = MaterialTheme.typography.bodyMedium)
+            }
         }
-
     }
 }
 
