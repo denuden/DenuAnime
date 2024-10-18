@@ -1,12 +1,7 @@
 package com.gmail.denuelle42.denuanime.ui.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -66,7 +61,7 @@ fun HomeScreen(
 fun HomeScreenContent(modifier: Modifier = Modifier, list: List<AnimeDetails>) {
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
-        contentPadding = PaddingValues(vertical = 12.dp),
+        modifier = modifier
     ) {
         items(list) { anime ->
             AnimeItemCard(
