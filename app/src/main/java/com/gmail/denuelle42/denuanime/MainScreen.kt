@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,7 +37,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -46,6 +51,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.gmail.denuelle42.denuanime.navigation.MainScreens
+import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import kotlinx.coroutines.launch
 
@@ -59,7 +66,14 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            SideBarContent()
+            SideBarContent(onNavigate = {
+                scope.launch {
+                    drawerState.close()
+                }
+                navController.navigate(it) {
+                    launchSingleTop = true
+                }
+            })
         }
     ) {
         Scaffold(
@@ -98,7 +112,8 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
 }
 
 @Composable
-fun SideBarContent(modifier: Modifier = Modifier) {
+fun SideBarContent(onNavigate: (NavigationScreens) -> Unit) {
+    var categoryState by remember { mutableStateOf(false) }
     ModalDrawerSheet {
         Box(
             modifier = Modifier
@@ -116,7 +131,9 @@ fun SideBarContent(modifier: Modifier = Modifier) {
         }
         HorizontalDivider(modifier = Modifier.padding(bottom = 12.dp))
 
-        Column (modifier = Modifier.padding(horizontal = 8.dp)){
+        Column(modifier = Modifier
+            .animateContentSize()
+            .padding(horizontal = 8.dp)) {
             NavigationDrawerItem(
                 label = {
                     Text(
@@ -126,7 +143,7 @@ fun SideBarContent(modifier: Modifier = Modifier) {
                     )
                 },
                 selected = true,
-                onClick = { /*TODO*/ },
+                onClick = { onNavigate(MainScreens.HomeNavigation) },
                 icon = {
                     Icon(
                         imageVector = Icons.Default.Home,
@@ -143,7 +160,7 @@ fun SideBarContent(modifier: Modifier = Modifier) {
                     )
                 },
                 selected = false,
-                onClick = { /*TODO*/ },
+                onClick = { onNavigate(MainScreens.FavoritesNavigation) },
                 icon = {
                     Icon(
                         imageVector = Icons.Default.Favorite,
@@ -179,7 +196,7 @@ fun SideBarContent(modifier: Modifier = Modifier) {
                     )
                 },
                 selected = false,
-                onClick = { /*TODO*/ },
+                onClick = { categoryState = !categoryState },
                 icon = {
                     Icon(
                         imageVector = Icons.Default.Category,
@@ -188,118 +205,130 @@ fun SideBarContent(modifier: Modifier = Modifier) {
                 },
                 badge = {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowDown,
+                        imageVector = if (categoryState) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                         contentDescription = stringResource(R.string.categories)
                     )
                 }
             )
+
             /**
              * For Categories sub navigation drawer
              */
-            Column(
-                modifier = Modifier
-                    .animateContentSize()
-                    .padding(start = 30.dp)
-            ) {
-                NavigationDrawerItem(
-                    label = {
-                        Text(
-                            text = stringResource(R.string.anime),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontSize = 18.sp
-                        )
-                    },
-                    selected = false,
-                    onClick = { /*TODO*/ },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.FiberManualRecord,
-                            contentDescription = stringResource(R.string.anime)
-                        )
-                    },
-                    badge = {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = stringResource(R.string.anime)
-                        )
-                    }
-                )
-                /**
-                 * Anime Sub Categories
-                 */
-                AnimeSubCategories()
-
-                NavigationDrawerItem(
-                    label = {
-                        Text(
-                            text = stringResource(R.string.characters),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontSize = 18.sp
-                        )
-                    },
-                    selected = false,
-                    onClick = { /*TODO*/ },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.FiberManualRecord,
-                            contentDescription = stringResource(R.string.characters)
-                        )
-                    },
-                    badge = {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = stringResource(R.string.characters)
-                        )
-                    }
-                )
-                NavigationDrawerItem(
-                    label = {
-                        Text(
-                            text = stringResource(R.string.voice_actor_actress),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontSize = 18.sp
-                        )
-                    },
-                    selected = false,
-                    onClick = { /*TODO*/ },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.FiberManualRecord,
-                            contentDescription = stringResource(R.string.voice_actor_actress)
-                        )
-                    },
-                    badge = {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = stringResource(R.string.voice_actor_actress)
-                        )
-                    }
-                )
-                NavigationDrawerItem(
-                    label = {
-                        Text(
-                            text = stringResource(R.string.manga),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontSize = 18.sp
-                        )
-                    },
-                    selected = false,
-                    onClick = { /*TODO*/ },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.FiberManualRecord,
-                            contentDescription = stringResource(R.string.manga)
-                        )
-                    },
-                    badge = {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = stringResource(R.string.manga)
-                        )
-                    }
-                )
+            if (categoryState) {
+                Categories()
             }
         }
+    }
+}
+
+@Composable
+fun Categories(modifier: Modifier = Modifier) {
+    var animeSubCategoriesState by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = modifier
+            .animateContentSize()
+            .padding(start = 30.dp)
+    ) {
+        NavigationDrawerItem(
+            label = {
+                Text(
+                    text = stringResource(R.string.anime),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 18.sp
+                )
+            },
+            selected = false,
+            onClick = { animeSubCategoriesState = !animeSubCategoriesState },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.FiberManualRecord,
+                    contentDescription = stringResource(R.string.anime)
+                )
+            },
+            badge = {
+                Icon(
+                    imageVector = if (animeSubCategoriesState) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = stringResource(R.string.anime)
+                )
+            }
+        )
+        /**
+         * Anime Sub Categories
+         */
+        if (animeSubCategoriesState) {
+            AnimeSubCategories()
+        }
+
+        NavigationDrawerItem(
+            label = {
+                Text(
+                    text = stringResource(R.string.characters),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 18.sp
+                )
+            },
+            selected = false,
+            onClick = { /*TODO*/ },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.FiberManualRecord,
+                    contentDescription = stringResource(R.string.characters)
+                )
+            },
+            badge = {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = stringResource(R.string.characters)
+                )
+            }
+        )
+        NavigationDrawerItem(
+            label = {
+                Text(
+                    text = stringResource(R.string.voice_actor_actress),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 18.sp
+                )
+            },
+            selected = false,
+            onClick = { /*TODO*/ },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.FiberManualRecord,
+                    contentDescription = stringResource(R.string.voice_actor_actress)
+                )
+            },
+            badge = {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = stringResource(R.string.voice_actor_actress)
+                )
+            }
+        )
+        NavigationDrawerItem(
+            label = {
+                Text(
+                    text = stringResource(R.string.manga),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 18.sp
+                )
+            },
+            selected = false,
+            onClick = { /*TODO*/ },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.FiberManualRecord,
+                    contentDescription = stringResource(R.string.manga)
+                )
+            },
+            badge = {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = stringResource(R.string.manga)
+                )
+            }
+        )
     }
 }
 
@@ -379,7 +408,7 @@ private fun MainScreenPreview() {
         Surface(
             color = MaterialTheme.colorScheme.surface,
         ) {
-            SideBarContent()
+            SideBarContent() {}
         }
     }
 }

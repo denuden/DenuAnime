@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -59,7 +60,9 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreenContent(modifier: Modifier = Modifier, list: List<AnimeDetails>) {
+    val state = rememberLazyStaggeredGridState()
     LazyVerticalStaggeredGrid(
+        state = state,
         columns = StaggeredGridCells.Fixed(2),
         modifier = modifier
     ) {
