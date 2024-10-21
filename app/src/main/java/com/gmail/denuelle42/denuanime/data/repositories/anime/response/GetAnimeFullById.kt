@@ -1,4 +1,4 @@
-package com.gmail.denuelle42.denuanime.data.remote.models
+package com.gmail.denuelle42.denuanime.data.repositories.anime.response
 
 
 import androidx.annotation.Keep
