@@ -1,0 +1,64 @@
+package com.gmail.denuelle42.denuanime.ui.home.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.gmail.denuelle42.denuanime.R
+import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+
+@Composable
+fun CategoriesFilterChip(modifier: Modifier = Modifier, categoryList : List<String>) {
+    //Default Category Selected
+    var labelSelected by remember { mutableStateOf("Top") }
+
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(8.dp)
+    ) {
+        items(categoryList) { category ->
+            FilterChip(
+                onClick = { labelSelected = category },
+                label = {
+                    Text(category)
+                },
+                selected = category == labelSelected,
+                leadingIcon = if (category == labelSelected) {
+                    {
+                        Icon(
+                            imageVector = Icons.Default.Done,
+                            contentDescription = stringResource(R.string.selected),
+                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                        )
+                    }
+                } else {
+                    null
+                },
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun CategoriesFilterChipPreview() {
+    DenuAnimeTheme {
+        CategoriesFilterChip(categoryList = listOf("Top", "Upcoming", "Action", "Adventure"))
+    }
+}

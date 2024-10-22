@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -78,29 +79,13 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
     ) {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    title = {
-                        Text("DenuAnime")
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            scope.launch {
-                                drawerState.apply {
-                                    if (isClosed) open() else close()
-                                }
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu Bar"
-                            )
+                TopAppBarContent(onClickNavigationMenu = {
+                    scope.launch {
+                        drawerState.apply {
+                            if (isClosed) open() else close()
                         }
-                    },
-                )
+                    }
+                })
             },
         ) { contentPadding ->
             // Screen content
@@ -109,6 +94,45 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopAppBarContent(modifier: Modifier = Modifier, onClickNavigationMenu : () -> Unit,) {
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+        title = {
+            Text("DenuAnime")
+        },
+        navigationIcon = {
+            IconButton(onClick = {
+               onClickNavigationMenu()
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Menu Bar"
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = stringResource(R.string.search)
+                )
+            }
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = stringResource(R.string.favorite)
+                )
+            }
+        },
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -408,7 +432,9 @@ private fun MainScreenPreview() {
         Surface(
             color = MaterialTheme.colorScheme.surface,
         ) {
-            SideBarContent() {}
+            TopAppBarContent(onClickNavigationMenu = {
+
+            })
         }
     }
 }

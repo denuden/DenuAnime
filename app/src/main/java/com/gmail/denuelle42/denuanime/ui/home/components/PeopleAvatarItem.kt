@@ -3,13 +3,9 @@ package com.gmail.denuelle42.denuanime.ui.home.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -26,12 +22,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.palette.graphics.Palette
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
-import coil3.request.allowHardware
 import coil3.request.crossfade
-import coil3.toBitmap
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
@@ -52,11 +45,10 @@ fun PeopleAvatarItem(modifier: Modifier = Modifier, image : Any, name : String) 
             contentScale = ContentScale.Crop,
             error = painterResource(R.drawable.baseline_account_circle_24),
             modifier = Modifier
-                .wrapContentWidth()
-                .height(50.dp)
+                .width(80.dp)
+                .height(80.dp)
                 .clip(CircleShape)
         )
-        Spacer(modifier = Modifier.padding(bottom = 4.dp))
         Text(text = name, style = MaterialTheme.typography.labelLarge, maxLines = 2, overflow = TextOverflow.Visible, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
     }
 }
