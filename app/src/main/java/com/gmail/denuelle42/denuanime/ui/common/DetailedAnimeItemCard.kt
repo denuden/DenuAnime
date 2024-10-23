@@ -3,10 +3,14 @@ package com.gmail.denuelle42.denuanime.ui.common
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.AssistChip
@@ -63,12 +67,12 @@ fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDeta
         colors = CardDefaults.cardColors(
             containerColor = animatedColor,
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        elevation = CardDefaults.cardElevation(2.dp),
         modifier = modifier
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxSize()
+           ,
             contentAlignment = Alignment.Center
         ) {
             AsyncImage(
@@ -89,9 +93,7 @@ fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDeta
                             palette?.getDominantColor(R.color.black) ?: R.color.black
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
+                modifier = Modifier.matchParentSize()
             )
             Box(
                 modifier = Modifier
@@ -117,12 +119,35 @@ fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDeta
             ) {
                 Icon(imageVector = Icons.Default.Favorite, contentDescription = stringResource(R.string.favorites), tint = Color.White)
             }
-            Text(
-                text = animeDetails.title ?: stringResource(R.string.nondescript),
-                color = Color.White,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.align(Alignment.BottomStart).padding(start = 16.dp, bottom = 12.dp)
-            )
+
+            Column(
+                modifier = Modifier.align(Alignment.BottomCenter).padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth()
+            ) {
+                Text(
+                    text = animeDetails.title ?: stringResource(R.string.nondescript),
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                
+                Spacer(modifier = Modifier.padding(vertical = 8.dp))
+
+                Row (horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()){
+                    Text(text = "4 Season, 24 eps", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium )
+                    Spacer(modifier = Modifier.padding(horizontal = 3.dp))
+                    Text(text = "Finished Airing", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium )
+                    Spacer(modifier = Modifier.padding(horizontal = 3.dp))
+                    Text(text = "2019, Winter", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium )
+                }
+
+                Row (horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()){
+                    Text(text = "Rating: 8.4", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium )
+                    Spacer(modifier = Modifier.padding(horizontal = 3.dp))
+                    Text(text = "Rank 192", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium )
+                    Spacer(modifier = Modifier.padding(horizontal = 3.dp))
+                    Text(text = "PG - 13", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium )
+                }
+            }
+
         }
     }
 }
@@ -133,9 +158,8 @@ private fun DetailedAnimeItemCardPreview() {
     DenuAnimeTheme {
         Surface(color = MaterialTheme.colorScheme.surface) {
             DetailedAnimeItemCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
+                modifier = Modifier,
+
                 animeDetails = AnimeDetails(title = "gfweklkl jklf mklw mklwdcmklcdw mklwe")
             )
         }

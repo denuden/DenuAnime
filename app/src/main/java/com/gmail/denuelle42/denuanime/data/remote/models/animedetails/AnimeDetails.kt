@@ -19,7 +19,7 @@ data class AnimeDetails(
     val type: String? = "", // TV
     val source: String? = "", // Manga
     val episodes: Int? = 0, // 12
-    val status: String? = "", // Finished Airing
+    val status : String? = "", // Finished Airing
     val airing: Boolean? = false, // false
     val aired: Aired? = Aired(),
     val duration: String? = "", // 25 min per ep
