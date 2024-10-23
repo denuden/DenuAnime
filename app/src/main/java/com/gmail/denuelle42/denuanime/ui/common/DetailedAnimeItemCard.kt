@@ -71,9 +71,8 @@ fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDeta
         modifier = modifier
     ) {
         Box(
-            modifier = Modifier.fillMaxSize()
-           ,
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize(),
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
