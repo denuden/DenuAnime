@@ -11,11 +11,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -29,6 +34,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -41,14 +48,14 @@ import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 fun Recommendations(modifier: Modifier = Modifier) {
     var state by remember { mutableIntStateOf(0) }
     val titles = listOf("Anime", "Manga")
-    Column(modifier = modifier) {
+    Column(modifier = modifier.clip(MaterialTheme.shapes.extraSmall)) {
         SecondaryTabRow(
             selectedTabIndex = state,
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
             indicator = {},
             modifier = Modifier
                 .clip(MaterialTheme.shapes.extraSmall)
-                .padding(horizontal = 8.dp)
+
         ) {
             titles.forEachIndexed { index, title ->
                 CustomRecommendationsTab(
@@ -62,7 +69,39 @@ fun Recommendations(modifier: Modifier = Modifier) {
             }
         }
 
-        Spacer(modifier = Modifier.padding(vertical = 6.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(top = 4.dp, bottom = 8.dp)
+                .fillMaxWidth()
+        ) {
+            TextButton(
+                onClick = {},
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, stringResource(R.string.prev))
+                Text(stringResource(R.string.prev))
+            }
+
+            Text(
+                text = stringResource(R.string.recommendations).uppercase(),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(2f)
+            )
+
+            TextButton(
+                onClick = {},
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, stringResource(R.string.next))
+                Text(stringResource(R.string.next))
+            }
+        }
+
         RecommendationsContent()
     }
 }
@@ -73,7 +112,11 @@ fun RecommendationsContent(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
     ) {
-        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth().padding(horizontal = 34.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 34.dp)
+        ) {
             RecommendationsImage(
                 image = "",
                 imageSize = 140.dp,
@@ -87,7 +130,11 @@ fun RecommendationsContent(modifier: Modifier = Modifier) {
             )
         }
 
-        Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             RecommendationsImage(
                 image = "",
                 imageSize = 80.dp,
@@ -96,7 +143,9 @@ fun RecommendationsContent(modifier: Modifier = Modifier) {
             RecommendationsImage(
                 image = "",
                 imageSize = 180.dp,
-                modifier = Modifier.weight(2f, fill = false).padding(horizontal = 6.dp)
+                modifier = Modifier
+                    .weight(2f, fill = false)
+                    .padding(horizontal = 6.dp)
             )
             RecommendationsImage(
                 image = "",
@@ -105,7 +154,11 @@ fun RecommendationsContent(modifier: Modifier = Modifier) {
             )
         }
 
-        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth().padding(horizontal = 34.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 34.dp)
+        ) {
             RecommendationsImage(
                 image = "",
                 imageSize = 140.dp,
@@ -166,11 +219,12 @@ fun CustomRecommendationsTab(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
             .background(
-                color = if (selected) Color.White else MaterialTheme.colorScheme.surfaceContainerHighest,
+                color = if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primaryContainer,
                 shape = MaterialTheme.shapes.extraSmall
             )
-            .padding(vertical = 5.dp)
             .clickable { onClick() }
+            .padding(vertical = 5.dp)
+
     ) {
 
         Text(

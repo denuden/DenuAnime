@@ -22,7 +22,7 @@ fun PeopleList(modifier: Modifier = Modifier, items: List<People>) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         state = state,
-        contentPadding = PaddingValues(8.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp),
         modifier = modifier
     ) {
         items(items) { people ->

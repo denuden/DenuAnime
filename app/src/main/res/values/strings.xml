@@ -18,4 +18,8 @@
     <string name="favorite">Favorite</string>
     <string name="selected">Selected</string>
     <string name="nondescript">Nondescript</string>
+    <string name="recommendations">Recommendations</string>
+    <string name="top_poeple">Top poeple</string>
+    <string name="prev">Prev</string>
+    <string name="next">Next</string>
 </resources>
