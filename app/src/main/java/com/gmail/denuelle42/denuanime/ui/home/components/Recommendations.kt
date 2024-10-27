@@ -1,5 +1,6 @@
 package com.gmail.denuelle42.denuanime.ui.home.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +18,9 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -49,32 +52,30 @@ fun Recommendations(modifier: Modifier = Modifier) {
     var state by remember { mutableIntStateOf(0) }
     val titles = listOf("Anime", "Manga")
     Column(modifier = modifier.clip(MaterialTheme.shapes.extraSmall)) {
-        SecondaryTabRow(
-            selectedTabIndex = state,
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            indicator = {},
-            modifier = Modifier
-                .clip(MaterialTheme.shapes.extraSmall)
-
+        SingleChoiceSegmentedButtonRow(
+            modifier = Modifier.fillMaxWidth()
         ) {
             titles.forEachIndexed { index, title ->
-                CustomRecommendationsTab(
-                    title = title,
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = index,
+                        count = titles.size,
+                        baseShape = MaterialTheme.shapes.small
+                    ),
                     onClick = { state = index },
-                    selected = (index == state),
-                    modifier = Modifier
-                        .padding(5.dp)
-                        .fillMaxWidth()
-                )
+                    selected = index == state,
+                    border = BorderStroke(width = 1.dp, color = Color.Gray)
+                ) {
+                    Text(title)
+                }
             }
         }
-
 
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(top = 4.dp, bottom = 8.dp)
+                .padding(bottom = 8.dp)
                 .fillMaxWidth()
         ) {
             TextButton(

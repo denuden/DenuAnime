@@ -2,24 +2,23 @@ package com.gmail.denuelle42.denuanime.ui.common
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,8 +45,10 @@ import coil3.request.crossfade
 import coil3.toBitmap
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
+import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
+@OptIn(ExperimentalLayoutApi::class)
 @SuppressLint("ResourceAsColor")
 @Composable
 fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDetails) {
@@ -103,47 +104,90 @@ fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDeta
                         )
                     )
             )
-
-            AssistChip(
-                onClick = {},
-                label = { Text("Adventure", color = MaterialTheme.colorScheme.onPrimaryContainer) },
-                colors = AssistChipDefaults.assistChipColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                modifier = Modifier.align(Alignment.TopStart).padding(12.dp),
-            )
-
-            IconButton(
-                onClick = {},
-                colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.primary),
-                modifier = Modifier.align(Alignment.TopEnd).padding(12.dp)
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier
+                    .padding(12.dp)
+                    .align(Alignment.TopStart)
             ) {
-                Icon(imageVector = Icons.Default.Favorite, contentDescription = stringResource(R.string.favorites), tint = Color.White)
+                animeDetails.genres?.forEach { genre ->
+                    if (genre.name.orEmpty().isNotEmpty()) {
+                        AssistChip(
+                            onClick = {},
+                            label = {
+                                Text(
+                                    genre.name.orEmpty(),
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    maxLines = 1,
+                                )
+                            },
+                            colors = AssistChipDefaults.assistChipColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                            border = BorderStroke(width = 0.dp, color = Color.White),
+                            modifier = Modifier.heightIn(min = 24.dp, max = 28.dp)
+                        )
+                    }
+                }
             }
 
             Column(
-                modifier = Modifier.align(Alignment.BottomCenter).padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth()
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .fillMaxWidth()
             ) {
                 Text(
                     text = animeDetails.title ?: stringResource(R.string.nondescript),
                     color = Color.White,
                     style = MaterialTheme.typography.titleMedium,
                 )
-                
+
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
 
-                Row (horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()){
-                    Text(text = "4 Season, 24 eps", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "4 Season, 24 eps",
+                        color = Color.White.copy(alpha = 0.75f),
+                        style = MaterialTheme.typography.labelMedium
+                    )
                     Spacer(modifier = Modifier.padding(horizontal = 3.dp))
-                    Text(text = "Finished Airing", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium )
+                    Text(
+                        text = "Finished Airing",
+                        color = Color.White.copy(alpha = 0.75f),
+                        style = MaterialTheme.typography.labelMedium
+                    )
                     Spacer(modifier = Modifier.padding(horizontal = 3.dp))
-                    Text(text = "2019, Winter", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium )
+                    Text(
+                        text = "2019, Winter",
+                        color = Color.White.copy(alpha = 0.75f),
+                        style = MaterialTheme.typography.labelMedium
+                    )
                 }
 
-                Row (horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()){
-                    Text(text = "Rating: 8.4", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Rating: 8.4",
+                        color = Color.White.copy(alpha = 0.75f),
+                        style = MaterialTheme.typography.labelMedium
+                    )
                     Spacer(modifier = Modifier.padding(horizontal = 3.dp))
-                    Text(text = "Rank 192", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium )
+                    Text(
+                        text = "Rank 192",
+                        color = Color.White.copy(alpha = 0.75f),
+                        style = MaterialTheme.typography.labelMedium
+                    )
                     Spacer(modifier = Modifier.padding(horizontal = 3.dp))
-                    Text(text = "PG - 13", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelMedium )
+                    Text(
+                        text = "PG - 13",
+                        color = Color.White.copy(alpha = 0.75f),
+                        style = MaterialTheme.typography.labelMedium
+                    )
                 }
             }
 
@@ -159,7 +203,16 @@ private fun DetailedAnimeItemCardPreview() {
             DetailedAnimeItemCard(
                 modifier = Modifier,
 
-                animeDetails = AnimeDetails(title = "gfweklkl jklf mklw mklwdcmklcdw mklwe")
+                animeDetails = AnimeDetails(
+                    title = "gfweklkl jklf mklw mklwdcmklcdw mklwe", genres = listOf(
+                        Genre(name = "Sci-fi"),
+                        Genre(name = "Adventure"),
+                        Genre(name = "Drama"),
+                        Genre(name = "Suspense"),
+                        Genre(name = "Suspense"),
+                        Genre(name = "Suspense"),
+                    )
+                )
             )
         }
     }
