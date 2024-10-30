@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,7 +30,7 @@ import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
 @Composable
-fun PeopleAvatarItem(modifier: Modifier = Modifier, image : Any, name : String) {
+fun PeopleAvatarItem(modifier: Modifier = Modifier, image : Any, name : String, date : String? = null) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -49,7 +50,21 @@ fun PeopleAvatarItem(modifier: Modifier = Modifier, image : Any, name : String) 
                 .height(80.dp)
                 .clip(CircleShape)
         )
-        Text(text = name, style = MaterialTheme.typography.labelLarge, maxLines = 2, overflow = TextOverflow.Visible, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+        Text(text = name, style = MaterialTheme.typography.labelMedium, maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        if(date != null){
+            Text(text = date, style = MaterialTheme.typography.labelSmall, maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.Light,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 

@@ -1,7 +1,6 @@
 package com.gmail.denuelle42.denuanime.ui.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -99,76 +98,118 @@ fun HomeScreenContent(modifier: Modifier = Modifier) {
         state = lazyListState,
     ) {
         item {
-            /**
-             * PEOPLE SECTION
-             */
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, start = 8.dp, end = 8.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.top_poeple).uppercase(),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                )
-                Text(
-                    text = "See more",
-                    textDecoration = TextDecoration.Underline,
-                    fontWeight = FontWeight.Light,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier
-                )
-            }
-            PeopleList(
-                modifier = Modifier.fillMaxWidth(),
-                items = listOf(
-                    People(
-                        image = "",
-                        name = "Hiroshi Kamiya"
-                    ),
-                    People(
-                        image = "",
-                        name = "Ayane Sakura"
-                    ),
-                    People(
-                        image = "",
-                        name = "Inose Minari"
-                    ),
-                    People(
-                        image = "",
-                        name = "Kayano Ai"
-                    ),
-                    People(
-                        image = "",
-                        name = "Matsuoka Yoshitsugu"
-                    ),
-                    People(
-                        image = "",
-                        name = "Kenjiro Tsuda"
-                    ),
-                    People(
-                        image = "",
-                        name = "Kaji Yuki"
-                    ),
-                    People(
-                        image = "",
-                        name = "Aoi Koga"
-                    ),
-                    People(
-                        image = "",
-                        name = "Ayane Taketatsu"
-                    ),
-                    People(
-                        image = "",
-                        name = "Miku Ito"
-                    ),
+            val people = listOf(
+                People(
+                    image = "",
+                    name = "Hiroshi Kamiya"
+                ),
+                People(
+                    image = "",
+                    name = "Ayane Sakura"
+                ),
+                People(
+                    image = "",
+                    name = "Inose Minari"
+                ),
+                People(
+                    image = "",
+                    name = "Kayano Ai"
+                ),
+                People(
+                    image = "",
+                    name = "Matsuoka Yoshitsugu"
+                ),
+                People(
+                    image = "",
+                    name = "Kenjiro Tsuda"
+                ),
+                People(
+                    image = "",
+                    name = "Kaji Yuki"
+                ),
+                People(
+                    image = "",
+                    name = "Aoi Koga"
+                ),
+                People(
+                    image = "",
+                    name = "Ayane Taketatsu"
+                ),
+                People(
+                    image = "",
+                    name = "Miku Ito"
                 )
             )
 
+            val birthdays = listOf(
+                People(
+                    image = "",
+                    name = "Hiroshi Kamiya",
+                    date = "Oct. 24"
+                ),
+                People(
+                    image = "",
+                    name = "Ayane Sakura",
+                    date = "Oct. 24"
+                ),
+                People(
+                    image = "",
+                    name = "Inose Minari",
+                    date = "Oct. 24"
+                ),
+                People(
+                    image = "",
+                    name = "Kayano Ai",
+                    date = "Oct. 24"
+                ),
+                People(
+                    image = "",
+                    name = "Matsuoka Yoshitsugu",
+                    date = "Oct. 24"
+                ),
+                People(
+                    image = "",
+                    name = "Kenjiro Tsuda",
+                    date = "Oct. 24"
+                ),
+                People(
+                    image = "",
+                    name = "Kaji Yuki",
+                    date = "Oct. 24"
+                ),
+                People(
+                    image = "",
+                    name = "Aoi Koga",
+                    date = "Oct. 24"
+                ),
+                People(
+                    image = "",
+                    name = "Ayane Taketatsu",
+                    date = "Oct. 24"
+                ),
+                People(
+                    image = "",
+                    name = "Miku Ito",
+                    date = "Oct. 24"
+                )
+            )
+
+            /**
+             * TOP  PEOPLE SECTION
+             */
+            PeopleList(
+                modifier = Modifier.fillMaxWidth(),
+                items = people, title = stringResource(R.string.top_poeple)
+            )
+            HorizontalDivider(modifier = Modifier.padding(top = 10.dp, end = 16.dp, start = 16.dp))
+
+            /**
+             * INCOMING BIRTHDAY  PEOPLE SECTION
+             */
+            PeopleList(
+                modifier = Modifier.fillMaxWidth(),
+                items = birthdays, title = stringResource(R.string.incoming_birthdays)
+            )
             HorizontalDivider(modifier = Modifier.padding(top = 10.dp, end = 16.dp, start = 16.dp))
 
             /**
@@ -211,7 +252,7 @@ fun HomeScreenContent(modifier: Modifier = Modifier) {
 
                 DetailedAnimeItemCard(
                     modifier = Modifier
-                        .heightIn(min = 350.dp, max = 550.dp),
+                        .heightIn(min = 400.dp, max = 600.dp),
                     animeDetails = anime
                 )
             }

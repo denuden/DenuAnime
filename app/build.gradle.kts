@@ -104,7 +104,10 @@ dependencies {
 
 //    Retrofit
     implementation(libs.retrofit2)
-    implementation(libs.retrofit2.gson)
+    implementation(libs.retrofit2.moshi)
+
+//    Ok HTTP
+    implementation(libs.logging.interceptor)
 
 //    Coil
     implementation(libs.coil)
@@ -113,4 +116,7 @@ dependencies {
 
 //    Palette
     implementation(libs.palette)
+
+//    Kotlin Reflect
+    implementation(libs.kotlin.reflect)
 }
