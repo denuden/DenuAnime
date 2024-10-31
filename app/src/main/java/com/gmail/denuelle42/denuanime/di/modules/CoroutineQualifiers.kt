@@ -1,4 +1,4 @@
-package com.gmail.denuelle42.denuanime.di.scopes
+package com.gmail.denuelle42.denuanime.di.modules
 
 import javax.inject.Qualifier
 

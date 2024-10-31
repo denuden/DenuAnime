@@ -1,11 +1,11 @@
 package com.gmail.denuelle42.denuanime.data.repositories.people
 
-import com.gmail.denuelle42.denuanime.data.remote.models.people.People
+import com.gmail.denuelle42.denuanime.data.repositories.people.response.GetPeopleSearchResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.QueryMap
 
 interface PeopleAPI {
-    @GET
-    suspend fun getPeopleSearch(@QueryMap params : Map<String, String>) : Response<People>
+    @GET("people")
+    suspend fun getPeopleSearch(@QueryMap params : Map<String, Any>) : Response<GetPeopleSearchResponse>
 }

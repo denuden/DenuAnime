@@ -1,6 +1,5 @@
 package com.gmail.denuelle42.denuanime.di.modules
 
-import com.gmail.denuelle42.denuanime.di.scopes.DefaultDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

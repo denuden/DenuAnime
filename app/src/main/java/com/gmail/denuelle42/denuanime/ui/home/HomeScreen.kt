@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -23,6 +22,8 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.BaseImages
 import com.gmail.denuelle42.denuanime.data.remote.models.ImageType
@@ -53,14 +55,19 @@ import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 @Composable
 fun HomeScreen(
     onPopBackStack: () -> Unit,
-    onNavigation: (route: NavigationScreens) -> Unit
+    onNavigation: (route: NavigationScreens) -> Unit,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
-    HomeScreenContent(modifier = Modifier.fillMaxSize())
+
+    val peopleState by viewModel.peopleState.collectAsState()
+    HomeScreenContent(
+        peopleState = peopleState
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreenContent(modifier: Modifier = Modifier) {
+fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenState) {
     val lazyListState = rememberLazyListState()
     val animes = listOf(
         AnimeDetails(
@@ -96,110 +103,17 @@ fun HomeScreenContent(modifier: Modifier = Modifier) {
 
     LazyColumn(
         state = lazyListState,
+        modifier = modifier
     ) {
         item {
-            val people = listOf(
-                People(
-                    image = "",
-                    name = "Hiroshi Kamiya"
-                ),
-                People(
-                    image = "",
-                    name = "Ayane Sakura"
-                ),
-                People(
-                    image = "",
-                    name = "Inose Minari"
-                ),
-                People(
-                    image = "",
-                    name = "Kayano Ai"
-                ),
-                People(
-                    image = "",
-                    name = "Matsuoka Yoshitsugu"
-                ),
-                People(
-                    image = "",
-                    name = "Kenjiro Tsuda"
-                ),
-                People(
-                    image = "",
-                    name = "Kaji Yuki"
-                ),
-                People(
-                    image = "",
-                    name = "Aoi Koga"
-                ),
-                People(
-                    image = "",
-                    name = "Ayane Taketatsu"
-                ),
-                People(
-                    image = "",
-                    name = "Miku Ito"
-                )
-            )
-
-            val birthdays = listOf(
-                People(
-                    image = "",
-                    name = "Hiroshi Kamiya",
-                    date = "Oct. 24"
-                ),
-                People(
-                    image = "",
-                    name = "Ayane Sakura",
-                    date = "Oct. 24"
-                ),
-                People(
-                    image = "",
-                    name = "Inose Minari",
-                    date = "Oct. 24"
-                ),
-                People(
-                    image = "",
-                    name = "Kayano Ai",
-                    date = "Oct. 24"
-                ),
-                People(
-                    image = "",
-                    name = "Matsuoka Yoshitsugu",
-                    date = "Oct. 24"
-                ),
-                People(
-                    image = "",
-                    name = "Kenjiro Tsuda",
-                    date = "Oct. 24"
-                ),
-                People(
-                    image = "",
-                    name = "Kaji Yuki",
-                    date = "Oct. 24"
-                ),
-                People(
-                    image = "",
-                    name = "Aoi Koga",
-                    date = "Oct. 24"
-                ),
-                People(
-                    image = "",
-                    name = "Ayane Taketatsu",
-                    date = "Oct. 24"
-                ),
-                People(
-                    image = "",
-                    name = "Miku Ito",
-                    date = "Oct. 24"
-                )
-            )
+            val birthdays = emptyList<People>()
 
             /**
              * TOP  PEOPLE SECTION
              */
             PeopleList(
                 modifier = Modifier.fillMaxWidth(),
-                items = people, title = stringResource(R.string.top_poeple)
+                items = peopleState.people ?: emptyList(), title = stringResource(R.string.top_poeple)
             )
             HorizontalDivider(modifier = Modifier.padding(top = 10.dp, end = 16.dp, start = 16.dp))
 
@@ -307,7 +221,7 @@ enum class BorderSide {
 private fun HomeScreenPreview() {
     DenuAnimeTheme {
         Surface(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-            HomeScreenContent()
+            HomeScreenContent(peopleState = HomeScreenState())
         }
     }
 }

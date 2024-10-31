@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gmail.denuelle42.denuanime.data.remote.models.people.People
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.formatIsoDateAsMonthDayNamed
 
 @Composable
 fun PeopleList(modifier: Modifier = Modifier, items: List<People>, title: String) {
@@ -56,9 +57,9 @@ fun PeopleList(modifier: Modifier = Modifier, items: List<People>, title: String
         ) {
             items(items) { people ->
                 PeopleAvatarItem(
-                    image = people.image,
-                    name = people.name,
-                    date = people.date
+                    image = people.images?.jpg?.image_url.orEmpty(),
+                    name = people.name.orEmpty().ifEmpty { "No Name" },
+                    date = formatIsoDateAsMonthDayNamed(people.birthday.orEmpty())
                 )
             }
         }
@@ -68,57 +69,12 @@ fun PeopleList(modifier: Modifier = Modifier, items: List<People>, title: String
 
 @Preview
 @Composable
-private fun PeopleListReview() {
+private fun PeopleListPreview() {
     DenuAnimeTheme {
         Surface(
             modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)
         ) {
-            PeopleList(
-                modifier = Modifier.fillMaxWidth(),
-                items = listOf(
-                    People(
-                        image = "",
-                        name = "Hiroshi Kamiya"
-                    ),
-                    People(
-                        image = "",
-                        name = "Ayane Sakura"
-                    ),
-                    People(
-                        image = "",
-                        name = "Inose Minari"
-                    ),
-                    People(
-                        image = "",
-                        name = "Kayano Ai"
-                    ),
-                    People(
-                        image = "",
-                        name = "Matsuoka Yoshitsugu"
-                    ),
-                    People(
-                        image = "",
-                        name = "Kenjiro Tsuda"
-                    ),
-                    People(
-                        image = "",
-                        name = "Kaji Yuki"
-                    ),
-                    People(
-                        image = "",
-                        name = "Aoi Koga"
-                    ),
-                    People(
-                        image = "",
-                        name = "Ayane Taketatsu"
-                    ),
-                    People(
-                        image = "",
-                        name = "Miku Ito"
-                    ),
-                ),
-                title = ""
-            )
+
         }
     }
 }

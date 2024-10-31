@@ -11,9 +11,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
+//https://medium.com/@psarakisnick/clean-networking-with-retrofit-and-interceptor-in-kotlin-63a9ac85def2
+
 @Module
 @InstallIn(SingletonComponent::class)
-object APIServiceModule {
+object RetrofitModule {
 
     /**
      * Adds Logging to Retrofit Requests and Responses in Logcat

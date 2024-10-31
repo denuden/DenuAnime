@@ -1,9 +1,5 @@
 package com.gmail.denuelle42.denuanime.di.modules
 
-import com.gmail.denuelle42.denuanime.di.scopes.DefaultDispatcher
-import com.gmail.denuelle42.denuanime.di.scopes.IoDispatcher
-import com.gmail.denuelle42.denuanime.di.scopes.MainDispatcher
-import com.gmail.denuelle42.denuanime.di.scopes.MainImmediateDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
