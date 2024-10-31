@@ -48,7 +48,7 @@ class HomeViewModel @Inject constructor(
     )
 
     init {
-        onEvent(HomeScreenEvents.OnGetPeopleSearch(request = GetPeopleSearchRequest(limit = 4)))
+        onEvent(HomeScreenEvents.OnGetPeopleSearch(request = GetPeopleSearchRequest()))
     }
 
 

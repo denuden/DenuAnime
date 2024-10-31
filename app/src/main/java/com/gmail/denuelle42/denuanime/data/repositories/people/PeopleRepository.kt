@@ -19,7 +19,7 @@ class PeopleRepository @Inject constructor(
             "order_by" to request.order_by,
             "sort" to request.sort,
             "letter" to request.letter
-        ).filterValues { it != null }.mapValues { it.toString() }
+        ).filterValues { it != null }.mapValues { it.value.toString() }
 
         val response = peopleApi.getPeopleSearch(map)
 
