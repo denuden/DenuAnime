@@ -7,5 +7,5 @@ import retrofit2.http.QueryMap
 
 interface PeopleAPI {
     @GET("people")
-    suspend fun getPeopleSearch(@QueryMap params : Map<String, Any>) : Response<GetPeopleSearchResponse>
+    suspend fun getPeopleSearch(@QueryMap params : Map<String, String>) : Response<GetPeopleSearchResponse>
 }
