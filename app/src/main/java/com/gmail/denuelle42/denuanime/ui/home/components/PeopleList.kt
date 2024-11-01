@@ -21,10 +21,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gmail.denuelle42.denuanime.data.remote.models.people.People
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
-import com.gmail.denuelle42.denuanime.utils.formatIsoDateAsMonthDayNamed
+import com.gmail.denuelle42.denuanime.utils.formatIsoDateAsLongDate
 
 @Composable
-fun PeopleList(modifier: Modifier = Modifier, items: List<People>, title: String) {
+fun PeopleList(modifier: Modifier = Modifier, items: List<People>, title: String, shouldShowBirthDate : Boolean) {
     val state = rememberLazyListState()
     Column {
         Row(
@@ -59,7 +59,7 @@ fun PeopleList(modifier: Modifier = Modifier, items: List<People>, title: String
                 PeopleAvatarItem(
                     image = people.images?.jpg?.image_url.orEmpty(),
                     name = people.name.orEmpty().ifEmpty { "No Name" },
-                    date = formatIsoDateAsMonthDayNamed(people.birthday.orEmpty())
+                    date = if(shouldShowBirthDate) formatIsoDateAsLongDate(people.birthday.orEmpty()) else null
                 )
             }
         }

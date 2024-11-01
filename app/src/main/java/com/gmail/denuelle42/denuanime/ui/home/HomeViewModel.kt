@@ -31,15 +31,14 @@ class HomeViewModel @Inject constructor(
     private val _channel = Channel<OneTimeEvents>()
     val channel = _channel.receiveAsFlow()
 
-    private val people = MutableStateFlow(emptyList<People>())
-    private val isGetPeopleSearchLoading = MutableStateFlow(false)
-
+    private val topPeopleList = MutableStateFlow(emptyList<People>())
+    private val isGetTopPeopleSearchLoading = MutableStateFlow(false)
     val peopleState = combine(
-        people, isGetPeopleSearchLoading
-    ) { people, isGetPeopleSearchLoading ->
+        topPeopleList, isGetTopPeopleSearchLoading
+    ) { topPeopleList, isGetTopPeopleSearchLoading ->
         HomeScreenState(
-            people = people,
-            isGetPeopleSearchLoading = isGetPeopleSearchLoading,
+            topPeopleList = topPeopleList,
+            isGetTopPeopleSearchLoading = isGetTopPeopleSearchLoading,
         )
     }.stateIn(
         viewModelScope,
@@ -48,20 +47,19 @@ class HomeViewModel @Inject constructor(
     )
 
     init {
-        onEvent(HomeScreenEvents.OnGetPeopleSearch(request = GetPeopleSearchRequest()))
+        onEvent(HomeScreenEvents.OnGetTopPeopleSearch(request = GetPeopleSearchRequest(order_by = "favorites", sort = "desc")))
     }
-
 
     fun onEvent(event: HomeScreenEvents) {
         when(event) {
-            is HomeScreenEvents.OnGetPeopleSearch -> {
+            is HomeScreenEvents.OnGetTopPeopleSearch -> {
                 viewModelScope.launch {
                     peopleUseCase.getPeopleSearch(event.request).asResult().onEach { res ->
                         when(res){
-                            ResultState.Completed -> isGetPeopleSearchLoading.update { false }
+                            ResultState.Completed -> isGetTopPeopleSearchLoading.update { false }
                             is ResultState.Error ->  Log.e(TAG, res.exception.toString())
-                            ResultState.Loading -> isGetPeopleSearchLoading.update { true }
-                            is ResultState.Success -> people.update { res.data.data ?: emptyList() }
+                            ResultState.Loading -> isGetTopPeopleSearchLoading.update { true }
+                            is ResultState.Success -> topPeopleList.update { res.data.data ?: emptyList() }
                         }
                     }.collect()
                 }

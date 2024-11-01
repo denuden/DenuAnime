@@ -41,7 +41,6 @@ import com.gmail.denuelle42.denuanime.data.remote.models.BaseImages
 import com.gmail.denuelle42.denuanime.data.remote.models.ImageType
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
-import com.gmail.denuelle42.denuanime.data.remote.models.people.People
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.ui.common.AnimeListItemCard
 import com.gmail.denuelle42.denuanime.ui.common.DetailedAnimeItemCard
@@ -106,23 +105,13 @@ fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenSta
         modifier = modifier
     ) {
         item {
-            val birthdays = emptyList<People>()
-
             /**
              * TOP  PEOPLE SECTION
              */
             PeopleList(
                 modifier = Modifier.fillMaxWidth(),
-                items = peopleState.people ?: emptyList(), title = stringResource(R.string.top_poeple)
-            )
-            HorizontalDivider(modifier = Modifier.padding(top = 10.dp, end = 16.dp, start = 16.dp))
-
-            /**
-             * INCOMING BIRTHDAY  PEOPLE SECTION
-             */
-            PeopleList(
-                modifier = Modifier.fillMaxWidth(),
-                items = birthdays, title = stringResource(R.string.incoming_birthdays)
+                items = peopleState.topPeopleList ?: emptyList(), title = stringResource(R.string.top_poeple),
+                shouldShowBirthDate = true
             )
             HorizontalDivider(modifier = Modifier.padding(top = 10.dp, end = 16.dp, start = 16.dp))
 
