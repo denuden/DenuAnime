@@ -5,8 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gmail.denuelle42.bscode.util.ResultState
 import com.gmail.denuelle42.bscode.util.asResult
+import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.data.remote.models.people.People
+import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetTopAnimeRequest
 import com.gmail.denuelle42.denuanime.data.repositories.people.request.GetPeopleSearchRequest
+import com.gmail.denuelle42.denuanime.domain.repositories.anime.AnimeUseCase
 import com.gmail.denuelle42.denuanime.domain.repositories.people.PeopleUseCase
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +27,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val peopleUseCase: PeopleUseCase
+    private val peopleUseCase: PeopleUseCase,
+    private val animeUseCase : AnimeUseCase
 ) : ViewModel() {
     private val TAG = HomeViewModel::class.java.simpleName
 
@@ -46,8 +50,30 @@ class HomeViewModel @Inject constructor(
         initialValue = HomeScreenState()
     )
 
+    private val topAnimeList = MutableStateFlow(emptyList<AnimeDetails>())
+    private val isGetTopAnimeLoading = MutableStateFlow(false)
+    private val type = MutableStateFlow("tv")
+    private val rating = MutableStateFlow("")
+
+    val topAnimeState = combine(
+        topAnimeList, isGetTopAnimeLoading, rating, type
+    ) { topAnimeList, isGetTopAnimeLoading, rating, type ->
+        HomeScreenState(
+            topAnimeList = topAnimeList,
+            isGetTopAnimeLoading = isGetTopAnimeLoading,
+            rating = rating,
+            type = type,
+        )
+    }.stateIn(
+        viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = HomeScreenState()
+    )
+
+
     init {
         onEvent(HomeScreenEvents.OnGetTopPeopleSearch(request = GetPeopleSearchRequest(order_by = "favorites", sort = "desc")))
+        onEvent(HomeScreenEvents.OnGetTopAnime(request = GetTopAnimeRequest(type = topAnimeState.value.type, limit = 25)))
     }
 
     fun onEvent(event: HomeScreenEvents) {
@@ -60,6 +86,18 @@ class HomeViewModel @Inject constructor(
                             is ResultState.Error ->  Log.e(TAG, res.exception.toString())
                             ResultState.Loading -> isGetTopPeopleSearchLoading.update { true }
                             is ResultState.Success -> topPeopleList.update { res.data.data ?: emptyList() }
+                        }
+                    }.collect()
+                }
+            }
+            is HomeScreenEvents.OnGetTopAnime -> {
+                viewModelScope.launch {
+                    animeUseCase.getTopAnime(event.request).asResult().onEach { res ->
+                        when(res){
+                            ResultState.Completed -> isGetTopAnimeLoading.update { false }
+                            is ResultState.Error ->  Log.e(TAG, res.exception.toString())
+                            ResultState.Loading -> isGetTopAnimeLoading.update { true }
+                            is ResultState.Success -> topAnimeList.update { res.data.data ?: emptyList() }
                         }
                     }.collect()
                 }

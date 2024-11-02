@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -69,6 +70,7 @@ fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDeta
             containerColor = animatedColor,
         ),
         elevation = CardDefaults.cardElevation(2.dp),
+        shape = RectangleShape,
         modifier = modifier
     ) {
         Box(
@@ -149,19 +151,20 @@ fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDeta
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "4 Season, 24 eps",
+                        text = "${animeDetails.episodes ?: "Unknown"} eps",
                         color = Color.White.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelMedium
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 3.dp))
                     Text(
-                        text = "Finished Airing",
+                        text = animeDetails.status.orEmpty()
+                            .ifEmpty { "Unknown" },
                         color = Color.White.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelMedium
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 3.dp))
                     Text(
-                        text = "2019, Winter",
+                        text = "${animeDetails.year ?: "0000"}, ${animeDetails.season ?: "---"}",
                         color = Color.White.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelMedium
                     )
@@ -172,19 +175,19 @@ fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDeta
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Rating: 8.4",
+                        text = "Score: ${animeDetails.score ?: "--"}",
                         color = Color.White.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelMedium
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 3.dp))
                     Text(
-                        text = "Rank 192",
+                        text = "Rank ${animeDetails.rank ?: "--" }",
                         color = Color.White.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelMedium
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 3.dp))
                     Text(
-                        text = "PG - 13",
+                        text = animeDetails.rating.orEmpty().ifEmpty { "Unknown Rating" },
                         color = Color.White.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelMedium
                     )

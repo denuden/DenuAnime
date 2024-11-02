@@ -1,5 +1,6 @@
 package com.gmail.denuelle42.denuanime.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -37,10 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gmail.denuelle42.denuanime.R
-import com.gmail.denuelle42.denuanime.data.remote.models.BaseImages
-import com.gmail.denuelle42.denuanime.data.remote.models.ImageType
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
-import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.ui.common.AnimeListItemCard
 import com.gmail.denuelle42.denuanime.ui.common.DetailedAnimeItemCard
@@ -59,46 +57,22 @@ fun HomeScreen(
 ) {
 
     val peopleState by viewModel.peopleState.collectAsState()
+    val topAnimeState by viewModel.topAnimeState.collectAsState()
     HomeScreenContent(
-        peopleState = peopleState
+        peopleState = peopleState,
+        topAnimeState = topAnimeState
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenState) {
+fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenState, topAnimeState : HomeScreenState) {
     val lazyListState = rememberLazyListState()
-    val animes = listOf(
-        AnimeDetails(
-            title = "Kaguya sama Love is War",
-            images = ImageType(jpg = BaseImages(large_image_url = "https://cdn.myanimelist.net/images/anime/1015/138006l.jpg")),
-            genres = listOf(
-                Genre(name = "Sci-fi"),
-                Genre(name = "Adventure"),
-                Genre(name = "Drama"),
-                Genre(name = "Suspense"),
-                Genre(name = "Suspense"),
-                Genre(name = "Suspense"),
-            )
-        ),
-        AnimeDetails(
-            title = "Code Geass",
-            images = ImageType(jpg = BaseImages(large_image_url = "https://cdn.myanimelist.net/images/anime/1455/146229l.jpg"))
-        ),
-        AnimeDetails(
-            title = "One Punch Man",
-            images = ImageType(jpg = BaseImages(large_image_url = "https://cdn.myanimelist.net/images/anime/1208/94745l.jpg"))
-        ),
-        AnimeDetails(
-            title = "Nanatsu no Taizai",
-            images = ImageType(jpg = BaseImages(large_image_url = "https://cdn.myanimelist.net/images/anime/1935/127974l.jpg"))
-        ),
-    )
 
     //Whole Device wdith subtracted its 1/4
     val configuration = LocalConfiguration.current
     val screenWidthDp = remember { configuration.screenWidthDp.dp }
-    val carouselState = rememberCarouselState { animes.count() }
+    val carouselState = rememberCarouselState { 25 }
 
     LazyColumn(
         state = lazyListState,
@@ -145,31 +119,33 @@ fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenSta
             /**
              * ANIME CARD SECTION
              */
-            HorizontalMultiBrowseCarousel(
-                state = carouselState,
-                preferredItemWidth = screenWidthDp,
-                itemSpacing = 4.dp,
-                contentPadding = PaddingValues(horizontal = 8.dp)
-            ) { index ->
-                val anime = animes[index]
-
-                DetailedAnimeItemCard(
+            if(topAnimeState.topAnimeList?.isNotEmpty() == true){
+                HorizontalMultiBrowseCarousel(
+                    state = carouselState,
+                    preferredItemWidth = screenWidthDp,
+                    itemSpacing = 4.dp,
+                    contentPadding = PaddingValues(horizontal = 8.dp)
+                ) { index ->
+                    val anime = topAnimeState.topAnimeList?.get(index)
+                    DetailedAnimeItemCard(
+                        modifier = Modifier
+                            .heightIn(min = 400.dp, max = 600.dp),
+                        animeDetails = anime ?: AnimeDetails()
+                    )
+                }
+                Text(
+                    text = "See more",
+                    textDecoration = TextDecoration.Underline,
+                    fontWeight = FontWeight.Light,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    textAlign = TextAlign.End,
                     modifier = Modifier
-                        .heightIn(min = 400.dp, max = 600.dp),
-                    animeDetails = anime
+                        .fillMaxWidth()
+                        .padding(top = 4.dp, end = 12.dp)
                 )
             }
-            Text(
-                text = "See more",
-                textDecoration = TextDecoration.Underline,
-                fontWeight = FontWeight.Light,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.tertiary,
-                textAlign = TextAlign.End,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp, end = 12.dp)
-            )
+
 
             Spacer(modifier = Modifier.padding(vertical = 10.dp))
 
@@ -189,13 +165,13 @@ fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenSta
              */
             EpisodesAndSeasons(
                 modifier = Modifier .padding(horizontal = 8.dp),
-                animes = animes
+                animes = topAnimeState.topAnimeList ?: emptyList()
             )
             Spacer(modifier = Modifier.padding(bottom = 8.dp))
         }
 
         //Scrollable Item
-        items(animes) { anime ->
+        items(topAnimeState.topAnimeList ?: emptyList()) { anime ->
             AnimeListItemCard(animeDetails = anime, modifier = Modifier.padding(vertical = 3.dp, horizontal = 8.dp))
         }
     }
@@ -210,7 +186,10 @@ enum class BorderSide {
 private fun HomeScreenPreview() {
     DenuAnimeTheme {
         Surface(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-            HomeScreenContent(peopleState = HomeScreenState())
+            HomeScreenContent(
+                peopleState = HomeScreenState(),
+                topAnimeState = HomeScreenState(),
+                )
         }
     }
 }
