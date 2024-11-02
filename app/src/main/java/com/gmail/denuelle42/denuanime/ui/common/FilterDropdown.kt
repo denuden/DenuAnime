@@ -1,8 +1,11 @@
 package com.gmail.denuelle42.denuanime.ui.common
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -16,19 +19,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
 @Composable
 fun FilterDropdown(
-    modifier: Modifier = Modifier, label: String,
+    modifier: Modifier = Modifier,
+    buttonLabel: String,
+    typeLabel : String? = null,
+    secondaryTypeLabel : String? = null,
     type: List<String>,
+    secondaryType: List<String> = emptyList(),
     shape: Shape = ButtonDefaults.textShape,
-    onFilterClick: (Int) -> Unit,
+    onFilterClick: (String, String?) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
+
+    var selectedType by remember { mutableStateOf(type[0]) }
+    var selectedSecondaryType by remember { mutableStateOf(if (secondaryType.isNotEmpty()) secondaryType[0] else null) }
 
     Box(modifier = modifier) {
         TextButton(
@@ -37,20 +49,67 @@ fun FilterDropdown(
                 expanded = true
             },
         ) {
-            Icon(imageVector = Icons.Default.FilterAlt, contentDescription = label)
-            Text(text = label)
+            Icon(imageVector = Icons.Default.FilterAlt, contentDescription = buttonLabel)
+            Text(text = buttonLabel)
         }
 
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            type.forEachIndexed { index, item ->
-                DropdownMenuItem(
-                    text = { Text(item) },
-                    onClick = {
-                        onFilterClick(index)
-                        expanded = false
-                    },
-                )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+                onFilterClick(selectedType, selectedSecondaryType)
+            }) {
+
+            Row {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = typeLabel ?: "", fontWeight = FontWeight.SemiBold)
+                    type.forEachIndexed { index, item ->
+                        DropdownMenuItem(
+                            text = { Text(item) },
+                            onClick = {
+                                selectedType = type[index]
+                            },
+                            leadingIcon = {
+                                if (selectedType == item) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = null,
+                                        tint = Color.Gray,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                        )
+                    }
+                }
+
+
+                if (secondaryType.isNotEmpty()) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = secondaryTypeLabel ?: "", fontWeight = FontWeight.SemiBold)
+                        secondaryType.forEachIndexed { index, item ->
+                            DropdownMenuItem(
+                                text = { Text(item) },
+                                onClick = {
+                                    selectedSecondaryType = secondaryType[index]
+                                },
+                                leadingIcon = {
+                                    if (selectedSecondaryType == item) {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = null,
+                                            tint = Color.Gray,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                }
             }
+
         }
     }
 
@@ -61,9 +120,12 @@ fun FilterDropdown(
 private fun FilterTypeDropdownPreview() {
     DenuAnimeTheme {
         FilterDropdown(
-            label = "Type",
-            type = listOf("TV", "Movie", "Series")
-        ) {
+            buttonLabel = "Type",
+            typeLabel = "Type",
+            secondaryTypeLabel = "Type",
+            type = listOf("TV", "Movie", "Series"),
+            secondaryType = listOf("TV", "Movie", "Series")
+        ) { type, secondaryType ->
 
         }
     }

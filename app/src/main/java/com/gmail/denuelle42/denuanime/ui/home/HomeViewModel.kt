@@ -102,6 +102,45 @@ class HomeViewModel @Inject constructor(
                     }.collect()
                 }
             }
+            is HomeScreenEvents.OnChangeMainAnimeListFilter -> {
+                viewModelScope.launch {
+                    val type = when(event.type){
+                        "All" -> ""
+                        "TV" -> "tv"
+                        "Movie" -> "movie"
+                        "OVA" -> "ova"
+                        "Special" -> "special"
+                        "ONA" -> "ona"
+                        "Music" -> "music"
+                        "CM" -> "cm"
+                        "PV" -> "pv"
+                        "TV Special" -> "tv_special"
+                        else -> ""
+                    }
+                    val rating = when(event.rating){
+                        "All" -> ""
+                        "G" -> "g"
+                        "PG" -> "pg"
+                        "PG-13" -> "pg13"
+                        "R-17+" -> "r17"
+                        "R-Mild Nudity" -> "r"
+                        "Rx-Hentai" -> "rx"
+                        else -> ""
+                    }
+                    animeUseCase.getTopAnime(GetTopAnimeRequest(
+                        type = type,
+                        rating = rating,
+                        limit = 25
+                    )).asResult().onEach { res ->
+                        when(res){
+                            ResultState.Completed -> isGetTopAnimeLoading.update { false }
+                            is ResultState.Error ->  Log.e(TAG, res.exception.toString())
+                            ResultState.Loading -> isGetTopAnimeLoading.update { true }
+                            is ResultState.Success -> topAnimeList.update { res.data.data ?: emptyList() }
+                        }
+                    }.collect()
+                }
+            }
         }
     }
 

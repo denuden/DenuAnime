@@ -6,4 +6,5 @@ import com.gmail.denuelle42.denuanime.data.repositories.people.request.GetPeople
 sealed class HomeScreenEvents {
     data class OnGetTopPeopleSearch(val request: GetPeopleSearchRequest) :  HomeScreenEvents()
     data class OnGetTopAnime(val request: GetTopAnimeRequest) :  HomeScreenEvents()
+    data class OnChangeMainAnimeListFilter(val type : String, val rating : String) :  HomeScreenEvents()
 }

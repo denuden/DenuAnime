@@ -1,7 +1,7 @@
 package com.gmail.denuelle42.denuanime.ui.home
 
-import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,13 +23,17 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,7 +42,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gmail.denuelle42.denuanime.R
-import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.ui.common.AnimeListItemCard
 import com.gmail.denuelle42.denuanime.ui.common.DetailedAnimeItemCard
@@ -48,6 +51,7 @@ import com.gmail.denuelle42.denuanime.ui.home.components.EpisodesAndSeasons
 import com.gmail.denuelle42.denuanime.ui.home.components.PeopleList
 import com.gmail.denuelle42.denuanime.ui.home.components.Recommendations
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.calculateScrolledDistance
 
 @Composable
 fun HomeScreen(
@@ -60,20 +64,27 @@ fun HomeScreen(
     val topAnimeState by viewModel.topAnimeState.collectAsState()
     HomeScreenContent(
         peopleState = peopleState,
-        topAnimeState = topAnimeState
+        topAnimeState = topAnimeState,
+        onEvent = viewModel::onEvent
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenState, topAnimeState : HomeScreenState) {
+fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenState, topAnimeState : HomeScreenState, onEvent: (HomeScreenEvents) -> Unit) {
     val lazyListState = rememberLazyListState()
 
     //Whole Device wdith subtracted its 1/4
     val configuration = LocalConfiguration.current
     val screenWidthDp = remember { configuration.screenWidthDp.dp }
-    val carouselState = rememberCarouselState { 25 }
 
+    var carouselCount by remember { mutableIntStateOf(topAnimeState.topAnimeList?.size ?: 0) }
+    val carouselState = rememberCarouselState(0) { carouselCount }
+    val screenWidthPx = with(LocalDensity.current) { screenWidthDp.toPx() }
+
+    LaunchedEffect(carouselCount) {
+        carouselState.animateScrollBy(-calculateScrolledDistance(screenWidthPx, carouselCount))
+    }
     LazyColumn(
         state = lazyListState,
         modifier = modifier
@@ -98,10 +109,14 @@ fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenSta
             ) {
                 FilterDropdown(
                     shape = RectangleShape,
-                    label = "Type",
-                    type = listOf("TV", "Movie", "Series"),
-                ) {
-//                TODO Selected Filter Type
+                    buttonLabel = "Filter",
+                    typeLabel = "Type",
+                    secondaryTypeLabel = "Rating",
+                    type = listOf("All", "TV", "Movie", "OVA", "Special", "ONA", "Music", "CM", "PV", "TV Special"),
+                    secondaryType = listOf("All", "G", "PG", "PG-13", "R-17+", "R-Mild Nudity", "Rx-Hentai"),
+                ) { type, secondaryType ->
+                    //Recall Get Anime
+                    onEvent(HomeScreenEvents.OnChangeMainAnimeListFilter(type = type, rating = secondaryType.orEmpty()))
                 }
                 VerticalDivider(
                     modifier = Modifier
@@ -120,17 +135,18 @@ fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenSta
              * ANIME CARD SECTION
              */
             if(topAnimeState.topAnimeList?.isNotEmpty() == true){
+                carouselCount = topAnimeState.topAnimeList.size
                 HorizontalMultiBrowseCarousel(
                     state = carouselState,
                     preferredItemWidth = screenWidthDp,
                     itemSpacing = 4.dp,
-                    contentPadding = PaddingValues(horizontal = 8.dp)
+                    contentPadding = PaddingValues(horizontal = 8.dp),
                 ) { index ->
-                    val anime = topAnimeState.topAnimeList?.get(index)
+                    val anime = topAnimeState.topAnimeList[index]
                     DetailedAnimeItemCard(
                         modifier = Modifier
                             .heightIn(min = 400.dp, max = 600.dp),
-                        animeDetails = anime ?: AnimeDetails()
+                        animeDetails = anime
                     )
                 }
                 Text(
@@ -189,6 +205,7 @@ private fun HomeScreenPreview() {
             HomeScreenContent(
                 peopleState = HomeScreenState(),
                 topAnimeState = HomeScreenState(),
+                onEvent= {}
                 )
         }
     }
