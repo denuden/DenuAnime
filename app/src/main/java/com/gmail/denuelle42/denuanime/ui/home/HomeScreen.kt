@@ -1,5 +1,8 @@
 package com.gmail.denuelle42.denuanime.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.PaddingValues
@@ -46,12 +49,14 @@ import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.ui.common.AnimeListItemCard
 import com.gmail.denuelle42.denuanime.ui.common.DetailedAnimeItemCard
 import com.gmail.denuelle42.denuanime.ui.common.FilterDropdown
+import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonPeopleList
 import com.gmail.denuelle42.denuanime.ui.home.components.CategoriesFilterChip
 import com.gmail.denuelle42.denuanime.ui.home.components.EpisodesAndSeasons
 import com.gmail.denuelle42.denuanime.ui.home.components.PeopleList
 import com.gmail.denuelle42.denuanime.ui.home.components.Recommendations
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.calculateScrolledDistance
+import com.valentinilk.shimmer.shimmer
 
 @Composable
 fun HomeScreen(
@@ -93,11 +98,25 @@ fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenSta
             /**
              * TOP  PEOPLE SECTION
              */
-            PeopleList(
-                modifier = Modifier.fillMaxWidth(),
-                items = peopleState.topPeopleList ?: emptyList(), title = stringResource(R.string.top_poeple),
-                shouldShowBirthDate = true
-            )
+            AnimatedVisibility(
+                enter = fadeIn(),
+                exit = fadeOut(),
+                visible = !peopleState.isGetTopPeopleSearchLoading
+            ) {
+                PeopleList(
+                    modifier = Modifier.fillMaxWidth(),
+                    items = peopleState.topPeopleList ?: emptyList(), title = stringResource(R.string.top_poeple),
+                    shouldShowBirthDate = true
+                )
+            }
+
+            AnimatedVisibility(
+                enter = fadeIn(),
+                exit = fadeOut(),
+                visible = peopleState.isGetTopPeopleSearchLoading
+            ) {
+                SkeletonPeopleList(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp).shimmer())
+            }
             HorizontalDivider(modifier = Modifier.padding(top = 10.dp, end = 16.dp, start = 16.dp))
 
             /**

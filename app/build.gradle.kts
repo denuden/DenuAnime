@@ -116,4 +116,7 @@ dependencies {
 
 //    Palette
     implementation(libs.palette)
+
+//    Shimmer
+    implementation(libs.shimmer)
 }
