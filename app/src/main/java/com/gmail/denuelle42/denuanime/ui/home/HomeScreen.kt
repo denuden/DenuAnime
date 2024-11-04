@@ -5,6 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -49,6 +51,7 @@ import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.ui.common.AnimeListItemCard
 import com.gmail.denuelle42.denuanime.ui.common.DetailedAnimeItemCard
 import com.gmail.denuelle42.denuanime.ui.common.FilterDropdown
+import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonAnimeDetailsCard
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonPeopleList
 import com.gmail.denuelle42.denuanime.ui.home.components.CategoriesFilterChip
 import com.gmail.denuelle42.denuanime.ui.home.components.EpisodesAndSeasons
@@ -56,7 +59,6 @@ import com.gmail.denuelle42.denuanime.ui.home.components.PeopleList
 import com.gmail.denuelle42.denuanime.ui.home.components.Recommendations
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.calculateScrolledDistance
-import com.valentinilk.shimmer.shimmer
 
 @Composable
 fun HomeScreen(
@@ -76,7 +78,12 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenState, topAnimeState : HomeScreenState, onEvent: (HomeScreenEvents) -> Unit) {
+fun HomeScreenContent(
+    modifier: Modifier = Modifier,
+    peopleState: HomeScreenState,
+    topAnimeState: HomeScreenState,
+    onEvent: (HomeScreenEvents) -> Unit
+) {
     val lazyListState = rememberLazyListState()
 
     //Whole Device wdith subtracted its 1/4
@@ -105,18 +112,23 @@ fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenSta
             ) {
                 PeopleList(
                     modifier = Modifier.fillMaxWidth(),
-                    items = peopleState.topPeopleList ?: emptyList(), title = stringResource(R.string.top_poeple),
+                    items = peopleState.topPeopleList ?: emptyList(),
+                    title = stringResource(R.string.top_poeple),
                     shouldShowBirthDate = true
                 )
             }
-
             AnimatedVisibility(
                 enter = fadeIn(),
                 exit = fadeOut(),
                 visible = peopleState.isGetTopPeopleSearchLoading
             ) {
-                SkeletonPeopleList(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp).shimmer())
+                SkeletonPeopleList(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                )
             }
+
             HorizontalDivider(modifier = Modifier.padding(top = 10.dp, end = 16.dp, start = 16.dp))
 
             /**
@@ -131,11 +143,35 @@ fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenSta
                     buttonLabel = "Filter",
                     typeLabel = "Type",
                     secondaryTypeLabel = "Rating",
-                    type = listOf("All", "TV", "Movie", "OVA", "Special", "ONA", "Music", "CM", "PV", "TV Special"),
-                    secondaryType = listOf("All", "G", "PG", "PG-13", "R-17+", "R-Mild Nudity", "Rx-Hentai"),
+                    type = listOf(
+                        "All",
+                        "TV",
+                        "Movie",
+                        "OVA",
+                        "Special",
+                        "ONA",
+                        "Music",
+                        "CM",
+                        "PV",
+                        "TV Special"
+                    ),
+                    secondaryType = listOf(
+                        "All",
+                        "G",
+                        "PG",
+                        "PG-13",
+                        "R-17+",
+                        "R-Mild Nudity",
+                        "Rx-Hentai"
+                    ),
                 ) { type, secondaryType ->
                     //Recall Get Anime
-                    onEvent(HomeScreenEvents.OnChangeMainAnimeListFilter(type = type, rating = secondaryType.orEmpty()))
+                    onEvent(
+                        HomeScreenEvents.OnChangeMainAnimeListFilter(
+                            type = type,
+                            rating = secondaryType.orEmpty()
+                        )
+                    )
                 }
                 VerticalDivider(
                     modifier = Modifier
@@ -148,38 +184,62 @@ fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenSta
                     categoryList = listOf("Top", "Upcoming", "All", "Adventure")
                 )
             }
-
-
             /**
              * ANIME CARD SECTION
              */
-            if(topAnimeState.topAnimeList?.isNotEmpty() == true){
-                carouselCount = topAnimeState.topAnimeList.size
-                HorizontalMultiBrowseCarousel(
-                    state = carouselState,
-                    preferredItemWidth = screenWidthDp,
-                    itemSpacing = 4.dp,
-                    contentPadding = PaddingValues(horizontal = 8.dp),
-                ) { index ->
-                    val anime = topAnimeState.topAnimeList[index]
-                    DetailedAnimeItemCard(
-                        modifier = Modifier
-                            .heightIn(min = 400.dp, max = 600.dp),
-                        animeDetails = anime
-                    )
+            AnimatedVisibility(
+                enter = fadeIn(),
+                exit = fadeOut(),
+                visible = !topAnimeState.isGetTopAnimeLoading
+            ) {
+                if (topAnimeState.topAnimeList?.isNotEmpty() == true) {
+                    carouselCount = topAnimeState.topAnimeList.size
+
+                    Column{
+                        HorizontalMultiBrowseCarousel(
+                            state = carouselState,
+                            preferredItemWidth = screenWidthDp,
+                            itemSpacing = 4.dp,
+                            contentPadding = PaddingValues(horizontal = 8.dp),
+                        ) { index ->
+                            val anime = topAnimeState.topAnimeList[index]
+                            DetailedAnimeItemCard(
+                                modifier = Modifier
+                                    .heightIn(min = 400.dp, max = 600.dp),
+                                animeDetails = anime
+                            )
+                        }
+                        Text(
+                            text = "See more",
+                            textDecoration = TextDecoration.Underline,
+                            fontWeight = FontWeight.Light,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp, end = 12.dp)
+                        )
+                    }
+
+                } else {
+//                    TODO
                 }
-                Text(
-                    text = "See more",
-                    textDecoration = TextDecoration.Underline,
-                    fontWeight = FontWeight.Light,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    textAlign = TextAlign.End,
+            }
+            AnimatedVisibility(
+                enter = fadeIn(),
+                exit = fadeOut(),
+                visible = topAnimeState.isGetTopAnimeLoading
+            ) {
+                SkeletonAnimeDetailsCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 4.dp, end = 12.dp)
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .size(width = screenWidthDp, height = 500.dp)
                 )
             }
+
+
 
 
             Spacer(modifier = Modifier.padding(vertical = 10.dp))
@@ -199,7 +259,7 @@ fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenSta
              * EPISODES AND SEASONS SECTION
              */
             EpisodesAndSeasons(
-                modifier = Modifier .padding(horizontal = 8.dp),
+                modifier = Modifier.padding(horizontal = 8.dp),
                 animes = topAnimeState.topAnimeList ?: emptyList()
             )
             Spacer(modifier = Modifier.padding(bottom = 8.dp))
@@ -207,7 +267,10 @@ fun HomeScreenContent(modifier: Modifier = Modifier, peopleState : HomeScreenSta
 
         //Scrollable Item
         items(topAnimeState.topAnimeList ?: emptyList()) { anime ->
-            AnimeListItemCard(animeDetails = anime, modifier = Modifier.padding(vertical = 3.dp, horizontal = 8.dp))
+            AnimeListItemCard(
+                animeDetails = anime,
+                modifier = Modifier.padding(vertical = 3.dp, horizontal = 8.dp)
+            )
         }
     }
 }
@@ -224,8 +287,8 @@ private fun HomeScreenPreview() {
             HomeScreenContent(
                 peopleState = HomeScreenState(),
                 topAnimeState = HomeScreenState(),
-                onEvent= {}
-                )
+                onEvent = {}
+            )
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.gmail.denuelle42.denuanime.di.modules
 
 import com.gmail.denuelle42.denuanime.data.repositories.anime.AnimeAPI
+import com.gmail.denuelle42.denuanime.data.repositories.genre.GenreAPI
 import com.gmail.denuelle42.denuanime.data.repositories.people.PeopleAPI
 import dagger.Module
 import dagger.Provides
@@ -23,5 +24,11 @@ object APIModule {
     @Singleton
     fun provideAnimeAPI(retrofit: Retrofit): AnimeAPI {
         return retrofit.create(AnimeAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGenreAPI(retrofit: Retrofit): GenreAPI {
+        return retrofit.create(GenreAPI::class.java)
     }
 }

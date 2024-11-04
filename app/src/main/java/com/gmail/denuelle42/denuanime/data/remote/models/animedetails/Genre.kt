@@ -8,5 +8,6 @@ data class Genre(
     val mal_id: Int? = null, // 4
     val type: String? = null, // anime
     val name: String? = null, // Comedy
+    val count: Int? = null, // 253
     val url: String? = null // https://myanimelist.net/anime/genre/4/Comedy
 )
