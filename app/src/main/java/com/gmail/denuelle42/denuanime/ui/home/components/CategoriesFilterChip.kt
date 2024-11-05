@@ -21,10 +21,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gmail.denuelle42.denuanime.R
+import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
 @Composable
-fun CategoriesFilterChip(modifier: Modifier = Modifier, categoryList : List<String>) {
+fun CategoriesFilterChip(modifier: Modifier = Modifier, categoryList : List<Genre>) {
     //Default Category Selected
     var labelSelected by remember { mutableStateOf("Top") }
 
@@ -34,12 +35,12 @@ fun CategoriesFilterChip(modifier: Modifier = Modifier, categoryList : List<Stri
     ) {
         items(categoryList) { category ->
             FilterChip(
-                onClick = { labelSelected = category },
+                onClick = { labelSelected = category.name ?: "Unknown" },
                 label = {
-                    Text(category)
+                    Text(category.name ?: "Unknown")
                 },
-                selected = category == labelSelected,
-                leadingIcon = if (category == labelSelected) {
+                selected = category.name == labelSelected,
+                leadingIcon = if (category.name == labelSelected) {
                     {
                         Icon(
                             imageVector = Icons.Default.Done,
@@ -59,6 +60,6 @@ fun CategoriesFilterChip(modifier: Modifier = Modifier, categoryList : List<Stri
 @Composable
 private fun CategoriesFilterChipPreview() {
     DenuAnimeTheme {
-        CategoriesFilterChip(categoryList = listOf("Top", "Upcoming", "Action", "Adventure"))
+        CategoriesFilterChip(categoryList = emptyList())
     }
 }

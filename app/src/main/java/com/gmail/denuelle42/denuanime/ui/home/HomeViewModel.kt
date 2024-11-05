@@ -1,15 +1,20 @@
 package com.gmail.denuelle42.denuanime.ui.home
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gmail.denuelle42.bscode.util.ResultState
 import com.gmail.denuelle42.bscode.util.asResult
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
+import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.data.remote.models.people.People
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetTopAnimeRequest
+import com.gmail.denuelle42.denuanime.data.repositories.genre.request.GetAnimeGenresRequest
 import com.gmail.denuelle42.denuanime.data.repositories.people.request.GetPeopleSearchRequest
 import com.gmail.denuelle42.denuanime.domain.repositories.anime.AnimeUseCase
+import com.gmail.denuelle42.denuanime.domain.repositories.genre.GenreUseCase
 import com.gmail.denuelle42.denuanime.domain.repositories.people.PeopleUseCase
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +33,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val peopleUseCase: PeopleUseCase,
-    private val animeUseCase : AnimeUseCase
+    private val animeUseCase: AnimeUseCase,
+    private val genreUseCase: GenreUseCase,
 ) : ViewModel() {
     private val TAG = HomeViewModel::class.java.simpleName
 
@@ -70,41 +76,85 @@ class HomeViewModel @Inject constructor(
         initialValue = HomeScreenState()
     )
 
+    private val animeGenresList = MutableStateFlow(emptyList<Genre>())
+    private val isGetAnimeGenresLoading = MutableStateFlow<Boolean>(false)
+    val animeGenresState =
+        combine(animeGenresList, isGetAnimeGenresLoading) { animeGenresList, isGetAnimeGenresLoading ->
+            val genres = mutableListOf(Genre(mal_id = -1, name = "Top"), Genre(mal_id = -1, name = "Upcoming")).apply {
+                animeGenresList.onEach {
+                    add(it)
+                }
+            }
+
+            HomeScreenState(
+                animeGenres = genres,
+                isGetAnimeGenresLoading = isGetAnimeGenresLoading
+            )
+        }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = HomeScreenState()
+        )
 
     init {
-        onEvent(HomeScreenEvents.OnGetTopPeopleSearch(request = GetPeopleSearchRequest(order_by = "favorites", sort = "desc")))
-        onEvent(HomeScreenEvents.OnGetTopAnime(request = GetTopAnimeRequest(type = topAnimeState.value.type, limit = 25)))
+        onEvent(
+            HomeScreenEvents.OnGetTopPeopleSearch(
+                request = GetPeopleSearchRequest(
+                    order_by = "favorites",
+                    sort = "desc"
+                )
+            )
+        )
+        onEvent(
+            HomeScreenEvents.OnGetTopAnime(
+                request = GetTopAnimeRequest(
+                    type = topAnimeState.value.type,
+                    limit = 25
+                )
+            )
+        )
+        onEvent(
+            HomeScreenEvents.OnGetAnimeGenres(
+                request = GetAnimeGenresRequest(filter = "genres")
+            )
+        )
     }
 
     fun onEvent(event: HomeScreenEvents) {
-        when(event) {
+        when (event) {
             is HomeScreenEvents.OnGetTopPeopleSearch -> {
                 viewModelScope.launch {
                     peopleUseCase.getPeopleSearch(event.request).asResult().onEach { res ->
-                        when(res){
+                        when (res) {
                             ResultState.Completed -> isGetTopPeopleSearchLoading.update { false }
-                            is ResultState.Error ->  Log.e(TAG, res.exception.toString())
+                            is ResultState.Error -> Log.e(TAG, res.exception.toString())
                             ResultState.Loading -> isGetTopPeopleSearchLoading.update { true }
-                            is ResultState.Success -> topPeopleList.update { res.data.data ?: emptyList() }
+                            is ResultState.Success -> topPeopleList.update {
+                                res.data.data ?: emptyList()
+                            }
                         }
                     }.collect()
                 }
             }
+
             is HomeScreenEvents.OnGetTopAnime -> {
                 viewModelScope.launch {
                     animeUseCase.getTopAnime(event.request).asResult().onEach { res ->
-                        when(res){
+                        when (res) {
                             ResultState.Completed -> isGetTopAnimeLoading.update { false }
-                            is ResultState.Error ->  Log.e(TAG, res.exception.toString())
+                            is ResultState.Error -> Log.e(TAG, res.exception.toString())
                             ResultState.Loading -> isGetTopAnimeLoading.update { true }
-                            is ResultState.Success -> topAnimeList.update { res.data.data ?: emptyList() }
+                            is ResultState.Success -> topAnimeList.update {
+                                res.data.data ?: emptyList()
+                            }
                         }
                     }.collect()
                 }
             }
+
             is HomeScreenEvents.OnChangeMainAnimeListFilter -> {
                 viewModelScope.launch {
-                    val type = when(event.type){
+                    val type = when (event.type) {
                         "All" -> ""
                         "TV" -> "tv"
                         "Movie" -> "movie"
@@ -117,7 +167,7 @@ class HomeViewModel @Inject constructor(
                         "TV Special" -> "tv_special"
                         else -> ""
                     }
-                    val rating = when(event.rating){
+                    val rating = when (event.rating) {
                         "All" -> ""
                         "G" -> "g"
                         "PG" -> "pg"
@@ -127,16 +177,35 @@ class HomeViewModel @Inject constructor(
                         "Rx-Hentai" -> "rx"
                         else -> ""
                     }
-                    animeUseCase.getTopAnime(GetTopAnimeRequest(
-                        type = type,
-                        rating = rating,
-                        limit = 25
-                    )).asResult().onEach { res ->
-                        when(res){
+                    animeUseCase.getTopAnime(
+                        GetTopAnimeRequest(
+                            type = type,
+                            rating = rating,
+                            limit = 25
+                        )
+                    ).asResult().onEach { res ->
+                        when (res) {
                             ResultState.Completed -> isGetTopAnimeLoading.update { false }
-                            is ResultState.Error ->  Log.e(TAG, res.exception.toString())
+                            is ResultState.Error -> Log.e(TAG, res.exception.toString())
                             ResultState.Loading -> isGetTopAnimeLoading.update { true }
-                            is ResultState.Success -> topAnimeList.update { res.data.data ?: emptyList() }
+                            is ResultState.Success -> topAnimeList.update {
+                                res.data.data ?: emptyList()
+                            }
+                        }
+                    }.collect()
+                }
+            }
+
+            is HomeScreenEvents.OnGetAnimeGenres -> {
+                viewModelScope.launch {
+                    genreUseCase.getAnimeGenres(event.request).asResult().onEach { res ->
+                        when (res) {
+                            ResultState.Completed -> isGetAnimeGenresLoading.update { false }
+                            is ResultState.Error -> Log.e(TAG, res.exception.toString())
+                            ResultState.Loading -> isGetAnimeGenresLoading.update { true }
+                            is ResultState.Success -> animeGenresList.update {
+                                res.data.data ?: emptyList()
+                            }
                         }
                     }.collect()
                 }

@@ -47,11 +47,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gmail.denuelle42.denuanime.R
+import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.ui.common.AnimeListItemCard
 import com.gmail.denuelle42.denuanime.ui.common.DetailedAnimeItemCard
 import com.gmail.denuelle42.denuanime.ui.common.FilterDropdown
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonAnimeDetailsCard
+import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonGenreList
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonPeopleList
 import com.gmail.denuelle42.denuanime.ui.home.components.CategoriesFilterChip
 import com.gmail.denuelle42.denuanime.ui.home.components.EpisodesAndSeasons
@@ -69,9 +71,11 @@ fun HomeScreen(
 
     val peopleState by viewModel.peopleState.collectAsState()
     val topAnimeState by viewModel.topAnimeState.collectAsState()
+    val animeGenresState by viewModel.animeGenresState.collectAsState()
     HomeScreenContent(
         peopleState = peopleState,
         topAnimeState = topAnimeState,
+        animeGenresState = animeGenresState,
         onEvent = viewModel::onEvent
     )
 }
@@ -82,6 +86,7 @@ fun HomeScreenContent(
     modifier: Modifier = Modifier,
     peopleState: HomeScreenState,
     topAnimeState: HomeScreenState,
+    animeGenresState: HomeScreenState,
     onEvent: (HomeScreenEvents) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
@@ -179,10 +184,29 @@ fun HomeScreenContent(
                         .height(ButtonDefaults.MinHeight)
                         .align(Alignment.CenterVertically)
                 )
-                CategoriesFilterChip(
-                    modifier = Modifier.fillMaxWidth(),
-                    categoryList = listOf("Top", "Upcoming", "All", "Adventure")
-                )
+
+                /**
+                 * Anime Genres
+                 */
+                AnimatedVisibility(
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                    visible = !animeGenresState.isGetAnimeGenresLoading
+                ) {
+                    CategoriesFilterChip(
+                        modifier = Modifier.fillMaxWidth(),
+                        categoryList = animeGenresState.animeGenres ?: emptyList<Genre>()
+                    )
+                }
+                AnimatedVisibility(
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                    visible = animeGenresState.isGetAnimeGenresLoading
+                ) {
+                    SkeletonGenreList(modifier = Modifier.fillMaxWidth())
+                }
+
+
             }
             /**
              * ANIME CARD SECTION
@@ -287,6 +311,7 @@ private fun HomeScreenPreview() {
             HomeScreenContent(
                 peopleState = HomeScreenState(),
                 topAnimeState = HomeScreenState(),
+                animeGenresState =  HomeScreenState(),
                 onEvent = {}
             )
         }

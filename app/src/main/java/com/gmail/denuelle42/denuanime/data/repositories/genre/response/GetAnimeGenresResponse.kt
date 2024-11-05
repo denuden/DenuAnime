@@ -6,5 +6,5 @@ import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 
 @Keep
 data class GetAnimeGenresResponse(
-    val `data`: List<Genre?>? = null
+    val `data`: List<Genre>? = null
 )
