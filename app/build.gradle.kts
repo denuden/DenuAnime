@@ -119,4 +119,8 @@ dependencies {
 
 //    Shimmer
     implementation(libs.shimmer)
+
+//    Paging 3
+    implementation(libs.paging)
+    implementation(libs.paging.compose)
 }

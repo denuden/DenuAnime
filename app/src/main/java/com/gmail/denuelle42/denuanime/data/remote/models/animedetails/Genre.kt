@@ -9,5 +9,6 @@ data class Genre(
     val type: String? = null, // anime
     val name: String? = null, // Comedy
     val count: Int? = null, // 253
-    val url: String? = null // https://myanimelist.net/anime/genre/4/Comedy
+    val url: String? = null, // https://myanimelist.net/anime/genre/4/Comedy
+    val isSelected : Boolean = false, // Local variable for selected in list
 )

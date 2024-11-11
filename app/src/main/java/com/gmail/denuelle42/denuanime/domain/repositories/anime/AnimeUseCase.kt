@@ -1,7 +1,9 @@
 package com.gmail.denuelle42.denuanime.domain.repositories.anime
 
 import com.gmail.denuelle42.denuanime.data.repositories.anime.AnimeRepository
+import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetAnimeSearchRequest
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetTopAnimeRequest
+import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetAnimeSearchResponse
 import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetTopAnimeResponse
 import com.gmail.denuelle42.denuanime.di.modules.IoDispatcher
 import dagger.hilt.android.scopes.ViewModelScoped
@@ -19,6 +21,13 @@ class AnimeUseCase @Inject constructor(
     fun getTopAnime(request : GetTopAnimeRequest) : Flow<GetTopAnimeResponse> {
         return flow {
             val response = animeRepository.getTopAnime(request)
+            emit(response)
+        }.flowOn(ioDispatcher)
+    }
+
+    fun getAnimeSearch(request: GetAnimeSearchRequest) : Flow<GetAnimeSearchResponse> {
+        return flow {
+            val response = animeRepository.getAnimeSearch(request)
             emit(response)
         }.flowOn(ioDispatcher)
     }

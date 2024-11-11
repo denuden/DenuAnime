@@ -12,10 +12,6 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,22 +21,21 @@ import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
 @Composable
-fun CategoriesFilterChip(modifier: Modifier = Modifier, categoryList : List<Genre>) {
-    //Default Category Selected
-    var labelSelected by remember { mutableStateOf("Top") }
-
+fun CategoriesFilterChip(modifier: Modifier = Modifier, categoryList: List<Genre>, onSelectedCategory : (Genre) -> Unit) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         contentPadding = PaddingValues(8.dp)
     ) {
         items(categoryList) { category ->
             FilterChip(
-                onClick = { labelSelected = category.name ?: "Unknown" },
+                onClick = {
+                    onSelectedCategory(category)
+                  },
                 label = {
                     Text(category.name ?: "Unknown")
                 },
-                selected = category.name == labelSelected,
-                leadingIcon = if (category.name == labelSelected) {
+                selected = category.isSelected,
+                leadingIcon = if (category.isSelected) {
                     {
                         Icon(
                             imageVector = Icons.Default.Done,
@@ -60,6 +55,6 @@ fun CategoriesFilterChip(modifier: Modifier = Modifier, categoryList : List<Genr
 @Composable
 private fun CategoriesFilterChipPreview() {
     DenuAnimeTheme {
-        CategoriesFilterChip(categoryList = emptyList())
+        CategoriesFilterChip(categoryList = emptyList()){}
     }
 }

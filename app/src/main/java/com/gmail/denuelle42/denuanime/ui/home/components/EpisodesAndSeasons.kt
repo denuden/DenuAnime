@@ -23,7 +23,7 @@ import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetai
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
 @Composable
-fun EpisodesAndSeasons(modifier: Modifier = Modifier, animes: List<AnimeDetails>) {
+fun EpisodesAndSeasonsTab(modifier: Modifier = Modifier, animes: List<AnimeDetails>) {
     var state by remember { mutableIntStateOf(0) }
     val titles = listOf("Recent\nEpisodes", "Ongoing\nSeasons", "Upcoming\nSeasons")
 
@@ -57,7 +57,7 @@ fun EpisodesAndSeasons(modifier: Modifier = Modifier, animes: List<AnimeDetails>
 @Composable
 private fun EpisodesAndSeasonsPreview() {
     DenuAnimeTheme {
-        EpisodesAndSeasons(
+        EpisodesAndSeasonsTab(
             animes = listOf(
                 AnimeDetails(),
                 AnimeDetails(),

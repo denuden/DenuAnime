@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(color = MaterialTheme.colorScheme.surface)
                 ) {
+//                    SampleScreen()
                     MainScreen(navController = navController)
                 }
             }

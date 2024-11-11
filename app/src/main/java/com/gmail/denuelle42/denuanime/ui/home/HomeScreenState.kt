@@ -8,11 +8,14 @@ data class HomeScreenState(
     val topPeopleList: List<People>? = null,
     val isGetTopPeopleSearchLoading: Boolean = false,
 
-    val topAnimeList : List<AnimeDetails>? = null,
-    val isGetTopAnimeLoading : Boolean = false,
+    val animeList : List<AnimeDetails>? = null,
+    val isGetAnimeListLoading : Boolean = false,
     val rating : String? = null,
     val type : String? = null,
 
     val animeGenres : List<Genre>? = null,
     val isGetAnimeGenresLoading : Boolean = false,
+
+    val animeRecommendationsList : List<AnimeDetails>? = null,
+    val isGetRecentAnimeRecommendationsLoading : Boolean = false,
 )

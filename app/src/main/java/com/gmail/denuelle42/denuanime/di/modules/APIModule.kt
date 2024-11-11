@@ -3,6 +3,7 @@ package com.gmail.denuelle42.denuanime.di.modules
 import com.gmail.denuelle42.denuanime.data.repositories.anime.AnimeAPI
 import com.gmail.denuelle42.denuanime.data.repositories.genre.GenreAPI
 import com.gmail.denuelle42.denuanime.data.repositories.people.PeopleAPI
+import com.gmail.denuelle42.denuanime.data.repositories.recommendations.RecommendationsAPI
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,5 +31,11 @@ object APIModule {
     @Singleton
     fun provideGenreAPI(retrofit: Retrofit): GenreAPI {
         return retrofit.create(GenreAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRecommendationsAPI(retrofit: Retrofit): RecommendationsAPI {
+        return retrofit.create(RecommendationsAPI::class.java)
     }
 }
