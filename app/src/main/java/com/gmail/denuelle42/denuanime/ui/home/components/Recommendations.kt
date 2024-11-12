@@ -1,5 +1,6 @@
 package com.gmail.denuelle42.denuanime.ui.home.components
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,7 +49,15 @@ import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Recommendations(modifier: Modifier = Modifier) {
+fun Recommendations(
+    onSelectAnimeTab : () -> Unit,
+    onSelectMangaTab : () -> Unit,
+    onClickPrevButton : () -> Unit,
+    onClickNextButton : () -> Unit,
+    list : List<Pair<Any, String>>,
+    modifier: Modifier = Modifier,
+
+) {
     var state by remember { mutableIntStateOf(0) }
     val titles = listOf("Anime", "Manga")
     Column(modifier = modifier.clip(MaterialTheme.shapes.extraSmall)) {
@@ -62,7 +71,14 @@ fun Recommendations(modifier: Modifier = Modifier) {
                         count = titles.size,
                         baseShape = MaterialTheme.shapes.small
                     ),
-                    onClick = { state = index },
+                    onClick = {
+                        state = index
+                        if(index == 0){ //anime tab
+                            onSelectAnimeTab()
+                        } else if (index == 1){ //manga tab
+                            onSelectMangaTab()
+                        }
+                      },
                     selected = index == state,
                     border = BorderStroke(width = 1.dp, color = Color.Gray)
                 ) {
@@ -79,7 +95,9 @@ fun Recommendations(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
         ) {
             TextButton(
-                onClick = {},
+                onClick = {
+                    onClickPrevButton()
+                },
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, stringResource(R.string.prev))
@@ -95,21 +113,44 @@ fun Recommendations(modifier: Modifier = Modifier) {
             )
 
             TextButton(
-                onClick = {},
+                onClick = {
+                    onClickNextButton()
+                },
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, stringResource(R.string.next))
                 Text(stringResource(R.string.next))
             }
         }
+        Log.e("ege", list.isNotEmpty().toString())
+        Log.e("ege", list.toString())
+        if(list.isNotEmpty()){
+            RecommendationsContent(
+                imageA1 = list[0],
+                imageA2 = list[1],
+                imageB1 = list[2],
+                imageB2 = list[3],
+                imageB3 = list[4],
+                imageC1 = list[5],
+                imageC2 = list[6],
+            )
+        }
 
-        RecommendationsContent()
     }
 }
 
 
 @Composable
-fun RecommendationsContent(modifier: Modifier = Modifier) {
+fun RecommendationsContent(
+    modifier: Modifier = Modifier,
+    imageA1: Pair<Any, String>,
+    imageA2: Pair<Any, String>,
+    imageB1: Pair<Any, String>,
+    imageB2: Pair<Any, String>,
+    imageB3: Pair<Any, String>,
+    imageC1: Pair<Any, String>,
+    imageC2: Pair<Any, String>,
+) {
     Column(
         modifier = modifier
     ) {
@@ -119,13 +160,15 @@ fun RecommendationsContent(modifier: Modifier = Modifier) {
                 .padding(horizontal = 34.dp)
         ) {
             RecommendationsImage(
-                image = "",
+                image = imageA1.first,
+                title = imageA1.second,
                 imageSize = 140.dp,
                 modifier = Modifier.weight(1f, fill = false)
             )
             Spacer(modifier = Modifier.padding(horizontal = 6.dp))
             RecommendationsImage(
-                image = "",
+                image = imageA2.first,
+                title = imageA2.second,
                 imageSize = 140.dp,
                 modifier = Modifier.weight(1f, fill = false)
             )
@@ -137,19 +180,22 @@ fun RecommendationsContent(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth()
         ) {
             RecommendationsImage(
-                image = "",
+                image = imageB1.first,
+                title = imageB1.second,
                 imageSize = 80.dp,
                 modifier = Modifier.weight(1f, fill = false)
             )
             RecommendationsImage(
-                image = "",
+                image = imageB2.first,
+                title = imageB2.second,
                 imageSize = 180.dp,
                 modifier = Modifier
                     .weight(2f, fill = false)
                     .padding(horizontal = 6.dp)
             )
             RecommendationsImage(
-                image = "",
+                image = imageB3.first,
+                title = imageB3.second,
                 imageSize = 80.dp,
                 modifier = Modifier.weight(1f, fill = false)
             )
@@ -161,13 +207,15 @@ fun RecommendationsContent(modifier: Modifier = Modifier) {
                 .padding(horizontal = 34.dp)
         ) {
             RecommendationsImage(
-                image = "",
+                image = imageC1.first,
+                title = imageC1.second,
                 imageSize = 140.dp,
                 modifier = Modifier.weight(1f, fill = false)
             )
             Spacer(modifier = Modifier.padding(horizontal = 6.dp))
             RecommendationsImage(
-                image = "",
+                image = imageC2.first,
+                title = imageC2.second,
                 imageSize = 140.dp,
                 modifier = Modifier.weight(1f, fill = false)
             )
@@ -176,7 +224,7 @@ fun RecommendationsContent(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun RecommendationsImage(modifier: Modifier = Modifier, image: Any, imageSize: Dp) {
+fun RecommendationsImage(modifier: Modifier = Modifier, image: Any, imageSize: Dp, title : String) {
     val gradientColors: List<Color> = listOf(
         Color.Transparent,
         Color(0xFF000000)
@@ -206,6 +254,7 @@ fun RecommendationsImage(modifier: Modifier = Modifier, image: Any, imageSize: D
                     )
                 )
         )
+        Text(text = "Sam")
     }
 }
 
@@ -243,7 +292,14 @@ private fun RecommendationsPreview() {
         Surface(
             color = Color.White
         ) {
-            Recommendations()
+            Recommendations(
+                modifier = Modifier,
+                onSelectAnimeTab = {},
+                onSelectMangaTab = {},
+                onClickNextButton = {},
+                onClickPrevButton = {},
+                list = emptyList<Pair<Any, String>>()
+            )
         }
 
     }

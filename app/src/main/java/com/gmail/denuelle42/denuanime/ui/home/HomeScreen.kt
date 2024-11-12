@@ -1,5 +1,6 @@
 package com.gmail.denuelle42.denuanime.ui.home
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -96,7 +97,10 @@ fun HomeScreen(
             )
         }
         item{
-            RecommendationsSection()
+            RecommendationsSection(
+                onEvent = viewModel::onEvent,
+                list = homeScreenState.animeRecommendationsShown.orEmpty()
+            )
         }
         item{
             RecentEpisodesAndSeasonsSection(animeList = homeScreenState.animeList.orEmpty())
@@ -358,11 +362,26 @@ fun AnimeCardListSection(
 }
 
 @Composable
-fun RecommendationsSection(modifier: Modifier = Modifier) {
+fun RecommendationsSection(modifier: Modifier = Modifier, onEvent: (HomeScreenEvents) -> Unit, list: List<AnimeDetails>) {
+    Log.d("recommendation", list.toString())
+    var currentStartPage by remember { mutableIntStateOf(0) }
     /**
      * RECOMMENDATIONS SECTION
      */
     Recommendations(
+        onSelectAnimeTab = {},
+        onSelectMangaTab = {},
+        onClickPrevButton = {
+            currentStartPage -= 7
+            onEvent(HomeScreenEvents.OnSelectPreviousAnimeRecommendations(currentStartPage))
+        },
+        onClickNextButton = {
+           currentStartPage +=7
+            onEvent(HomeScreenEvents.OnSelectNextAnimeRecommendations(currentStartPage))
+        },
+        list = list.map {
+            Pair(it.images?.jpg?.image_url.orEmpty(), it.title ?: "Unknown Title")
+        },
         modifier = modifier
             .fillMaxHeight()
             .padding(horizontal = 8.dp)

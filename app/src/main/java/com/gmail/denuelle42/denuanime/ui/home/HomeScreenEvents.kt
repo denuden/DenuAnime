@@ -14,4 +14,6 @@ sealed class HomeScreenEvents {
     data class OnGetAnimeSearch(val request: GetAnimeSearchRequest) :  HomeScreenEvents()
     object OnGetAnimeRecommendations : HomeScreenEvents()
     data class OnSelectAnimeGenre(val genre: Genre) : HomeScreenEvents()
+    data class OnSelectNextAnimeRecommendations(val page : Int) : HomeScreenEvents()
+    data class OnSelectPreviousAnimeRecommendations(val page : Int) : HomeScreenEvents()
 }

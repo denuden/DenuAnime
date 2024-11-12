@@ -19,4 +19,15 @@ class RecommendationsRepository @Inject constructor(
 
         return response.body() ?: throw NullPointerException("Response data is empty")
     }
+
+
+    suspend fun getRecentMangaRecommendations() : GetRecentAnimeRecommendationsResponse {
+        val response = recommendationsAPI.getRecentMangaRecommendations()
+
+        if(response.code() != HttpURLConnection.HTTP_OK) {
+            throw HttpException(response)
+        }
+
+        return response.body() ?: throw NullPointerException("Response data is empty")
+    }
 }

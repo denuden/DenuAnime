@@ -17,5 +17,6 @@ data class HomeScreenState(
     val isGetAnimeGenresLoading : Boolean = false,
 
     val animeRecommendationsList : List<AnimeDetails>? = null,
+    val animeRecommendationsShown : List<AnimeDetails>? = null,
     val isGetRecentAnimeRecommendationsLoading : Boolean = false,
 )

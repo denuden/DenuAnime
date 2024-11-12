@@ -7,4 +7,7 @@ import retrofit2.http.GET
 interface RecommendationsAPI {
     @GET("recommendations/anime")
     suspend fun getRecentAnimeRecommendations() : Response<GetRecentAnimeRecommendationsResponse>
+
+    @GET("recommendations/manga")
+    suspend fun getRecentMangaRecommendations() : Response<GetRecentAnimeRecommendationsResponse>
 }

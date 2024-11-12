@@ -1,7 +1,7 @@
 package com.gmail.denuelle42.denuanime.domain.repositories.recommendations
 
+import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.data.repositories.recommendations.RecommendationsRepository
-import com.gmail.denuelle42.denuanime.data.repositories.recommendations.response.GetRecentAnimeRecommendationsResponse
 import com.gmail.denuelle42.denuanime.di.modules.IoDispatcher
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineDispatcher
@@ -15,10 +15,16 @@ class RecommendationsUseCase @Inject constructor(
     private val recommendationsRepository: RecommendationsRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ){
-    fun getRecentAnimeRecommendations() : Flow<GetRecentAnimeRecommendationsResponse> {
+    fun getRecentAnimeRecommendations() : Flow<List<AnimeDetails>> {
         return flow {
             val response = recommendationsRepository.getRecentAnimeRecommendations()
-            emit(response)
+            val listOfAnime = mutableListOf<AnimeDetails>()
+            response.data?.onEach { data ->
+                data.entry?.onEach { anime ->
+                    listOfAnime.add(anime)
+                }
+            }
+            emit(listOfAnime)
         }.flowOn(ioDispatcher)
     }
 }

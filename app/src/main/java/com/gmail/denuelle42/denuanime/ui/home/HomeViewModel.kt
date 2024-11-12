@@ -16,6 +16,7 @@ import com.gmail.denuelle42.denuanime.domain.repositories.recommendations.Recomm
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
@@ -91,8 +92,14 @@ class HomeViewModel @Inject constructor(
                             ResultState.Completed -> _homeScreenState.update { it.copy(isGetAnimeListLoading = false) }
                             is ResultState.Error -> Log.e(TAG, res.exception.toString())
                             ResultState.Loading -> _homeScreenState.update { it.copy(isGetAnimeListLoading = true) }
-                            is ResultState.Success -> _homeScreenState.update {
-                                it.copy(animeList = res.data.data)
+                            is ResultState.Success -> {
+                                _homeScreenState.update {
+                                    it.copy(animeList = res.data.data)
+                                }
+
+                                //================ Only Call this because of API Rate Limiting
+                                delay(3000L)
+                                onEvent(HomeScreenEvents.OnGetAnimeRecommendations)
                             }
                         }
                     }.collect()
@@ -207,9 +214,34 @@ class HomeViewModel @Inject constructor(
                             ResultState.Completed -> _homeScreenState.update { it.copy(isGetRecentAnimeRecommendationsLoading = false) }
                             is ResultState.Error ->  Log.e(TAG, res.exception.toString())
                             ResultState.Loading ->  _homeScreenState.update { it.copy(isGetRecentAnimeRecommendationsLoading = true) }
-                            is ResultState.Success -> _homeScreenState.update { it.copy(animeRecommendationsList = res.data.data ?: emptyList()) }
+                            is ResultState.Success -> _homeScreenState.update {
+                                Log.d(TAG, res.data.subList(0, 7).toString())
+                                it.copy(
+                                animeRecommendationsList = res.data,
+                                animeRecommendationsShown = res.data.subList(0, 7)
+                            )}
                         }
+                    }.collect()
+                }
+            }
+            is HomeScreenEvents.OnSelectNextAnimeRecommendations -> {
+                if(_homeScreenState.value.animeRecommendationsList?.isNotEmpty() == true){
+                    _homeScreenState.update {
+                        val endPage = if( (event.page + 7) > it.animeRecommendationsList!!.size) it.animeRecommendationsList.size else event.page + 7
+                        it.copy(animeRecommendationsShown = it.animeRecommendationsList.subList(event.page, endPage))
                     }
+                } else {
+                    sendEvent(OneTimeEvents.ShowToast("No more pages left"))
+                }
+            }
+            is HomeScreenEvents.OnSelectPreviousAnimeRecommendations -> {
+                if(_homeScreenState.value.animeRecommendationsList?.isNotEmpty() == true){
+                    _homeScreenState.update {
+                        val startPage = if( (event.page - 7) < 0) 0 else event.page - 7
+                        it.copy(animeRecommendationsShown = it.animeRecommendationsList!!.subList(startPage, event.page))
+                    }
+                } else {
+                    sendEvent(OneTimeEvents.ShowToast("No more pages left"))
                 }
             }
         }

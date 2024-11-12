@@ -7,5 +7,12 @@ import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetai
 @Keep
 data class GetRecentAnimeRecommendationsResponse(
     val pagination: Pagination? = null,
-    val `data` : List<AnimeDetails>? = null,
+    val `data` : List<RecommendationsListResponse>? = null,
+)
+
+
+@Keep
+data class RecommendationsListResponse(
+    val mal_id : String? = null,
+    val entry : List<AnimeDetails>? = null,
 )
