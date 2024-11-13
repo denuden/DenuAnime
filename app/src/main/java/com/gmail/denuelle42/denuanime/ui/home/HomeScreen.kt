@@ -1,6 +1,5 @@
 package com.gmail.denuelle42.denuanime.ui.home
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -99,7 +98,8 @@ fun HomeScreen(
         item{
             RecommendationsSection(
                 onEvent = viewModel::onEvent,
-                list = homeScreenState.animeRecommendationsShown.orEmpty()
+                list = homeScreenState.animeRecommendationsShown.orEmpty(),
+                maxRecommendationsListSize = homeScreenState.animeRecommendationsList.orEmpty().size
             )
         }
         item{
@@ -362,30 +362,33 @@ fun AnimeCardListSection(
 }
 
 @Composable
-fun RecommendationsSection(modifier: Modifier = Modifier, onEvent: (HomeScreenEvents) -> Unit, list: List<AnimeDetails>) {
-    Log.d("recommendation", list.toString())
+fun RecommendationsSection(modifier: Modifier = Modifier, onEvent: (HomeScreenEvents) -> Unit, list: List<AnimeDetails>, maxRecommendationsListSize : Int) {
     var currentStartPage by remember { mutableIntStateOf(0) }
     /**
      * RECOMMENDATIONS SECTION
      */
-    Recommendations(
-        onSelectAnimeTab = {},
-        onSelectMangaTab = {},
-        onClickPrevButton = {
-            currentStartPage -= 7
-            onEvent(HomeScreenEvents.OnSelectPreviousAnimeRecommendations(currentStartPage))
-        },
-        onClickNextButton = {
-           currentStartPage +=7
-            onEvent(HomeScreenEvents.OnSelectNextAnimeRecommendations(currentStartPage))
-        },
-        list = list.map {
-            Pair(it.images?.jpg?.image_url.orEmpty(), it.title ?: "Unknown Title")
-        },
-        modifier = modifier
-            .fillMaxHeight()
-            .padding(horizontal = 8.dp)
-    )
+    if(list.isNotEmpty()){
+        Recommendations(
+            isPrevButtonDisabled = currentStartPage > 0,
+            isNextButtonDisabled = currentStartPage < maxRecommendationsListSize,
+            onSelectAnimeTab = {},
+            onSelectMangaTab = {},
+            onClickPrevButton = {
+                onEvent(HomeScreenEvents.OnSelectPreviousAnimeRecommendations(currentStartPage))
+                currentStartPage -= 7 //update local state after viewmodel process
+            },
+            onClickNextButton = {
+                onEvent(HomeScreenEvents.OnSelectNextAnimeRecommendations(currentStartPage))
+                currentStartPage +=7 //update local state after viewmodel process
+            },
+            list = list.map {
+                Pair(it.images?.jpg?.image_url.orEmpty(), it.title ?: "Unknown Title")
+            },
+            modifier = modifier
+                .fillMaxHeight()
+                .padding(horizontal = 8.dp)
+        )
+    }
     Spacer(modifier = Modifier.padding(vertical = 12.dp))
 }
 

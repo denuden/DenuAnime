@@ -227,8 +227,8 @@ class HomeViewModel @Inject constructor(
             is HomeScreenEvents.OnSelectNextAnimeRecommendations -> {
                 if(_homeScreenState.value.animeRecommendationsList?.isNotEmpty() == true){
                     _homeScreenState.update {
-                        val endPage = if( (event.page + 7) > it.animeRecommendationsList!!.size) it.animeRecommendationsList.size else event.page + 7
-                        it.copy(animeRecommendationsShown = it.animeRecommendationsList.subList(event.page, endPage))
+                        val startPage = if( (event.page + 7) > it.animeRecommendationsList!!.size) it.animeRecommendationsList.size else event.page + 7
+                        it.copy(animeRecommendationsShown = it.animeRecommendationsList.subList(startPage, startPage + 7))
                     }
                 } else {
                     sendEvent(OneTimeEvents.ShowToast("No more pages left"))

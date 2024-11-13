@@ -1,6 +1,9 @@
 package com.gmail.denuelle42.denuanime.ui.home.components
 
-import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,13 +29,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -40,26 +46,41 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Recommendations(
-    onSelectAnimeTab : () -> Unit,
-    onSelectMangaTab : () -> Unit,
-    onClickPrevButton : () -> Unit,
-    onClickNextButton : () -> Unit,
-    list : List<Pair<Any, String>>,
     modifier: Modifier = Modifier,
-
+    isPrevButtonDisabled: Boolean = false,
+    isNextButtonDisabled: Boolean = false,
+    onSelectAnimeTab: () -> Unit,
+    onSelectMangaTab: () -> Unit,
+    onClickPrevButton: () -> Unit,
+    onClickNextButton: () -> Unit,
+    list: List<Pair<Any, String>>,
+    delayMillis: Long = 900L, // 1 second delay
 ) {
     var state by remember { mutableIntStateOf(0) }
     val titles = listOf("Anime", "Manga")
+
+    //to make sure that button wont be spammed
+    var canClick by remember { mutableStateOf(true) }
+    LaunchedEffect(canClick) {
+        if (!canClick) {
+            delay(delayMillis)
+            canClick = true
+        }
+    }
+
     Column(modifier = modifier.clip(MaterialTheme.shapes.extraSmall)) {
         SingleChoiceSegmentedButtonRow(
             modifier = Modifier.fillMaxWidth()
@@ -73,12 +94,12 @@ fun Recommendations(
                     ),
                     onClick = {
                         state = index
-                        if(index == 0){ //anime tab
+                        if (index == 0) { //anime tab
                             onSelectAnimeTab()
-                        } else if (index == 1){ //manga tab
+                        } else if (index == 1) { //manga tab
                             onSelectMangaTab()
                         }
-                      },
+                    },
                     selected = index == state,
                     border = BorderStroke(width = 1.dp, color = Color.Gray)
                 ) {
@@ -97,7 +118,9 @@ fun Recommendations(
             TextButton(
                 onClick = {
                     onClickPrevButton()
+                    canClick = false
                 },
+                enabled = isPrevButtonDisabled && canClick,
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, stringResource(R.string.prev))
@@ -115,16 +138,16 @@ fun Recommendations(
             TextButton(
                 onClick = {
                     onClickNextButton()
+                    canClick = false
                 },
+                enabled = isNextButtonDisabled && canClick,
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, stringResource(R.string.next))
                 Text(stringResource(R.string.next))
             }
         }
-        Log.e("ege", list.isNotEmpty().toString())
-        Log.e("ege", list.toString())
-        if(list.isNotEmpty()){
+        if (list.isNotEmpty()) {
             RecommendationsContent(
                 imageA1 = list[0],
                 imageA2 = list[1],
@@ -157,19 +180,19 @@ fun RecommendationsContent(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 34.dp)
+                .padding(horizontal = 16.dp)
         ) {
             RecommendationsImage(
                 image = imageA1.first,
                 title = imageA1.second,
-                imageSize = 140.dp,
+                imageSize = 160.dp,
                 modifier = Modifier.weight(1f, fill = false)
             )
-            Spacer(modifier = Modifier.padding(horizontal = 6.dp))
+            Spacer(modifier = Modifier.padding(horizontal = 8.dp))
             RecommendationsImage(
                 image = imageA2.first,
                 title = imageA2.second,
-                imageSize = 140.dp,
+                imageSize = 160.dp,
                 modifier = Modifier.weight(1f, fill = false)
             )
         }
@@ -188,9 +211,9 @@ fun RecommendationsContent(
             RecommendationsImage(
                 image = imageB2.first,
                 title = imageB2.second,
-                imageSize = 180.dp,
+                imageSize = 220.dp,
                 modifier = Modifier
-                    .weight(2f, fill = false)
+                    .weight(3f, fill = false)
                     .padding(horizontal = 6.dp)
             )
             RecommendationsImage(
@@ -204,19 +227,19 @@ fun RecommendationsContent(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 34.dp)
+                .padding(horizontal = 16.dp)
         ) {
             RecommendationsImage(
                 image = imageC1.first,
                 title = imageC1.second,
-                imageSize = 140.dp,
+                imageSize = 160.dp,
                 modifier = Modifier.weight(1f, fill = false)
             )
-            Spacer(modifier = Modifier.padding(horizontal = 6.dp))
+            Spacer(modifier = Modifier.padding(horizontal = 8.dp))
             RecommendationsImage(
                 image = imageC2.first,
                 title = imageC2.second,
-                imageSize = 140.dp,
+                imageSize = 160.dp,
                 modifier = Modifier.weight(1f, fill = false)
             )
         }
@@ -224,37 +247,77 @@ fun RecommendationsContent(
 }
 
 @Composable
-fun RecommendationsImage(modifier: Modifier = Modifier, image: Any, imageSize: Dp, title : String) {
-    val gradientColors: List<Color> = listOf(
-        Color.Transparent,
-        Color(0xFF000000)
-    )
+fun RecommendationsImage(modifier: Modifier = Modifier, image: Any, imageSize: Dp, title: String) {
+    val gradientColors: List<Color> by remember {
+        mutableStateOf(
+            listOf(
+                Color.Transparent,
+                Color(0xFF000000)
+            )
+        )
+    }
+    var imageHolder by remember { mutableStateOf(image) }
+    var isImageVisible by remember { mutableStateOf(true) }
 
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier,
+    LaunchedEffect(image) {
+        // Hide the image, trigger exit animation
+        isImageVisible = false
+
+        // Wait for the exit animation to finish before updating image
+        delay(300) // Adjust this to match exit animation duration
+        imageHolder = image
+
+        // Show the new image, triggering enter animation
+        isImageVisible = true
+    }
+
+    AnimatedVisibility(
+        visible = isImageVisible,
+        enter = scaleIn(animationSpec = tween(durationMillis = 650)),
+        exit = scaleOut(animationSpec = tween(durationMillis = 300))
     ) {
-        AsyncImage(
-            model = image,
-            placeholder = painterResource(R.drawable.baseline_image_24),
-            contentDescription = stringResource(R.string.anime_banner),
-            contentScale = ContentScale.Crop,
-            error = painterResource(R.drawable.baseline_image_not_supported_24),
-            modifier = Modifier
-                .size(imageSize)
-                .clip(CircleShape)
-        )
         Box(
-            modifier = Modifier
-                .matchParentSize()
-                .clip(CircleShape)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = gradientColors,
+            contentAlignment = Alignment.Center,
+            modifier = modifier.shadow(
+                elevation = 4.dp,
+                shape = CircleShape,
+            ),
+        ) {
+            AsyncImage(
+                model = imageHolder,
+                placeholder = painterResource(R.drawable.baseline_image_24),
+                contentDescription = stringResource(R.string.anime_banner),
+                contentScale = ContentScale.Crop,
+                error = painterResource(R.drawable.baseline_image_not_supported_24),
+                modifier = Modifier
+                    .size(imageSize)
+                    .clip(CircleShape)
+            )
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(CircleShape)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = gradientColors,
+                        )
                     )
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.labelSmall,
+                    textAlign = TextAlign.Center,
+                    overflow = TextOverflow.Ellipsis,
+                    color = Color.White,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Light,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(16.dp),
                 )
-        )
-        Text(text = "Sam")
+
+            }
+        }
     }
 }
 
@@ -298,7 +361,15 @@ private fun RecommendationsPreview() {
                 onSelectMangaTab = {},
                 onClickNextButton = {},
                 onClickPrevButton = {},
-                list = emptyList<Pair<Any, String>>()
+                list = listOf(
+                    Pair("", " TRH TRHRTH HT RT R RE W WE FWEWFWE"),
+                    Pair("", "RTHRHTR TRH"),
+                    Pair("", " TRHTHTRHTRHT"),
+                    Pair("", " RHR HTR"),
+                    Pair("", "GERG EE EGR "),
+                    Pair("", "GEGGEHWEHS ERG ER ERH HERH"),
+                    Pair("", "GER GERG REG R ERE"),
+                )
             )
         }
 
