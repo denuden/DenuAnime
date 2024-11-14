@@ -60,6 +60,7 @@ import com.gmail.denuelle42.denuanime.ui.common.FilterDropdown
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonAnimeDetailsCard
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonGenreList
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonPeopleList
+import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonRecommendationsList
 import com.gmail.denuelle42.denuanime.ui.home.components.CategoriesFilterChip
 import com.gmail.denuelle42.denuanime.ui.home.components.EpisodesAndSeasonsTab
 import com.gmail.denuelle42.denuanime.ui.home.components.PeopleList
@@ -95,11 +96,14 @@ fun HomeScreen(
                 click = {viewModel.onEvent(HomeScreenEvents.OnGetTopAnime(GetTopAnimeRequest()))}
             )
         }
-        item{
+        item(key = homeScreenState.recommendationsList.hashCode()){
             RecommendationsSection(
                 onEvent = viewModel::onEvent,
-                list = homeScreenState.animeRecommendationsShown.orEmpty(),
-                maxRecommendationsListSize = homeScreenState.animeRecommendationsList.orEmpty().size
+                list = homeScreenState.recommendationsShown.orEmpty(),
+                maxRecommendationsListSize = homeScreenState.recommendationsList.orEmpty().size,
+                isLoading = homeScreenState.isGetRecentRecommendationsLoading,
+                currentStartPage = viewModel.currentStartPage.intValue,
+                updateCurrentStartPage = { viewModel.updateCurrentStartPage(it) }
             )
         }
         item{
@@ -362,24 +366,41 @@ fun AnimeCardListSection(
 }
 
 @Composable
-fun RecommendationsSection(modifier: Modifier = Modifier, onEvent: (HomeScreenEvents) -> Unit, list: List<AnimeDetails>, maxRecommendationsListSize : Int) {
-    var currentStartPage by remember { mutableIntStateOf(0) }
+fun RecommendationsSection(
+    modifier: Modifier = Modifier,
+    onEvent: (HomeScreenEvents) -> Unit,
+    list: List<AnimeDetails>,
+    maxRecommendationsListSize: Int,
+    isLoading: Boolean,
+    currentStartPage : Int,
+    updateCurrentStartPage : (Int) -> Unit
+) {
     /**
      * RECOMMENDATIONS SECTION
      */
-    if(list.isNotEmpty()){
+
+    AnimatedVisibility(
+        visible = !isLoading,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
         Recommendations(
             isPrevButtonDisabled = currentStartPage > 0,
             isNextButtonDisabled = currentStartPage < maxRecommendationsListSize,
-            onSelectAnimeTab = {},
-            onSelectMangaTab = {},
+            onSelectAnimeTab = {
+                onEvent(HomeScreenEvents.OnGetAnimeRecommendations)
+            },
+            onSelectMangaTab = {
+                onEvent(HomeScreenEvents.OnGetMangaRecommendations)
+            },
             onClickPrevButton = {
                 onEvent(HomeScreenEvents.OnSelectPreviousAnimeRecommendations(currentStartPage))
-                currentStartPage -= 7 //update local state after viewmodel process
+                updateCurrentStartPage(currentStartPage - 7)//update local state after viewmodel process
             },
             onClickNextButton = {
                 onEvent(HomeScreenEvents.OnSelectNextAnimeRecommendations(currentStartPage))
-                currentStartPage +=7 //update local state after viewmodel process
+                updateCurrentStartPage(currentStartPage + 7)//update local state after viewmodel process
+
             },
             list = list.map {
                 Pair(it.images?.jpg?.image_url.orEmpty(), it.title ?: "Unknown Title")
@@ -388,6 +409,14 @@ fun RecommendationsSection(modifier: Modifier = Modifier, onEvent: (HomeScreenEv
                 .fillMaxHeight()
                 .padding(horizontal = 8.dp)
         )
+    }
+
+    AnimatedVisibility(
+        visible = isLoading,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        SkeletonRecommendationsList(modifier = Modifier.fillMaxWidth())
     }
     Spacer(modifier = Modifier.padding(vertical = 12.dp))
 }

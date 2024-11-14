@@ -1,6 +1,7 @@
 package com.gmail.denuelle42.denuanime.ui.home
 
 import android.util.Log
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gmail.denuelle42.bscode.util.ResultState
@@ -44,6 +45,13 @@ class HomeViewModel @Inject constructor(
     private val _peopleState = MutableStateFlow<HomeScreenState>(HomeScreenState())
     val peopleState = _peopleState.asStateFlow()
 
+    //Holder for pagination in valus of Recommendations Secion
+    var currentStartPage = mutableIntStateOf(0)
+        private set
+
+    fun updateCurrentStartPage(value : Int){
+        currentStartPage.intValue = value
+    }
     init {
         onEvent(
             HomeScreenEvents.OnGetTopPeopleSearch(
@@ -211,34 +219,51 @@ class HomeViewModel @Inject constructor(
                 viewModelScope.launch {
                     recommendationsUseCase.getRecentAnimeRecommendations().asResult().onEach { res ->
                         when(res){
-                            ResultState.Completed -> _homeScreenState.update { it.copy(isGetRecentAnimeRecommendationsLoading = false) }
+                            ResultState.Completed -> _homeScreenState.update { it.copy(isGetRecentRecommendationsLoading = false) }
                             is ResultState.Error ->  Log.e(TAG, res.exception.toString())
-                            ResultState.Loading ->  _homeScreenState.update { it.copy(isGetRecentAnimeRecommendationsLoading = true) }
+                            ResultState.Loading ->  _homeScreenState.update { it.copy(isGetRecentRecommendationsLoading = true) }
                             is ResultState.Success -> _homeScreenState.update {
                                 Log.d(TAG, res.data.subList(0, 7).toString())
                                 it.copy(
-                                animeRecommendationsList = res.data,
-                                animeRecommendationsShown = res.data.subList(0, 7)
+                                recommendationsList = res.data,
+                                recommendationsShown = res.data.subList(0, 7)
                             )}
                         }
                     }.collect()
                 }
             }
+            is HomeScreenEvents.OnGetMangaRecommendations -> {
+                viewModelScope.launch {
+                    recommendationsUseCase.getRecentMangaRecommendations().asResult().onEach { res ->
+                        when(res){
+                            ResultState.Completed -> _homeScreenState.update { it.copy(isGetRecentRecommendationsLoading = false) }
+                            is ResultState.Error ->  Log.e(TAG, res.exception.toString())
+                            ResultState.Loading ->  _homeScreenState.update { it.copy(isGetRecentRecommendationsLoading = true) }
+                            is ResultState.Success -> _homeScreenState.update {
+                                Log.d(TAG, res.data.subList(0, 7).toString())
+                                it.copy(
+                                    recommendationsList = res.data,
+                                    recommendationsShown = res.data.subList(0, 7)
+                                )}
+                        }
+                    }.collect()
+                }
+            }
             is HomeScreenEvents.OnSelectNextAnimeRecommendations -> {
-                if(_homeScreenState.value.animeRecommendationsList?.isNotEmpty() == true){
+                if(_homeScreenState.value.recommendationsList?.isNotEmpty() == true){
                     _homeScreenState.update {
-                        val startPage = if( (event.page + 7) > it.animeRecommendationsList!!.size) it.animeRecommendationsList.size else event.page + 7
-                        it.copy(animeRecommendationsShown = it.animeRecommendationsList.subList(startPage, startPage + 7))
+                        val startPage = if( (event.page + 7) > it.recommendationsList!!.size) it.recommendationsList.size else event.page + 7
+                        it.copy(recommendationsShown = it.recommendationsList.subList(startPage, startPage + 7))
                     }
                 } else {
                     sendEvent(OneTimeEvents.ShowToast("No more pages left"))
                 }
             }
             is HomeScreenEvents.OnSelectPreviousAnimeRecommendations -> {
-                if(_homeScreenState.value.animeRecommendationsList?.isNotEmpty() == true){
+                if(_homeScreenState.value.recommendationsList?.isNotEmpty() == true){
                     _homeScreenState.update {
                         val startPage = if( (event.page - 7) < 0) 0 else event.page - 7
-                        it.copy(animeRecommendationsShown = it.animeRecommendationsList!!.subList(startPage, event.page))
+                        it.copy(recommendationsShown = it.recommendationsList!!.subList(startPage, event.page))
                     }
                 } else {
                     sendEvent(OneTimeEvents.ShowToast("No more pages left"))

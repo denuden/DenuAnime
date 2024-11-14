@@ -27,4 +27,17 @@ class RecommendationsUseCase @Inject constructor(
             emit(listOfAnime)
         }.flowOn(ioDispatcher)
     }
+
+    fun getRecentMangaRecommendations() : Flow<List<AnimeDetails>> {
+        return flow {
+            val response = recommendationsRepository.getRecentMangaRecommendations()
+            val listOfManga = mutableListOf<AnimeDetails>()
+            response.data?.onEach { data ->
+                data.entry?.onEach { anime ->
+                    listOfManga.add(anime)
+                }
+            }
+            emit(listOfManga)
+        }.flowOn(ioDispatcher)
+    }
 }

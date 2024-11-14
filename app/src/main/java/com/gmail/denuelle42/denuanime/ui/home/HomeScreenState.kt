@@ -6,17 +6,17 @@ import com.gmail.denuelle42.denuanime.data.remote.models.people.People
 
 data class HomeScreenState(
     val topPeopleList: List<People>? = null,
-    val isGetTopPeopleSearchLoading: Boolean = false,
+    val isGetTopPeopleSearchLoading: Boolean = true,
 
     val animeList : List<AnimeDetails>? = null,
-    val isGetAnimeListLoading : Boolean = false,
+    val isGetAnimeListLoading : Boolean = true,
     val rating : String? = null,
     val type : String? = null,
 
     val animeGenres : List<Genre>? = null,
-    val isGetAnimeGenresLoading : Boolean = false,
+    val isGetAnimeGenresLoading : Boolean = true,
 
-    val animeRecommendationsList : List<AnimeDetails>? = null,
-    val animeRecommendationsShown : List<AnimeDetails>? = null,
-    val isGetRecentAnimeRecommendationsLoading : Boolean = false,
+    val recommendationsList : List<AnimeDetails>? = null,
+    val recommendationsShown : List<AnimeDetails>? = null,
+    val isGetRecentRecommendationsLoading : Boolean = true,
 )

@@ -313,7 +313,7 @@ fun RecommendationsImage(modifier: Modifier = Modifier, image: Any, imageSize: D
                     fontWeight = FontWeight.Light,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(16.dp),
+                        .padding(vertical = 16.dp, horizontal = 26.dp),
                 )
 
             }

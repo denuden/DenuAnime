@@ -61,3 +61,22 @@
     public static int i(...);
 }
 
+
+-keep class com.gmail.denuelle42.denuanime.data.remote.models.* { *; }
+-keep class com.gmail.denuelle42.denuanime.data.remote.models.animedetails.* { *; }
+-keep class com.gmail.denuelle42.denuanime.data.remote.models.people.* { *; }
+
+-keep class com.gmail.denuelle42.denuanime.data.repositories.people.request.* { *; }
+-keep class com.gmail.denuelle42.denuanime.data.repositories.people.response.* { *; }
+
+-keep class com.gmail.denuelle42.denuanime.data.repositories.anime.request.* { *; }
+-keep class com.gmail.denuelle42.denuanime.data.repositories.anime.response.* { *; }
+
+-keep class com.gmail.denuelle42.denuanime.data.repositories.auth.request.* { *; }
+-keep class com.gmail.denuelle42.denuanime.data.repositories.auth.response.* { *; }
+
+-keep class com.gmail.denuelle42.denuanime.data.repositories.genre.request.* { *; }
+-keep class com.gmail.denuelle42.denuanime.data.repositories.genre.response.* { *; }
+
+-keep class com.gmail.denuelle42.denuanime.data.repositories.recommendations.request.* { *; }
+-keep class com.gmail.denuelle42.denuanime.data.repositories.recommendations.response.* { *; }

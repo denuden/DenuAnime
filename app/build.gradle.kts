@@ -25,14 +25,25 @@ android {
     }
 
     buildTypes {
-        release {
-            isMinifyEnabled = false
+        getByName("debug") {
+            isMinifyEnabled = false // Keeps debugging info for better traceability in development
+            applicationIdSuffix = ".debug" // Optional: helps differentiate debug APK
+            versionNameSuffix = "-debug"   // Optional: appends "-debug" to version name
+            isDebuggable = true
+        }
+
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            isDebuggable = false
         }
     }
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8

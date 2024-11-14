@@ -1,7 +1,9 @@
 package com.gmail.denuelle42.denuanime.data.remote.models.people
 
+import androidx.annotation.Keep
 import com.gmail.denuelle42.denuanime.data.remote.models.ImageType
 
+@Keep
 data class People(
     val mal_id: Int? = null, // 1
     val url: String? = null, // https://myanimelist.net/people/1/Tomokazu_Seki
