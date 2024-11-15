@@ -51,7 +51,6 @@ import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.data.remote.models.people.People
-import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetAnimeSearchRequest
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetTopAnimeRequest
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.ui.common.AnimeListItemCard
@@ -86,7 +85,7 @@ fun HomeScreen(
             AnimeGenresSection(
                 onEvent = viewModel::onEvent,
                 isLoading = homeScreenState.isGetAnimeGenresLoading,
-                genres = homeScreenState.animeGenres.orEmpty()
+                genres = homeScreenState.animeGenres.orEmpty(),
             )
         }
         item{
@@ -106,8 +105,17 @@ fun HomeScreen(
                 updateCurrentStartPage = { viewModel.updateCurrentStartPage(it) }
             )
         }
+
+        // ========= START OF RELATED COMPONENTS ==============
         item{
-            RecentEpisodesAndSeasonsSection(animeList = homeScreenState.animeList.orEmpty())
+            /**
+             * EPISODES AND SEASONS SECTION
+             */
+            EpisodesAndSeasonsTab(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                animes =homeScreenState.animeList.orEmpty()
+            )
+            Spacer(modifier = Modifier.padding(bottom = 8.dp))
         }
         items(homeScreenState.animeList.orEmpty()){ anime ->
             AnimeListItemCard(
@@ -115,7 +123,7 @@ fun HomeScreen(
                 modifier = Modifier.padding(vertical = 3.dp, horizontal = 8.dp)
             )
         }
-
+        // ========= END OF RELATED COMPONENTS ==============
     }
 }
 
@@ -161,7 +169,6 @@ fun AnimeGenresSection(
     genres: List<Genre>,
     onEvent: (HomeScreenEvents) -> Unit
 ) {
-    val selectedGenreIsTopOrUpcoming by remember { mutableIntStateOf(-1) }
     /**
      * CATEGORIES SECTION
      */
@@ -196,37 +203,7 @@ fun AnimeGenresSection(
                 "Rx-Hentai"
             ),
         ) { type, secondaryType ->
-            //Recall Get Anime
-            onEvent(
-                HomeScreenEvents.OnChangeMainAnimeListFilter(
-                    type = type,
-                    rating = secondaryType.orEmpty()
-                ) {
-                    if (selectedGenreIsTopOrUpcoming == -1) {
-                        onEvent(HomeScreenEvents.OnGetTopAnime(GetTopAnimeRequest(filter = "favorite", type = type, rating = secondaryType)))
-                        return@OnChangeMainAnimeListFilter
-                    }
-                    if (selectedGenreIsTopOrUpcoming == -2) {
-                        onEvent(
-                            HomeScreenEvents.OnGetAnimeSearch(
-                                GetAnimeSearchRequest(
-                                    status = "upcoming",
-                                    order_by = "popularity",
-                                    type = type,
-                                    rating = secondaryType
-                                )
-                            )
-                        )
-                        return@OnChangeMainAnimeListFilter
-                    }
-                    if (selectedGenreIsTopOrUpcoming > 0) {
-                        val formattedGenres = genres.filter { it.isSelected }
-                            .joinToString(separator = ",") { it.mal_id.toString() }
-                        onEvent(HomeScreenEvents.OnGetAnimeSearch(GetAnimeSearchRequest(genres = formattedGenres, type = type, rating = secondaryType)))
-                        return@OnChangeMainAnimeListFilter
-                    }
-                }
-            )
+            onEvent(HomeScreenEvents.OnChangeAnimeFilters(type =  type, rating = secondaryType.orEmpty()))
         }
         VerticalDivider(
             modifier = Modifier
@@ -252,27 +229,6 @@ fun AnimeGenresSection(
                     return@CategoriesFilterChip
                 }
                 onEvent(HomeScreenEvents.OnSelectAnimeGenre(genre))
-                if (genre.mal_id == -1) {
-                    onEvent(HomeScreenEvents.OnGetTopAnime(GetTopAnimeRequest(filter = "favorite")))
-                    return@CategoriesFilterChip
-                }
-                if (genre.mal_id == -2) {
-                    onEvent(
-                        HomeScreenEvents.OnGetAnimeSearch(
-                            GetAnimeSearchRequest(
-                                status = "upcoming",
-                                order_by = "popularity"
-                            )
-                        )
-                    )
-                    return@CategoriesFilterChip
-                }
-                if (genre.mal_id > 0) {
-                    val formattedGenres = genres.filter { it.isSelected }
-                        .joinToString(separator = ",") { it.mal_id.toString() }
-                    onEvent(HomeScreenEvents.OnGetAnimeSearch(GetAnimeSearchRequest(genres = formattedGenres)))
-                    return@CategoriesFilterChip
-                }
             }
         }
         AnimatedVisibility(
@@ -311,6 +267,7 @@ fun AnimeCardListSection(
     /**
      * ANIME CARD SECTION
      */
+
     AnimatedVisibility(
         enter = fadeIn(),
         exit = fadeOut(),
@@ -324,15 +281,19 @@ fun AnimeCardListSection(
                     itemSpacing = 4.dp,
                     contentPadding = PaddingValues(horizontal = 8.dp),
                 ) { index ->
-                    val anime = animeList[index]
-                    DetailedAnimeItemCard(
-                        animeDetails = anime,
-                        modifier = Modifier
-                            .heightIn(min = 400.dp, max = 600.dp)
-                            .clickable {
-                                click()
-                            }
-                    )
+
+                    if(index < animeList.size){
+                        val anime = animeList[index]
+                        DetailedAnimeItemCard(
+                            animeDetails = anime,
+                            modifier = Modifier
+                                .heightIn(min = 400.dp, max = 600.dp)
+                                .clickable {
+                                    click()
+                                }
+                        )
+                    }
+
                 }
                 Text(
                     text = "See more",
@@ -389,9 +350,11 @@ fun RecommendationsSection(
             isNextButtonDisabled = currentStartPage < maxRecommendationsListSize,
             onSelectAnimeTab = {
                 onEvent(HomeScreenEvents.OnGetAnimeRecommendations)
+                updateCurrentStartPage(0)
             },
             onSelectMangaTab = {
                 onEvent(HomeScreenEvents.OnGetMangaRecommendations)
+                updateCurrentStartPage(0)
             },
             onClickPrevButton = {
                 onEvent(HomeScreenEvents.OnSelectPreviousAnimeRecommendations(currentStartPage))
@@ -421,22 +384,7 @@ fun RecommendationsSection(
     Spacer(modifier = Modifier.padding(vertical = 12.dp))
 }
 
-@Composable
-fun RecentEpisodesAndSeasonsSection(modifier: Modifier = Modifier,animeList: List<AnimeDetails>) {
-    /**
-     * EPISODES AND SEASONS SECTION
-     */
-    EpisodesAndSeasonsTab(
-        modifier = modifier.padding(horizontal = 8.dp),
-        animes = emptyList()
-    )
-    Spacer(modifier = Modifier.padding(bottom = 8.dp))
-}
 
-
-enum class BorderSide {
-    Top, Bottom, Left, Right
-}
 
 @Preview
 @Composable

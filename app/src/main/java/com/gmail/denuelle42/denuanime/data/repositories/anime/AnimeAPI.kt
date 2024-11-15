@@ -1,6 +1,7 @@
 package com.gmail.denuelle42.denuanime.data.repositories.anime
 
 import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetAnimeSearchResponse
+import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetRecentEpisodesResponse
 import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetTopAnimeResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -12,4 +13,7 @@ interface AnimeAPI {
 
     @GET("anime")
     suspend fun getAnimeSearch(@QueryMap params : Map<String, String>) : Response<GetAnimeSearchResponse>
+
+    @GET("watch/episodes")
+    suspend fun getRecentEpisodes() : Response<GetRecentEpisodesResponse>
 }

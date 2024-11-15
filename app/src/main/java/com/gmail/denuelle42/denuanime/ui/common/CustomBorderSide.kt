@@ -7,7 +7,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.gmail.denuelle42.denuanime.ui.home.BorderSide
 
 @Composable
 fun CustomBorderSide(modifier: Modifier = Modifier) {
@@ -46,4 +45,9 @@ fun CustomBorderSide(modifier: Modifier = Modifier) {
             }
         }
     )
+}
+
+
+enum class BorderSide {
+    Top, Bottom, Left, Right
 }

@@ -3,6 +3,7 @@ package com.gmail.denuelle42.denuanime.data.repositories.anime
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetAnimeSearchRequest
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetTopAnimeRequest
 import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetAnimeSearchResponse
+import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetRecentEpisodesResponse
 import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetTopAnimeResponse
 import dagger.hilt.android.scopes.ViewModelScoped
 import retrofit2.HttpException
@@ -65,5 +66,14 @@ class AnimeRepository @Inject constructor(
         return response.body() ?: throw NullPointerException("Response data is empty")
     }
 
+    suspend fun getRecentEpisodes() : GetRecentEpisodesResponse {
+        val response = animeAPI.getRecentEpisodes()
+
+        if(response.code() != HttpURLConnection.HTTP_OK){
+            throw HttpException(response)
+        }
+
+        return response.body() ?: throw NullPointerException("Response data is empty")
+    }
 
 }

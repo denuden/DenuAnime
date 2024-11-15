@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.gmail.denuelle42.bscode.util.ResultState
 import com.gmail.denuelle42.bscode.util.asResult
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
+import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetAnimeSearchRequest
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetTopAnimeRequest
 import com.gmail.denuelle42.denuanime.data.repositories.genre.request.GetAnimeGenresRequest
 import com.gmail.denuelle42.denuanime.data.repositories.people.request.GetPeopleSearchRequest
@@ -52,6 +53,40 @@ class HomeViewModel @Inject constructor(
     fun updateCurrentStartPage(value : Int){
         currentStartPage.intValue = value
     }
+
+    fun formatType(type : String) : String {
+       return when (type) {
+            "All" -> ""
+            "TV" -> "tv"
+            "Movie" -> "movie"
+            "OVA" -> "ova"
+            "Special" -> "special"
+            "ONA" -> "ona"
+            "Music" -> "music"
+            "CM" -> "cm"
+            "PV" -> "pv"
+            "TV Special" -> "tv_special"
+            else -> ""
+        }
+    }
+
+    fun formatRating(rating : String) : String {
+        return when (rating) {
+            "All" -> ""
+            "G" -> "g"
+            "PG" -> "pg"
+            "PG-13" -> "pg13"
+            "R-17+" -> "r17"
+            "R-Mild Nudity" -> "r"
+            "Rx-Hentai" -> "rx"
+            else -> ""
+        }
+    }
+
+    private val selectedGenre = MutableStateFlow<Int>(-1)
+    private val selectedType = MutableStateFlow<String>("All")
+    private val selectedRating = MutableStateFlow<String>("All")
+
     init {
         onEvent(
             HomeScreenEvents.OnGetTopPeopleSearch(
@@ -127,50 +162,6 @@ class HomeViewModel @Inject constructor(
                     }.collect()
                 }
             }
-            is HomeScreenEvents.OnChangeMainAnimeListFilter -> {
-                viewModelScope.launch {
-                    val type = when (event.type) {
-                        "All" -> ""
-                        "TV" -> "tv"
-                        "Movie" -> "movie"
-                        "OVA" -> "ova"
-                        "Special" -> "special"
-                        "ONA" -> "ona"
-                        "Music" -> "music"
-                        "CM" -> "cm"
-                        "PV" -> "pv"
-                        "TV Special" -> "tv_special"
-                        else -> ""
-                    }
-                    val rating = when (event.rating) {
-                        "All" -> ""
-                        "G" -> "g"
-                        "PG" -> "pg"
-                        "PG-13" -> "pg13"
-                        "R-17+" -> "r17"
-                        "R-Mild Nudity" -> "r"
-                        "Rx-Hentai" -> "rx"
-                        else -> ""
-                    }
-//                    animeUseCase.getTopAnime(
-//                        GetTopAnimeRequest(
-//                            type = type,
-//                            rating = rating,
-//                            limit = 25
-//                        )
-//                    ).asResult().onEach { res ->
-//                        when (res) {
-//                            ResultState.Completed -> isGetTopAnimeLoading.update { false }
-//                            is ResultState.Error -> Log.e(TAG, res.exception.toString())
-//                            ResultState.Loading -> isGetTopAnimeLoading.update { true }
-//                            is ResultState.Success -> topAnimeList.update {
-//                                res.data.data ?: emptyList()
-//                            }
-//                        }
-//                    }.collect()
-                }
-            }
-
             is HomeScreenEvents.OnGetAnimeGenres -> {
                 viewModelScope.launch {
                     genreUseCase.getAnimeGenres(event.request).asResult().onEach { res ->
@@ -193,26 +184,98 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
+            is HomeScreenEvents.OnChangeAnimeFilters -> {
+                selectedRating.update { event.rating }
+                selectedType.update { event.type }
+
+                //Recall Get Anime
+                if (selectedGenre.value == -1) {
+                    onEvent(
+                        HomeScreenEvents.OnGetTopAnime(
+                            GetTopAnimeRequest(
+                                filter = "favorite",
+                                type = formatType(event.type),
+                                rating = formatRating(event.rating)
+                            )
+                        )
+                    )
+                }
+                if (selectedGenre.value == -2) {
+                    onEvent(
+                        HomeScreenEvents.OnGetAnimeSearch(
+                            GetAnimeSearchRequest(
+                                status = "upcoming",
+                                order_by = "popularity",
+                                type = formatType(event.type),
+                                rating = formatRating(event.rating)
+                            )
+                        )
+                    )
+                }
+                if (selectedGenre.value > 0) {
+                    val formattedGenres = _homeScreenState.value.animeGenres.orEmpty().filter { it.isSelected }
+                        .joinToString(separator = ",") { it.mal_id.toString() }
+                    onEvent(HomeScreenEvents.OnGetAnimeSearch(GetAnimeSearchRequest(
+                        genres = formattedGenres,
+                        type = formatType(event.type),
+                        rating = formatRating(event.rating))
+                    ))
+                }
+            }
             is HomeScreenEvents.OnSelectAnimeGenre -> {
                 _homeScreenState.update {
-                    it.copy(
-                        animeGenres =  it.animeGenres?.map { genre ->
-                            if(event.genre.mal_id!! > 0){
-                                if (genre.mal_id == event.genre.mal_id) {
-                                    genre.copy(isSelected = !genre.isSelected)
-                                } else {
-                                    genre
-                                }
-                            } else{
-                                if (genre.mal_id == event.genre.mal_id) {
-                                    genre.copy(isSelected = true)
-                                } else {
-                                    genre.copy(isSelected = false)
-                                }
+                    val reset = it.animeGenres?.map { genre ->
+                        if (event.genre.mal_id!! < 0){ //if selected genre is top or upcoming
+                            if(genre.mal_id!! != event.genre.mal_id){ // check every genre that is not top equal to selected one
+                                genre.copy(isSelected =  false) // so i can reset everything else those to false
+                            } else {
+                                genre.copy(isSelected = true)
                             }
-
+                        } else {
+                            if(genre.mal_id!! == event.genre.mal_id ){
+                                genre.copy(isSelected = !genre.isSelected)
+                            } else if(genre.mal_id!! < 0) {
+                                genre.copy(isSelected = false)
+                            } else {
+                                genre
+                            }
                         }
+                    }
+                    it.copy(
+                        animeGenres =  reset
                     )
+                }
+
+                //update selected genre for other events that needs access to this
+                selectedGenre.update { event.genre.mal_id!! }
+
+                if (event.genre.mal_id == -1) {
+                    onEvent(HomeScreenEvents.OnGetTopAnime(GetTopAnimeRequest(
+                        filter = "favorite",
+                        type = formatType(selectedType.value),
+                        rating = formatRating(selectedRating.value)
+                    )))
+                }
+                if (event.genre.mal_id == -2) {
+                    onEvent(
+                        HomeScreenEvents.OnGetAnimeSearch(
+                            GetAnimeSearchRequest(
+                                status = "upcoming",
+                                order_by = "popularity",
+                                type = formatType(selectedType.value),
+                                rating = formatRating(selectedRating.value)
+                            )
+                        )
+                    )
+                }
+                if (event.genre.mal_id!! > 0) {
+                    val formattedGenres = _homeScreenState.value.animeGenres.orEmpty().filter { it.isSelected }
+                        .joinToString(separator = ",") { it.mal_id.toString() }
+                    onEvent(HomeScreenEvents.OnGetAnimeSearch(GetAnimeSearchRequest(
+                        genres = formattedGenres,
+                        type = formatType(selectedType.value),
+                        rating = formatRating(selectedRating.value)
+                    )))
                 }
             }
             is HomeScreenEvents.OnGetAnimeRecommendations -> {
@@ -268,6 +331,9 @@ class HomeViewModel @Inject constructor(
                 } else {
                     sendEvent(OneTimeEvents.ShowToast("No more pages left"))
                 }
+            }
+            is HomeScreenEvents.OnGetRecentEpisodes -> {
+
             }
         }
     }

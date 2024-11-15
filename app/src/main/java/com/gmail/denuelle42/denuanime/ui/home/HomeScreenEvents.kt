@@ -9,12 +9,14 @@ import com.gmail.denuelle42.denuanime.data.repositories.people.request.GetPeople
 sealed class HomeScreenEvents {
     data class OnGetTopPeopleSearch(val request: GetPeopleSearchRequest) :  HomeScreenEvents()
     data class OnGetTopAnime(val request: GetTopAnimeRequest) :  HomeScreenEvents()
-    data class OnChangeMainAnimeListFilter(val type : String, val rating : String, val event : (HomeScreenEvents) -> Unit) :  HomeScreenEvents()
     data class OnGetAnimeGenres(val request: GetAnimeGenresRequest) :  HomeScreenEvents()
     data class OnGetAnimeSearch(val request: GetAnimeSearchRequest) :  HomeScreenEvents()
     object OnGetAnimeRecommendations : HomeScreenEvents()
     object OnGetMangaRecommendations : HomeScreenEvents()
     data class OnSelectAnimeGenre(val genre: Genre) : HomeScreenEvents()
+    data class OnChangeAnimeFilters(val type: String, val rating : String) : HomeScreenEvents()
     data class OnSelectNextAnimeRecommendations(val page : Int) : HomeScreenEvents()
     data class OnSelectPreviousAnimeRecommendations(val page : Int) : HomeScreenEvents()
+    object OnGetRecentEpisodes : HomeScreenEvents()
+
 }
