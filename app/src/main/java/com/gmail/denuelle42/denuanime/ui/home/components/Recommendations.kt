@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,16 +21,12 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -62,16 +57,11 @@ fun Recommendations(
     modifier: Modifier = Modifier,
     isPrevButtonDisabled: Boolean = false,
     isNextButtonDisabled: Boolean = false,
-    onSelectAnimeTab: () -> Unit,
-    onSelectMangaTab: () -> Unit,
     onClickPrevButton: () -> Unit,
     onClickNextButton: () -> Unit,
     list: List<Pair<Any, String>>,
     delayMillis: Long = 900L, // 1 second delay
 ) {
-    var state by remember { mutableIntStateOf(0) }
-    val titles = listOf("Anime", "Manga")
-
     //to make sure that button wont be spammed
     var canClick by remember { mutableStateOf(true) }
     LaunchedEffect(canClick) {
@@ -81,33 +71,7 @@ fun Recommendations(
         }
     }
 
-    Column(modifier = modifier.clip(MaterialTheme.shapes.extraSmall)) {
-        SingleChoiceSegmentedButtonRow(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            titles.forEachIndexed { index, title ->
-                SegmentedButton(
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = index,
-                        count = titles.size,
-                        baseShape = MaterialTheme.shapes.small
-                    ),
-                    onClick = {
-                        state = index
-                        if (index == 0) { //anime tab
-                            onSelectAnimeTab()
-                        } else if (index == 1) { //manga tab
-                            onSelectMangaTab()
-                        }
-                    },
-                    selected = index == state,
-                    border = BorderStroke(width = 1.dp, color = Color.Gray)
-                ) {
-                    Text(title)
-                }
-            }
-        }
-
+    Column(modifier = modifier) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
@@ -158,7 +122,6 @@ fun Recommendations(
                 imageC2 = list[6],
             )
         }
-
     }
 }
 
@@ -357,8 +320,6 @@ private fun RecommendationsPreview() {
         ) {
             Recommendations(
                 modifier = Modifier,
-                onSelectAnimeTab = {},
-                onSelectMangaTab = {},
                 onClickNextButton = {},
                 onClickPrevButton = {},
                 list = listOf(

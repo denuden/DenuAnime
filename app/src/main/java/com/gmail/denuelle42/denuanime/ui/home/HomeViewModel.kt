@@ -54,7 +54,7 @@ class HomeViewModel @Inject constructor(
         currentStartPage.intValue = value
     }
 
-    fun formatType(type : String) : String {
+    private fun formatType(type : String) : String {
        return when (type) {
             "All" -> ""
             "TV" -> "tv"
@@ -70,7 +70,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun formatRating(rating : String) : String {
+    private fun formatRating(rating : String) : String {
         return when (rating) {
             "All" -> ""
             "G" -> "g"
@@ -99,8 +99,9 @@ class HomeViewModel @Inject constructor(
         onEvent(
             HomeScreenEvents.OnGetTopAnime(
                 request = GetTopAnimeRequest(
-                    type = homeScreenState.value.type,
-                    limit = 25
+                    filter="bypopularity",
+                    type = formatType(selectedType.value),
+                    rating = formatRating(selectedRating.value)
                 )
             )
         )
@@ -109,6 +110,7 @@ class HomeViewModel @Inject constructor(
                 request = GetAnimeGenresRequest(filter = "genres")
             )
         )
+        //refer to OnGetTopPeopleSearch for more initializations after initial batch of api request
     }
 
     fun onEvent(event: HomeScreenEvents) {
@@ -120,8 +122,15 @@ class HomeViewModel @Inject constructor(
                             ResultState.Completed -> _peopleState.update { it.copy(isGetTopPeopleSearchLoading =  false) }
                             is ResultState.Error -> Log.e(TAG, res.exception.toString())
                             ResultState.Loading -> _peopleState.update { it.copy(isGetTopPeopleSearchLoading =  true) }
-                            is ResultState.Success -> _peopleState.update {
-                                it.copy(topPeopleList = res.data.data)
+                            is ResultState.Success -> {
+                                _peopleState.update {
+                                    it.copy(topPeopleList = res.data.data)
+                                }
+
+                                //================ Only Call this because of API Rate Limiting
+                                delay(3000L)
+                                onEvent(HomeScreenEvents.OnGetAnimeRecommendations)
+                                onEvent(HomeScreenEvents.OnGetRecentEpisodes)
                             }
                         }
                     }.collect()
@@ -139,10 +148,6 @@ class HomeViewModel @Inject constructor(
                                 _homeScreenState.update {
                                     it.copy(animeList = res.data.data)
                                 }
-
-                                //================ Only Call this because of API Rate Limiting
-                                delay(3000L)
-                                onEvent(HomeScreenEvents.OnGetAnimeRecommendations)
                             }
                         }
                     }.collect()
@@ -178,6 +183,8 @@ class HomeViewModel @Inject constructor(
                                 _homeScreenState.update {
                                     it.copy(animeGenres = genres)
                                 }
+
+                                onEvent(HomeScreenEvents.OnSelectAnimeGenre(Genre(mal_id = -1, name = "Top")))
                             }
                         }
                     }.collect()
@@ -193,7 +200,7 @@ class HomeViewModel @Inject constructor(
                     onEvent(
                         HomeScreenEvents.OnGetTopAnime(
                             GetTopAnimeRequest(
-                                filter = "favorite",
+                                filter = "bypopularity",
                                 type = formatType(event.type),
                                 rating = formatRating(event.rating)
                             )
@@ -251,7 +258,7 @@ class HomeViewModel @Inject constructor(
 
                 if (event.genre.mal_id == -1) {
                     onEvent(HomeScreenEvents.OnGetTopAnime(GetTopAnimeRequest(
-                        filter = "favorite",
+                        filter = "bypopularity",
                         type = formatType(selectedType.value),
                         rating = formatRating(selectedRating.value)
                     )))
@@ -333,7 +340,18 @@ class HomeViewModel @Inject constructor(
                 }
             }
             is HomeScreenEvents.OnGetRecentEpisodes -> {
-
+                viewModelScope.launch {
+                    animeUseCase.getRecentEpisodes().asResult().onEach { res ->
+                        when(res) {
+                            ResultState.Completed -> _homeScreenState.update { it.copy(isEpisodesAndSeasonsLoading = false) }
+                            is ResultState.Error -> Log.e(TAG, res.exception.toString())
+                            ResultState.Loading -> _homeScreenState.update { it.copy(isEpisodesAndSeasonsLoading = true) }
+                            is ResultState.Success -> _homeScreenState.update {
+                                it.copy(episodesAndSeasonsList = res.data.data.orEmpty())
+                            }
+                        }
+                    }.collect()
+                }
             }
         }
     }

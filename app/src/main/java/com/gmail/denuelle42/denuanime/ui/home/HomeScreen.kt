@@ -1,8 +1,10 @@
 package com.gmail.denuelle42.denuanime.ui.home
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
@@ -10,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -23,6 +24,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -32,10 +36,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -57,6 +64,7 @@ import com.gmail.denuelle42.denuanime.ui.common.AnimeListItemCard
 import com.gmail.denuelle42.denuanime.ui.common.DetailedAnimeItemCard
 import com.gmail.denuelle42.denuanime.ui.common.FilterDropdown
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonAnimeDetailsCard
+import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonEpisodesAndSeasonsList
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonGenreList
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonPeopleList
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonRecommendationsList
@@ -95,7 +103,7 @@ fun HomeScreen(
                 click = {viewModel.onEvent(HomeScreenEvents.OnGetTopAnime(GetTopAnimeRequest()))}
             )
         }
-        item(key = homeScreenState.recommendationsList.hashCode()){
+        item{
             RecommendationsSection(
                 onEvent = viewModel::onEvent,
                 list = homeScreenState.recommendationsShown.orEmpty(),
@@ -117,12 +125,21 @@ fun HomeScreen(
             )
             Spacer(modifier = Modifier.padding(bottom = 8.dp))
         }
-        items(homeScreenState.animeList.orEmpty()){ anime ->
-            AnimeListItemCard(
-                animeDetails = anime,
-                modifier = Modifier.padding(vertical = 3.dp, horizontal = 8.dp)
-            )
+
+        if (!homeScreenState.isEpisodesAndSeasonsLoading){
+            items(homeScreenState.episodesAndSeasonsList.orEmpty()){ anime ->
+                AnimeListItemCard(
+                    animeDetails = anime.entry ?: AnimeDetails(),
+                    modifier = Modifier.padding(vertical = 3.dp, horizontal = 8.dp),
+                    recentEpisodesList = anime.episodes.orEmpty()
+                )
+            }
+        } else {
+            items(5){
+                SkeletonEpisodesAndSeasonsList(modifier =Modifier.padding(vertical = 2.dp, horizontal = 8.dp))
+            }
         }
+
         // ========= END OF RELATED COMPONENTS ==============
     }
 }
@@ -257,12 +274,10 @@ fun AnimeCardListSection(
     val carouselState = rememberCarouselState(0) { carouselCount }
     val screenWidthPx =  with(LocalDensity.current) { screenWidthDp.toPx() }
 
-    LaunchedEffect(carouselCount) {
-        carouselState.animateScrollBy(-calculateScrolledDistance(screenWidthPx, carouselCount))
-    }
 
     LaunchedEffect(animeList) {
         carouselCount = animeList.size
+        carouselState.animateScrollBy(-calculateScrolledDistance(screenWidthPx, carouselCount))
     }
     /**
      * ANIME CARD SECTION
@@ -339,48 +354,72 @@ fun RecommendationsSection(
     /**
      * RECOMMENDATIONS SECTION
      */
+    var state by remember { mutableIntStateOf(0) }
+    val titles by remember { mutableStateOf( listOf("Anime", "Manga")) }
 
-    AnimatedVisibility(
-        visible = !isLoading,
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        Recommendations(
-            isPrevButtonDisabled = currentStartPage > 0,
-            isNextButtonDisabled = currentStartPage < maxRecommendationsListSize,
-            onSelectAnimeTab = {
-                onEvent(HomeScreenEvents.OnGetAnimeRecommendations)
-                updateCurrentStartPage(0)
-            },
-            onSelectMangaTab = {
-                onEvent(HomeScreenEvents.OnGetMangaRecommendations)
-                updateCurrentStartPage(0)
-            },
-            onClickPrevButton = {
-                onEvent(HomeScreenEvents.OnSelectPreviousAnimeRecommendations(currentStartPage))
-                updateCurrentStartPage(currentStartPage - 7)//update local state after viewmodel process
-            },
-            onClickNextButton = {
-                onEvent(HomeScreenEvents.OnSelectNextAnimeRecommendations(currentStartPage))
-                updateCurrentStartPage(currentStartPage + 7)//update local state after viewmodel process
+    Column(modifier = modifier.clip(MaterialTheme.shapes.extraSmall).padding(horizontal = 8.dp)) {
+        SingleChoiceSegmentedButtonRow(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            titles.forEachIndexed { index, title ->
+                Log.d("wegw", state.toString())
 
-            },
-            list = list.map {
-                Pair(it.images?.jpg?.image_url.orEmpty(), it.title ?: "Unknown Title")
-            },
-            modifier = modifier
-                .fillMaxHeight()
-                .padding(horizontal = 8.dp)
-        )
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = index,
+                        count = titles.size,
+                        baseShape = MaterialTheme.shapes.small
+                    ),
+                    onClick = {
+                        state = index
+                        if (index == 0) { //anime tab
+                            onEvent(HomeScreenEvents.OnGetAnimeRecommendations)
+                            updateCurrentStartPage(0)
+                        } else if (index == 1) { //manga tab
+                            onEvent(HomeScreenEvents.OnGetMangaRecommendations)
+                            updateCurrentStartPage(0)
+                        }
+                    },
+                    selected = index == state,
+                    border = BorderStroke(width = 1.dp, color = Color.Gray)
+                ) {
+                    Text(title)
+                }
+            }
+        }
+
+        AnimatedVisibility(
+            visible = !isLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            Recommendations(
+                isPrevButtonDisabled = currentStartPage > 0,
+                isNextButtonDisabled = currentStartPage < maxRecommendationsListSize,
+                onClickPrevButton = {
+                    onEvent(HomeScreenEvents.OnSelectPreviousAnimeRecommendations(currentStartPage))
+                    updateCurrentStartPage(currentStartPage - 7)//update local state after viewmodel process
+                },
+                onClickNextButton = {
+                    onEvent(HomeScreenEvents.OnSelectNextAnimeRecommendations(currentStartPage))
+                    updateCurrentStartPage(currentStartPage + 7)//update local state after viewmodel process
+
+                },
+                list = list.map {
+                    Pair(it.images?.jpg?.image_url.orEmpty(), it.title ?: "Unknown Title")
+                },
+            )
+        }
+
+        AnimatedVisibility(
+            visible = isLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            SkeletonRecommendationsList(modifier = Modifier.fillMaxWidth().padding(top=8.dp))
+        }
     }
 
-    AnimatedVisibility(
-        visible = isLoading,
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        SkeletonRecommendationsList(modifier = Modifier.fillMaxWidth())
-    }
     Spacer(modifier = Modifier.padding(vertical = 12.dp))
 }
 

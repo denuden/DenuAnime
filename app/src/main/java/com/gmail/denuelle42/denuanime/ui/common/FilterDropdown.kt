@@ -3,6 +3,7 @@ package com.gmail.denuelle42.denuanime.ui.common
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -62,7 +63,7 @@ fun FilterDropdown(
 
             Row {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = typeLabel ?: "", fontWeight = FontWeight.SemiBold)
+                    Text(text = typeLabel ?: "", fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start=6.dp))
                     type.forEachIndexed { index, item ->
                         DropdownMenuItem(
                             text = { Text(item) },
@@ -86,7 +87,7 @@ fun FilterDropdown(
 
                 if (secondaryType.isNotEmpty()) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(text = secondaryTypeLabel ?: "", fontWeight = FontWeight.SemiBold)
+                        Text(text = secondaryTypeLabel ?: "", fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start=6.dp))
                         secondaryType.forEachIndexed { index, item ->
                             DropdownMenuItem(
                                 text = { Text(item) },

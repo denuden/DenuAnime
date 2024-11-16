@@ -11,8 +11,6 @@ data class HomeScreenState(
 
     val animeList : List<AnimeDetails>? = null,
     val isGetAnimeListLoading : Boolean = true,
-    val rating : String? = null,
-    val type : String? = null,
 
     val animeGenres : List<Genre>? = null,
     val isGetAnimeGenresLoading : Boolean = true,
@@ -21,6 +19,6 @@ data class HomeScreenState(
     val recommendationsShown : List<AnimeDetails>? = null,
     val isGetRecentRecommendationsLoading : Boolean = true,
 
-    val recentEpisodesList : List<RecentEpisodesList>? = null,
-    val isRecentEpisodesLoading : Boolean = true,
+    val episodesAndSeasonsList : List<RecentEpisodesList>? = null,
+    val isEpisodesAndSeasonsLoading : Boolean = true,
 )

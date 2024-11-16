@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -67,20 +66,16 @@ fun AnimeListItemCard(
                     .weight(1f)
                     .padding(end = 8.dp)
             ) {
-                Text(
-                    text = "Finished Airing | 2019, Winter",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Normal
-                )
+
                 Text(
                     text = animeDetails.title.orEmpty()
                         .ifEmpty { stringResource(R.string.no_title_specified) },
-                    style = MaterialTheme.typography.titleSmall)
+                    style = MaterialTheme.typography.titleMedium)
 
                 if(recentEpisodesList.isNotEmpty()){
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        modifier = Modifier.fillMaxWidth().padding(top = 5.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         recentEpisodesList.forEach { episode ->
                             TextButton(
