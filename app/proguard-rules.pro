@@ -80,3 +80,6 @@
 
 -keep class com.gmail.denuelle42.denuanime.data.repositories.recommendations.request.* { *; }
 -keep class com.gmail.denuelle42.denuanime.data.repositories.recommendations.response.* { *; }
+
+-keep class com.gmail.denuelle42.denuanime.data.repositories.season.request.* { *; }
+-keep class com.gmail.denuelle42.denuanime.data.repositories.season.response.* { *; }

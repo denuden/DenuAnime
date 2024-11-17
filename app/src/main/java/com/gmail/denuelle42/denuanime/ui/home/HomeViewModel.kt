@@ -2,6 +2,7 @@ package com.gmail.denuelle42.denuanime.ui.home
 
 import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gmail.denuelle42.bscode.util.ResultState
@@ -15,6 +16,7 @@ import com.gmail.denuelle42.denuanime.domain.repositories.anime.AnimeUseCase
 import com.gmail.denuelle42.denuanime.domain.repositories.genre.GenreUseCase
 import com.gmail.denuelle42.denuanime.domain.repositories.people.PeopleUseCase
 import com.gmail.denuelle42.denuanime.domain.repositories.recommendations.RecommendationsUseCase
+import com.gmail.denuelle42.denuanime.domain.repositories.season.SeasonUseCase
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -33,6 +35,7 @@ class HomeViewModel @Inject constructor(
     private val peopleUseCase: PeopleUseCase,
     private val animeUseCase: AnimeUseCase,
     private val genreUseCase: GenreUseCase,
+    private val seasonUseCase: SeasonUseCase,
     private val recommendationsUseCase: RecommendationsUseCase
 ) : ViewModel() {
     private val TAG = HomeViewModel::class.java.simpleName
@@ -50,10 +53,12 @@ class HomeViewModel @Inject constructor(
     var currentStartPage = mutableIntStateOf(0)
         private set
 
+    //Updates Page of recommendations/resets List
     fun updateCurrentStartPage(value : Int){
         currentStartPage.intValue = value
     }
 
+    //Formats Filter dropodown type for API Request
     private fun formatType(type : String) : String {
        return when (type) {
             "All" -> ""
@@ -70,6 +75,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    //Formats Filter dropodown secondary type for API Request
     private fun formatRating(rating : String) : String {
         return when (rating) {
             "All" -> ""
@@ -83,10 +89,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private val selectedGenre = MutableStateFlow<Int>(-1)
-    private val selectedType = MutableStateFlow<String>("All")
-    private val selectedRating = MutableStateFlow<String>("All")
+    //value holders to make calls across different API to persists its settings
+    private val selectedGenre = mutableIntStateOf(-1)
+    private val selectedType = mutableStateOf("All")
+    private val selectedRating = mutableStateOf("All")
+    private val selectedEpisodesAndSeasonTab = mutableIntStateOf(0)
 
+    fun getSelectedEpisodesAndSeasonTab() : Int {
+        return selectedEpisodesAndSeasonTab.intValue
+    }
     init {
         onEvent(
             HomeScreenEvents.OnGetTopPeopleSearch(
@@ -192,8 +203,8 @@ class HomeViewModel @Inject constructor(
             }
 
             is HomeScreenEvents.OnChangeAnimeFilters -> {
-                selectedRating.update { event.rating }
-                selectedType.update { event.type }
+                selectedRating.value = event.rating
+                selectedType.value  = event.type
 
                 //Recall Get Anime
                 if (selectedGenre.value == -1) {
@@ -254,7 +265,7 @@ class HomeViewModel @Inject constructor(
                 }
 
                 //update selected genre for other events that needs access to this
-                selectedGenre.update { event.genre.mal_id!! }
+                selectedGenre.intValue =  event.genre.mal_id!!
 
                 if (event.genre.mal_id == -1) {
                     onEvent(HomeScreenEvents.OnGetTopAnime(GetTopAnimeRequest(
@@ -340,6 +351,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
             is HomeScreenEvents.OnGetRecentEpisodes -> {
+                selectedEpisodesAndSeasonTab.intValue = 0
                 viewModelScope.launch {
                     animeUseCase.getRecentEpisodes().asResult().onEach { res ->
                         when(res) {
@@ -348,6 +360,36 @@ class HomeViewModel @Inject constructor(
                             ResultState.Loading -> _homeScreenState.update { it.copy(isEpisodesAndSeasonsLoading = true) }
                             is ResultState.Success -> _homeScreenState.update {
                                 it.copy(episodesAndSeasonsList = res.data.data.orEmpty())
+                            }
+                        }
+                    }.collect()
+                }
+            }
+            is HomeScreenEvents.OnGetSeasonNow -> {
+                selectedEpisodesAndSeasonTab.intValue = 1
+                viewModelScope.launch {
+                    seasonUseCase.getSeasonNow(event.request).asResult().onEach { res ->
+                        when(res) {
+                            ResultState.Completed -> _homeScreenState.update { it.copy(isEpisodesAndSeasonsLoading = false) }
+                            is ResultState.Error -> Log.e(TAG, res.exception.toString())
+                            ResultState.Loading -> _homeScreenState.update { it.copy(isEpisodesAndSeasonsLoading = true) }
+                            is ResultState.Success -> _homeScreenState.update {
+                                it.copy(episodesAndSeasonsList = res.data.orEmpty())
+                            }
+                        }
+                    }.collect()
+                }
+            }
+            is HomeScreenEvents.OnGetSeasonUpcoming -> {
+                selectedEpisodesAndSeasonTab.intValue = 2
+                viewModelScope.launch {
+                    seasonUseCase.getSeasonUpcoming(event.request).asResult().onEach { res ->
+                        when(res) {
+                            ResultState.Completed -> _homeScreenState.update { it.copy(isEpisodesAndSeasonsLoading = false) }
+                            is ResultState.Error -> Log.e(TAG, res.exception.toString())
+                            ResultState.Loading -> _homeScreenState.update { it.copy(isEpisodesAndSeasonsLoading = true) }
+                            is ResultState.Success -> _homeScreenState.update {
+                                it.copy(episodesAndSeasonsList = res.data.orEmpty())
                             }
                         }
                     }.collect()

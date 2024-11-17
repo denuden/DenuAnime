@@ -21,4 +21,6 @@ data class HomeScreenState(
 
     val episodesAndSeasonsList : List<RecentEpisodesList>? = null,
     val isEpisodesAndSeasonsLoading : Boolean = true,
+
+
 )

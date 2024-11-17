@@ -70,7 +70,7 @@ fun AnimeListItemCard(
                 Text(
                     text = animeDetails.title.orEmpty()
                         .ifEmpty { stringResource(R.string.no_title_specified) },
-                    style = MaterialTheme.typography.titleMedium)
+                    style = MaterialTheme.typography.titleSmall)
 
                 if(recentEpisodesList.isNotEmpty()){
                     FlowRow(
@@ -80,10 +80,8 @@ fun AnimeListItemCard(
                         recentEpisodesList.forEach { episode ->
                             TextButton(
                                 onClick = {},
-                                contentPadding = PaddingValues(0.dp),
+                                contentPadding = PaddingValues(vertical = 3.dp, horizontal = 10.dp),
                                 modifier = Modifier.height(28.dp),
-
-
                             ) {
                                     Text(text = episode.title ?: "Unknown Episode")
                             }

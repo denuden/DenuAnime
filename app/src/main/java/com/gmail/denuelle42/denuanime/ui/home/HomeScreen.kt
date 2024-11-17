@@ -59,6 +59,8 @@ import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetai
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.data.remote.models.people.People
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetTopAnimeRequest
+import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonNowRequest
+import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonUpcomingRequest
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.ui.common.AnimeListItemCard
 import com.gmail.denuelle42.denuanime.ui.common.DetailedAnimeItemCard
@@ -121,8 +123,16 @@ fun HomeScreen(
              */
             EpisodesAndSeasonsTab(
                 modifier = Modifier.padding(horizontal = 8.dp),
-                animes =homeScreenState.animeList.orEmpty()
-            )
+                state = viewModel.getSelectedEpisodesAndSeasonTab()
+            ){ tabIndex ->
+                when(tabIndex){
+                    0 -> viewModel.onEvent(HomeScreenEvents.OnGetRecentEpisodes)
+                    1 -> viewModel.onEvent(HomeScreenEvents.OnGetSeasonNow(GetSeasonNowRequest(continuing = true)))
+                    2 -> viewModel.onEvent(HomeScreenEvents.OnGetSeasonUpcoming(
+                        GetSeasonUpcomingRequest()
+                    ))
+                }
+            }
             Spacer(modifier = Modifier.padding(bottom = 8.dp))
         }
 

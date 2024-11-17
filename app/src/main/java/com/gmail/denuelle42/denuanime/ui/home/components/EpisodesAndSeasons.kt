@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -19,13 +20,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
 @Composable
-fun EpisodesAndSeasonsTab(modifier: Modifier = Modifier, animes: List<AnimeDetails>) {
-    var state by remember { mutableIntStateOf(0) }
-    val titles = listOf("Recent\nEpisodes", "Ongoing\nSeasons", "Upcoming\nSeasons")
+fun EpisodesAndSeasonsTab(modifier: Modifier = Modifier, state : Int, onSelectTab : (Int) -> Unit){
+    val titles by remember { mutableStateOf(listOf("Recent\nEpisodes", "Ongoing\nSeasons", "Upcoming\nSeasons")) }
 
     Column(
         modifier = modifier.clip(MaterialTheme.shapes.extraSmall)
@@ -40,7 +39,9 @@ fun EpisodesAndSeasonsTab(modifier: Modifier = Modifier, animes: List<AnimeDetai
                         count = titles.size,
                         baseShape = MaterialTheme.shapes.small
                     ),
-                    onClick = { state = index },
+                    onClick = {
+                        onSelectTab(index)
+                      },
                     selected = index == state,
                     border = BorderStroke(width = 1.dp, color = Color.Gray),
                     modifier = Modifier.align(Alignment.CenterVertically)
@@ -57,11 +58,7 @@ fun EpisodesAndSeasonsTab(modifier: Modifier = Modifier, animes: List<AnimeDetai
 @Composable
 private fun EpisodesAndSeasonsPreview() {
     DenuAnimeTheme {
-        EpisodesAndSeasonsTab(
-            animes = listOf(
-                AnimeDetails(),
-                AnimeDetails(),
-            )
-        )
+        EpisodesAndSeasonsTab(state =0
+        ){}
     }
 }
