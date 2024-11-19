@@ -27,4 +27,5 @@
     <string name="unknown">Unknown</string>
     <string name="unknown_name">Unknown Name</string>
     <string name="birthday">Birthday</string>
+    <string name="no_anime_found">No Anime Found</string>
 </resources>

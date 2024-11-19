@@ -9,6 +9,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -135,7 +136,7 @@ fun HomeScreenContent(
 ) {
     val lazyListState = rememberLazyListState()
 
-    LazyColumn(state = lazyListState) {
+    LazyColumn(state = lazyListState, modifier = modifier) {
         item {
             TopPeopleSection(isLoading = peopleState.isGetTopPeopleSearchLoading, topPeopleList = peopleState.topPeopleList.orEmpty(), onClickSeeMore = {
                 onEvent(HomeScreenEvents.OnNavigateToSeeMorePeople(PeopleScreens.PeopleNavigation))
@@ -219,13 +220,26 @@ fun TopPeopleSection(
         exit = fadeOut(),
         visible = !isLoading
     ) {
-        PeopleList(
-            modifier = modifier.fillMaxWidth(),
-            items = topPeopleList,
-            title = stringResource(R.string.top_poeple),
-            shouldShowBirthDate = true,
-            onClickSeeMore = onClickSeeMore
-        )
+        if(topPeopleList.isNotEmpty()){
+            PeopleList(
+                modifier = modifier.fillMaxWidth(),
+                items = topPeopleList,
+                title = stringResource(R.string.top_poeple),
+                shouldShowBirthDate = true,
+                onClickSeeMore = onClickSeeMore
+            )
+        }else{
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth().background(
+                    color = Color.LightGray,
+                    shape = MaterialTheme.shapes.small
+                )
+                    .height(52.dp)
+            ){
+              Text(text = "No People Found")
+            }
+        }
     }
     AnimatedVisibility(
         enter = fadeIn(),
@@ -385,7 +399,15 @@ fun AnimeCardListSection(
                 )
             }
         } else {
-//                    TODO PUT NOTHING TO SHOW DETAILS
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                .height(400.dp)
+                .fillMaxWidth()
+                .background(color = Color.LightGray, shape = MaterialTheme.shapes.small)){
+                Text(text = stringResource(R.string.no_anime_found))
+            }
         }
     }
     AnimatedVisibility(

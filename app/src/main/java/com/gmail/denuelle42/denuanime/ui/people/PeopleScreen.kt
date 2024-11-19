@@ -1,7 +1,7 @@
 package com.gmail.denuelle42.denuanime.ui.people
 
-import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -23,9 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gmail.denuelle42.denuanime.R
+import com.gmail.denuelle42.denuanime.data.repositories.people.request.GetPeopleSearchRequest
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
@@ -41,8 +43,7 @@ fun PeopleScreen(
 
     LaunchedEffect(Unit) {
         viewModel.debouncedQuery.collect { query ->
-            Log.d("SEARCCHHe", query)
-            //TODO
+            viewModel.onEvent(PeopleScreenEvents.GetPeopleSearch(GetPeopleSearchRequest(q = query, order_by = "name")))
         }
     }
     PeopleScreenContent(uiState = uiState, onSearchQueryChanged = viewModel::onQueryChanged)
@@ -58,9 +59,9 @@ fun PeopleScreenContent(
     val lazyState = rememberLazyListState()
 
 
-
     LazyColumn(
-        state = lazyState
+        state = lazyState,
+        contentPadding = PaddingValues(8.dp)
     ) {
         item {
             TextField(

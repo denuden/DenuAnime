@@ -1,7 +1,10 @@
 package com.gmail.denuelle42.denuanime.ui.people
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gmail.denuelle42.bscode.util.ResultState
+import com.gmail.denuelle42.bscode.util.asResult
 import com.gmail.denuelle42.denuanime.domain.repositories.people.PeopleUseCase
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +16,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,6 +50,18 @@ class PeopleViewModel @Inject constructor(
 
     fun onEvent(event: PeopleScreenEvents) {
         when(event){
+            is PeopleScreenEvents.GetPeopleSearch -> {
+                viewModelScope.launch {
+                    peopleUseCase.getPeopleSearch(event.request).asResult().onEach { res ->
+                        when(res){
+                            ResultState.Completed -> _stateFlow.update { it.copy(isGetPeopleSearchLoading = false) }
+                            is ResultState.Error -> Log.e(TAG, res.exception.toString())
+                            ResultState.Loading -> _stateFlow.update { it.copy(isGetPeopleSearchLoading = true) }
+                            is ResultState.Success -> _stateFlow.update { it.copy( peopleList = res.data.data) }
+                        }
+                    }
+                }
+            }
             else -> Unit
         }
     }
