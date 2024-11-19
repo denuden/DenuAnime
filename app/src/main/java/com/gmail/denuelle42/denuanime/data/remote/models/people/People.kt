@@ -15,5 +15,8 @@ data class People(
     val alternate_names: List<String?>? = null,
     val birthday: String? = null, // 1972-09-08T00:00:00+00:00
     val favorites: Int? = null, // 6171
-    val about: String? = null // Hometown: Tokyo, JapanBlood type: ABTwitter: @seki0908Instagram: @sekitomokazuProfile: Atomic Monkey
+    val about: String? = null, // Hometown: Tokyo, JapanBlood type: ABTwitter: @seki0908Instagram: @sekitomokazuProfile: Atomic Monkey
+    val anime : List<PeopleAnime>? = null,
+    val manga : List<PeopleAnime>? = null,
+    val voices : List<Voices>? =null
 )

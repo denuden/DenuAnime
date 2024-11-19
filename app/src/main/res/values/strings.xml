@@ -25,4 +25,6 @@
     <string name="no_title_specified">No Title Specified</string>
     <string name="incoming_birthdays">Incoming Birthdays</string>
     <string name="unknown">Unknown</string>
+    <string name="unknown_name">Unknown Name</string>
+    <string name="birthday">Birthday</string>
 </resources>
