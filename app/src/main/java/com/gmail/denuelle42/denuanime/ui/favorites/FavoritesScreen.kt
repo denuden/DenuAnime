@@ -7,7 +7,7 @@ import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 @Composable
 fun FavoritesScreen(
     onPopBackStack: () -> Unit,
-    onNavigation: (route: NavigationScreens) -> Unit
+    onNavigate: (route: NavigationScreens) -> Unit
 ) {
     Text("hhgoewiolmkmklwe")
 }

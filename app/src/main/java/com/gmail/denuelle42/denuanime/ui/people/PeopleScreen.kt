@@ -1,5 +1,6 @@
 package com.gmail.denuelle42.denuanime.ui.people
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,15 +23,41 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gmail.denuelle42.denuanime.R
+import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
 @Composable
 fun PeopleScreen(
+    onPopBackStack : () -> Unit,
+    onNavigate : (NavigationScreens) -> Unit,
+    viewModel: PeopleViewModel = hiltViewModel()
+) {
+    val peopleScreenState by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val uiState = peopleScreenState
 
+
+    LaunchedEffect(Unit) {
+        viewModel.debouncedQuery.collect { query ->
+            Log.d("SEARCCHHe", query)
+            //TODO
+        }
+    }
+    PeopleScreenContent(uiState = uiState, onSearchQueryChanged = viewModel::onQueryChanged)
+}
+
+@Composable
+fun PeopleScreenContent(
+    modifier: Modifier = Modifier,
+    uiState: PeopleScreenState,
+    onSearchQueryChanged: (String) -> Unit ,
 ) {
     var searchState by remember { mutableStateOf("") }
     val lazyState = rememberLazyListState()
+
+
 
     LazyColumn(
         state = lazyState
@@ -37,7 +65,10 @@ fun PeopleScreen(
         item {
             TextField(
                 value = searchState,
-                onValueChange = { searchState = it },
+                onValueChange = {
+                    searchState = it
+                    onSearchQueryChanged(it)
+                },
                 shape = MaterialTheme.shapes.large,
                 colors = TextFieldDefaults.colors(
                     unfocusedContainerColor = Color.LightGray,
@@ -58,7 +89,6 @@ fun PeopleScreen(
             )
         }
     }
-
 }
 
 @Preview
@@ -66,7 +96,7 @@ fun PeopleScreen(
 private fun PeopleScreenPreview() {
     DenuAnimeTheme {
         Surface(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)) {
-            PeopleScreen()
+            PeopleScreenContent(uiState = PeopleScreenState(), onSearchQueryChanged = {})
         }
     }
 }

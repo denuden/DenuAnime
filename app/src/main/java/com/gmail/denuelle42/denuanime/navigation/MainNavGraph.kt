@@ -12,14 +12,14 @@ fun NavGraphBuilder.addMainNavGraph(navController: NavController){
         composable<MainScreens.HomeNavigation> {
             HomeScreen(
                 onPopBackStack = { navController.popBackStack() },
-                onNavigation = { navController.navigate(it) }
+                onNavigate = { navController.navigate(it) }
             )
         }
 
         composable<MainScreens.FavoritesNavigation> {
             FavoritesScreen(
                 onPopBackStack = { navController.popBackStack() },
-                onNavigation = { navController.navigate(it) }
+                onNavigate = { navController.navigate(it) }
             )
         }
     }

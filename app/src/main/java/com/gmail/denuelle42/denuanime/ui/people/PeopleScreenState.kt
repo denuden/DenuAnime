@@ -4,7 +4,7 @@ import com.gmail.denuelle42.denuanime.data.remote.models.people.People
 import com.gmail.denuelle42.denuanime.data.remote.models.people.PeopleAnime
 import com.gmail.denuelle42.denuanime.data.remote.models.people.Voices
 
-data class PeopleState(
+data class PeopleScreenState(
     val peopleList : List<People>? = null,
     val isGetPeopleSearchLoading : Boolean = true,
 

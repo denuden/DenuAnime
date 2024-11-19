@@ -1,6 +1,7 @@
 package com.gmail.denuelle42.denuanime.ui.home.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,7 +25,7 @@ import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.formatIsoDateAsLongDate
 
 @Composable
-fun PeopleList(modifier: Modifier = Modifier, items: List<People>, title: String, shouldShowBirthDate : Boolean) {
+fun PeopleList(modifier: Modifier = Modifier, items: List<People>, title: String, shouldShowBirthDate : Boolean, onClickSeeMore : () -> Unit) {
     val state = rememberLazyListState()
     Column {
         Row(
@@ -45,7 +46,9 @@ fun PeopleList(modifier: Modifier = Modifier, items: List<People>, title: String
                 fontWeight = FontWeight.Light,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier
+                modifier = Modifier.clickable {
+                    onClickSeeMore()
+                }
             )
         }
 

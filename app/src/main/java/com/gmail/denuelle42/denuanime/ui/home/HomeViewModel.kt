@@ -395,6 +395,10 @@ class HomeViewModel @Inject constructor(
                     }.collect()
                 }
             }
+
+            is HomeScreenEvents.OnNavigateToSeeMorePeople -> {
+                sendEvent(OneTimeEvents.OnNavigate(event.route))
+            }
         }
     }
 

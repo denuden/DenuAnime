@@ -7,14 +7,16 @@ import com.gmail.denuelle42.denuanime.data.repositories.genre.request.GetAnimeGe
 import com.gmail.denuelle42.denuanime.data.repositories.people.request.GetPeopleSearchRequest
 import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonNowRequest
 import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonUpcomingRequest
+import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 
 sealed class HomeScreenEvents {
+    //API Related
     data class OnGetTopPeopleSearch(val request: GetPeopleSearchRequest) :  HomeScreenEvents()
     data class OnGetTopAnime(val request: GetTopAnimeRequest) :  HomeScreenEvents()
     data class OnGetAnimeGenres(val request: GetAnimeGenresRequest) :  HomeScreenEvents()
     data class OnGetAnimeSearch(val request: GetAnimeSearchRequest) :  HomeScreenEvents()
     object OnGetAnimeRecommendations : HomeScreenEvents()
-    object OnGetMangaRecommendations : HomeScreenEvents()
+    data object OnGetMangaRecommendations : HomeScreenEvents()
     data class OnSelectAnimeGenre(val genre: Genre) : HomeScreenEvents()
     data class OnChangeAnimeFilters(val type: String, val rating : String) : HomeScreenEvents()
     data class OnSelectNextAnimeRecommendations(val page : Int) : HomeScreenEvents()
@@ -23,4 +25,6 @@ sealed class HomeScreenEvents {
     data class OnGetSeasonNow(val request : GetSeasonNowRequest) : HomeScreenEvents()
     data class OnGetSeasonUpcoming(val request : GetSeasonUpcomingRequest) : HomeScreenEvents()
 
+    //Navigation
+    data class OnNavigateToSeeMorePeople(val route: NavigationScreens) : HomeScreenEvents()
 }

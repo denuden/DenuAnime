@@ -9,6 +9,8 @@ import kotlinx.serialization.Serializable
 sealed class RootGraphs {
     @Serializable
     data object MainGraph : RootGraphs()
+    @Serializable
+    data object PeopleGraph : RootGraphs()
 }
 
 /**
@@ -24,4 +26,9 @@ sealed class MainScreens : NavigationScreens {
     data object FavoritesNavigation : MainScreens()
     @Serializable
     data object SettingsNavigation : MainScreens()
+}
+
+sealed class PeopleScreens : NavigationScreens {
+    @Serializable
+    data object PeopleNavigation : PeopleScreens()
 }
