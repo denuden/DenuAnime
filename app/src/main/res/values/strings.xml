@@ -28,4 +28,6 @@
     <string name="unknown_name">Unknown Name</string>
     <string name="birthday">Birthday</string>
     <string name="no_anime_found">No Anime Found</string>
+    <string name="no_recommendations_found">No recommendations found.</string>
+    <string name="no_genres_found">No genres found.</string>
 </resources>

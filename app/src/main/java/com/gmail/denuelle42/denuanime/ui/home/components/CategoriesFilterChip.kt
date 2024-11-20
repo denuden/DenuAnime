@@ -21,13 +21,19 @@ import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
 @Composable
-fun CategoriesFilterChip(modifier: Modifier = Modifier, categoryList: List<Genre>, onSelectedCategory : (Genre) -> Unit) {
+fun CategoriesFilterChip(
+    modifier: Modifier = Modifier,
+    categoryList: List<Genre>,
+    isEnabled: Boolean = true,
+    onSelectedCategory: (Genre) -> Unit
+) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         contentPadding = PaddingValues(8.dp)
     ) {
         items(categoryList) { category ->
             FilterChip(
+                enabled = isEnabled,
                 onClick = {
                     onSelectedCategory(category)
                   },

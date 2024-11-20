@@ -10,10 +10,8 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,7 +21,12 @@ import androidx.compose.ui.unit.dp
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
 @Composable
-fun EpisodesAndSeasonsTab(modifier: Modifier = Modifier, state : Int, onSelectTab : (Int) -> Unit){
+fun EpisodesAndSeasonsTab(
+    modifier: Modifier = Modifier,
+    state: Int,
+    isEnabled : Boolean = true,
+    onSelectTab: (Int) -> Unit
+){
     val titles by remember { mutableStateOf(listOf("Recent\nEpisodes", "Ongoing\nSeasons", "Upcoming\nSeasons")) }
 
     Column(
@@ -34,6 +37,7 @@ fun EpisodesAndSeasonsTab(modifier: Modifier = Modifier, state : Int, onSelectTa
         ) {
             titles.forEachIndexed { index, title ->
                 SegmentedButton(
+                    enabled = isEnabled,
                     shape = SegmentedButtonDefaults.itemShape(
                         index = index,
                         count = titles.size,

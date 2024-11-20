@@ -16,6 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,7 +26,13 @@ import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.formatIsoDateAsLongDate
 
 @Composable
-fun PeopleList(modifier: Modifier = Modifier, items: List<People>, title: String, shouldShowBirthDate : Boolean, onClickSeeMore : () -> Unit) {
+fun PeopleList(
+    modifier: Modifier = Modifier,
+    items: List<People>,
+    title: String,
+    shouldShowBirthDate: Boolean,
+    onClickSeeMore: () -> Unit
+) {
     val state = rememberLazyListState()
     Column {
         Row(
@@ -46,9 +53,9 @@ fun PeopleList(modifier: Modifier = Modifier, items: List<People>, title: String
                 fontWeight = FontWeight.Light,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier.clickable {
+                modifier = Modifier.clip(MaterialTheme.shapes.small).clickable {
                     onClickSeeMore()
-                }
+                }.padding(6.dp)
             )
         }
 

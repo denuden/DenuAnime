@@ -1,6 +1,5 @@
 package com.gmail.denuelle42.denuanime.ui.home
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -91,29 +90,31 @@ fun HomeScreen(
     onNavigate: (route: NavigationScreens) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+    //ui states
     val homeScreenState by viewModel.homeScreenState.collectAsStateWithLifecycle()
     val peopleState by viewModel.peopleState.collectAsStateWithLifecycle()
 
-    val lifecycle  = LocalLifecycleOwner.current.lifecycle
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
     val context = LocalContext.current
     HomeScreenContent(
         homeScreenState = homeScreenState,
         peopleState = peopleState,
         onEvent = viewModel::onEvent,
-        currentStartPage = viewModel.currentStartPage.intValue,
-        updateCurrentStartPage = { viewModel.updateCurrentStartPage(it) },
-        selectedEpisodesAndSeasonTab = viewModel.getSelectedEpisodesAndSeasonTab()
+        currentStartPage = viewModel.currentStartPage.intValue,// for recommendation page state
+        updateCurrentStartPage = { viewModel.updateCurrentStartPage(it) }, // for recommendation page state
+        selectedEpisodesAndSeasonTab = viewModel.getSelectedEpisodesAndSeasonTab()  // tab for episodes and season state
     )
 
     LaunchedEffect(Unit) {
-        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.channel.collect { event ->
-                when(event){
+                when (event) {
                     is OneTimeEvents.OnNavigate -> onNavigate(event.route)
                     OneTimeEvents.OnPopBackStack -> onPopBackStack()
                     is OneTimeEvents.ShowSnackbar -> {
                         TODO()
                     }
+
                     is OneTimeEvents.ShowToast -> {
                         Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                     }
@@ -129,34 +130,38 @@ fun HomeScreenContent(
     homeScreenState: HomeScreenState,
     peopleState: HomeScreenState,
     onEvent: (HomeScreenEvents) -> Unit,
-    currentStartPage: Int,//For Recommendations Section
-    updateCurrentStartPage : (Int) -> Unit,//For Recommendations Section
-    selectedEpisodesAndSeasonTab : Int
+    currentStartPage: Int,//for recommendation page state
+    updateCurrentStartPage: (Int) -> Unit,//for recommendation page state
+    selectedEpisodesAndSeasonTab: Int  // tab for episodes and season state
 
 ) {
     val lazyListState = rememberLazyListState()
 
     LazyColumn(state = lazyListState, modifier = modifier) {
         item {
-            TopPeopleSection(isLoading = peopleState.isGetTopPeopleSearchLoading, topPeopleList = peopleState.topPeopleList.orEmpty(), onClickSeeMore = {
-                onEvent(HomeScreenEvents.OnNavigateToSeeMorePeople(PeopleScreens.PeopleNavigation))
-            })
+            TopPeopleSection(
+                isLoading = peopleState.isGetTopPeopleSearchLoading,
+                topPeopleList = peopleState.topPeopleList.orEmpty(),
+                onClickSeeMore = {
+                    onEvent(HomeScreenEvents.OnNavigateToSeeMorePeople(PeopleScreens.PeopleNavigation))
+                })
         }
-        item{
+        item {
             AnimeGenresSection(
                 onEvent = onEvent,
                 isLoading = homeScreenState.isGetAnimeGenresLoading,
+                isEnabled = !homeScreenState.isGetAnimeListLoading,
                 genres = homeScreenState.animeGenres.orEmpty(),
             )
         }
-        item{
+        item {
             AnimeCardListSection(
                 isLoading = homeScreenState.isGetAnimeListLoading,
                 animeList = homeScreenState.animeList.orEmpty(),
-                click = {onEvent(HomeScreenEvents.OnGetTopAnime(GetTopAnimeRequest()))}
+                click = { onEvent(HomeScreenEvents.OnGetTopAnime(GetTopAnimeRequest())) }
             )
         }
-        item{
+        item {
             RecommendationsSection(
                 onEvent = onEvent,
                 list = homeScreenState.recommendationsShown.orEmpty(),
@@ -168,36 +173,63 @@ fun HomeScreenContent(
         }
 
         // ========= START OF RELATED COMPONENTS ==============
-        item{
+        item {
             /**
              * EPISODES AND SEASONS SECTION
              */
             EpisodesAndSeasonsTab(
                 modifier = Modifier.padding(horizontal = 8.dp),
-                state = selectedEpisodesAndSeasonTab
-            ){ tabIndex ->
-                when(tabIndex){
+                state = selectedEpisodesAndSeasonTab,
+                isEnabled = !homeScreenState.isEpisodesAndSeasonsLoading
+            ) { tabIndex ->
+                when (tabIndex) {
                     0 -> onEvent(HomeScreenEvents.OnGetRecentEpisodes)
                     1 -> onEvent(HomeScreenEvents.OnGetSeasonNow(GetSeasonNowRequest(continuing = true)))
-                    2 -> onEvent(HomeScreenEvents.OnGetSeasonUpcoming(
-                        GetSeasonUpcomingRequest()
-                    ))
+                    2 -> onEvent(
+                        HomeScreenEvents.OnGetSeasonUpcoming(
+                            GetSeasonUpcomingRequest()
+                        )
+                    )
                 }
             }
             Spacer(modifier = Modifier.padding(bottom = 8.dp))
         }
 
-        if (!homeScreenState.isEpisodesAndSeasonsLoading){
-            items(homeScreenState.episodesAndSeasonsList.orEmpty()){ anime ->
-                AnimeListItemCard(
-                    animeDetails = anime.entry ?: AnimeDetails(),
-                    modifier = Modifier.padding(vertical = 3.dp, horizontal = 8.dp),
-                    recentEpisodesList = anime.episodes.orEmpty()
-                )
+        if (!homeScreenState.isEpisodesAndSeasonsLoading) { //if its not loading then show the list
+            if (homeScreenState.episodesAndSeasonsList?.isNotEmpty() == true) { // if the list is not empty then show it
+                items(homeScreenState.episodesAndSeasonsList) { anime ->
+                    AnimeListItemCard(
+                        animeDetails = anime.entry ?: AnimeDetails(),
+                        modifier = Modifier.padding(vertical = 3.dp, horizontal = 8.dp),
+                        recentEpisodesList = anime.episodes.orEmpty()
+                    )
+                }
+            } else { // if list is empty, then show an empty placeholder
+                item {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .padding(vertical = 4.dp, horizontal = 8.dp)
+                            .height(60.dp)
+                            .fillMaxWidth()
+                            .background(
+                                color = Color.LightGray,
+                                shape = MaterialTheme.shapes.small
+                            )
+                    ) {
+                        Text(text = stringResource(R.string.no_anime_found))
+                    }
+                }
             }
-        } else {
-            items(5){
-                SkeletonEpisodesAndSeasonsList(modifier =Modifier.padding(vertical = 2.dp, horizontal = 8.dp))
+
+        } else { // if loading, show skeleton
+            items(5) {
+                SkeletonEpisodesAndSeasonsList(
+                    modifier = Modifier.padding(
+                        vertical = 2.dp,
+                        horizontal = 8.dp
+                    )
+                )
             }
         }
 
@@ -220,7 +252,7 @@ fun TopPeopleSection(
         exit = fadeOut(),
         visible = !isLoading
     ) {
-        if(topPeopleList.isNotEmpty()){
+        if (topPeopleList.isNotEmpty()) {
             PeopleList(
                 modifier = modifier.fillMaxWidth(),
                 items = topPeopleList,
@@ -228,16 +260,19 @@ fun TopPeopleSection(
                 shouldShowBirthDate = true,
                 onClickSeeMore = onClickSeeMore
             )
-        }else{
-            Box(
+        } else {
+            Box( //// if list is empty, then show an empty placeholder
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth().background(
-                    color = Color.LightGray,
-                    shape = MaterialTheme.shapes.small
-                )
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth()
+                    .background(
+                        color = Color.LightGray,
+                        shape = MaterialTheme.shapes.small
+                    )
                     .height(52.dp)
-            ){
-              Text(text = "No People Found")
+            ) {
+                Text(text = "No People Found")
             }
         }
     }
@@ -259,6 +294,7 @@ fun TopPeopleSection(
 fun AnimeGenresSection(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
+    isEnabled: Boolean,
     genres: List<Genre>,
     onEvent: (HomeScreenEvents) -> Unit
 ) {
@@ -274,7 +310,8 @@ fun AnimeGenresSection(
             buttonLabel = "Filter",
             typeLabel = "Type",
             secondaryTypeLabel = "Rating",
-            type = listOf(
+            isEnabled = isEnabled,
+            type = listOf( //Type of anime
                 "All",
                 "TV",
                 "Movie",
@@ -286,7 +323,7 @@ fun AnimeGenresSection(
                 "PV",
                 "TV Special"
             ),
-            secondaryType = listOf(
+            secondaryType = listOf( //second column, rating of anie
                 "All",
                 "G",
                 "PG",
@@ -296,7 +333,12 @@ fun AnimeGenresSection(
                 "Rx-Hentai"
             ),
         ) { type, secondaryType ->
-            onEvent(HomeScreenEvents.OnChangeAnimeFilters(type =  type, rating = secondaryType.orEmpty()))
+            onEvent(
+                HomeScreenEvents.OnChangeAnimeFilters(
+                    type = type,
+                    rating = secondaryType.orEmpty()
+                )
+            )
         }
         VerticalDivider(
             modifier = Modifier
@@ -313,16 +355,33 @@ fun AnimeGenresSection(
             exit = fadeOut(),
             visible = !isLoading
         ) {
-            CategoriesFilterChip(
-                modifier = Modifier.fillMaxWidth(),
-                categoryList = genres
-            ) { genre ->
-                if (genre.mal_id == null) {
-                    //TODO show toast
-                    return@CategoriesFilterChip
+            if (genres.isNotEmpty()) {
+                CategoriesFilterChip(
+                    modifier = Modifier.fillMaxWidth(),
+                    categoryList = genres,
+                    isEnabled = isEnabled
+                ) { genre ->
+                    if (genre.mal_id == null) { // check if genre is null, show an error
+                        //TODO show toast
+                        return@CategoriesFilterChip
+                    }
+                    onEvent(HomeScreenEvents.OnSelectAnimeGenre(genre))
                 }
-                onEvent(HomeScreenEvents.OnSelectAnimeGenre(genre))
+            } else { // if list is empty, then show an empty placeholder
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .fillMaxWidth()
+                        .background(
+                            color = Color.LightGray,
+                            shape = MaterialTheme.shapes.small
+                        )
+                ) {
+                    Text(stringResource(R.string.no_genres_found))
+                }
             }
+
         }
         AnimatedVisibility(
             enter = fadeIn(),
@@ -340,7 +399,7 @@ fun AnimeCardListSection(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     animeList: List<AnimeDetails>,
-    click : () -> Unit
+    click: () -> Unit
 ) {
     //Whole Device wdith subtracted its 1/4
     val configuration = LocalConfiguration.current
@@ -348,12 +407,12 @@ fun AnimeCardListSection(
 
     var carouselCount by remember { mutableIntStateOf(animeList.size) }
     val carouselState = rememberCarouselState(0) { carouselCount }
-    val screenWidthPx =  with(LocalDensity.current) { screenWidthDp.toPx() }
+    val screenWidthPx = with(LocalDensity.current) { screenWidthDp.toPx() } //convert dp to px
 
 
-    LaunchedEffect(animeList) {
+    LaunchedEffect(animeList) { //everytime the list changes, update the carousel count and reset the carousel scroll
         carouselCount = animeList.size
-        carouselState.animateScrollBy(-calculateScrolledDistance(screenWidthPx, carouselCount))
+        carouselState.animateScrollBy(-calculateScrolledDistance(screenWidthPx, carouselCount, multiplier = 99))
     }
     /**
      * ANIME CARD SECTION
@@ -373,7 +432,9 @@ fun AnimeCardListSection(
                     contentPadding = PaddingValues(horizontal = 8.dp),
                 ) { index ->
 
-                    if(index < animeList.size){
+                    //since carousel state is not changing fast enough along with the list size,
+                    //we double check if the index is correct before rendering the item
+                    if (index < animeList.size) {
                         val anime = animeList[index]
                         DetailedAnimeItemCard(
                             animeDetails = anime,
@@ -398,14 +459,15 @@ fun AnimeCardListSection(
                         .padding(top = 4.dp, end = 12.dp)
                 )
             }
-        } else {
+        } else { // if list is empty, then show an empty placeholder
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
-                .height(400.dp)
-                .fillMaxWidth()
-                .background(color = Color.LightGray, shape = MaterialTheme.shapes.small)){
+                    .height(400.dp)
+                    .fillMaxWidth()
+                    .background(color = Color.LightGray, shape = MaterialTheme.shapes.small)
+            ) {
                 Text(text = stringResource(R.string.no_anime_found))
             }
         }
@@ -430,26 +492,28 @@ fun RecommendationsSection(
     modifier: Modifier = Modifier,
     onEvent: (HomeScreenEvents) -> Unit,
     list: List<AnimeDetails>,
-    maxRecommendationsListSize: Int,
+    maxRecommendationsListSize: Int, //gets the updated size from api
     isLoading: Boolean,
-    currentStartPage : Int,
-    updateCurrentStartPage : (Int) -> Unit
+    currentStartPage: Int, //current page of user
+    updateCurrentStartPage: (Int) -> Unit //updates page (adjusting start-end index of list)
 ) {
     /**
      * RECOMMENDATIONS SECTION
      */
     var state by remember { mutableIntStateOf(0) }
-    val titles by remember { mutableStateOf( listOf("Anime", "Manga")) }
+    val titles by remember { mutableStateOf(listOf("Anime", "Manga")) }
 
-    Column(modifier = modifier
-        .clip(MaterialTheme.shapes.extraSmall)
-        .padding(horizontal = 8.dp)) {
+    Column(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.extraSmall)
+            .padding(horizontal = 8.dp)
+        )
+    {
+
         SingleChoiceSegmentedButtonRow(
             modifier = Modifier.fillMaxWidth()
         ) {
             titles.forEachIndexed { index, title ->
-                Log.d("wegw", state.toString())
-
                 SegmentedButton(
                     shape = SegmentedButtonDefaults.itemShape(
                         index = index,
@@ -460,12 +524,13 @@ fun RecommendationsSection(
                         state = index
                         if (index == 0) { //anime tab
                             onEvent(HomeScreenEvents.OnGetAnimeRecommendations)
-                            updateCurrentStartPage(0)
+                            updateCurrentStartPage(0) //reset page to 0
                         } else if (index == 1) { //manga tab
                             onEvent(HomeScreenEvents.OnGetMangaRecommendations)
-                            updateCurrentStartPage(0)
+                            updateCurrentStartPage(0) //reset page to 0
                         }
                     },
+                    enabled = !isLoading,
                     selected = index == state,
                     border = BorderStroke(width = 1.dp, color = Color.Gray)
                 ) {
@@ -479,22 +544,44 @@ fun RecommendationsSection(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            Recommendations(
-                isPrevButtonDisabled = currentStartPage > 0,
-                isNextButtonDisabled = currentStartPage < maxRecommendationsListSize,
-                onClickPrevButton = {
-                    onEvent(HomeScreenEvents.OnSelectPreviousAnimeRecommendations(currentStartPage))
-                    updateCurrentStartPage(currentStartPage - 7)//update local state after viewmodel process
-                },
-                onClickNextButton = {
-                    onEvent(HomeScreenEvents.OnSelectNextAnimeRecommendations(currentStartPage))
-                    updateCurrentStartPage(currentStartPage + 7)//update local state after viewmodel process
+            if (list.isNotEmpty()) {
+                Recommendations(
+                    isPrevButtonDisabled = currentStartPage > 0,
+                    isNextButtonDisabled = currentStartPage < maxRecommendationsListSize,
+                    onClickPrevButton = {
+                        onEvent(
+                            HomeScreenEvents.OnSelectPreviousAnimeRecommendations(
+                                currentStartPage
+                            )
+                        )
+                        updateCurrentStartPage(currentStartPage - 7)//update local state after viewmodel process
+                    },
+                    onClickNextButton = {
+                        onEvent(HomeScreenEvents.OnSelectNextAnimeRecommendations(currentStartPage))
+                        updateCurrentStartPage(currentStartPage + 7)//update local state after viewmodel process
 
-                },
-                list = list.map {
-                    Pair(it.images?.jpg?.image_url.orEmpty(), it.title ?: "Unknown Title")
-                },
-            )
+                    },
+                    list = list.map {
+                        Pair(it.images?.jpg?.image_url.orEmpty(), it.title ?: "Unknown Title")
+                    },
+                )
+            } else { // if list is empty, then show an empty placeholder
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxWidth()
+                        .background(
+                            color = Color.LightGray,
+                            shape = MaterialTheme.shapes.small
+                        )
+                        .height(400.dp)
+                ) {
+                    Text(text = stringResource(R.string.no_recommendations_found))
+                }
+
+            }
+
         }
 
         AnimatedVisibility(
@@ -502,15 +589,16 @@ fun RecommendationsSection(
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            SkeletonRecommendationsList(modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp))
+            SkeletonRecommendationsList(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            )
         }
     }
 
     Spacer(modifier = Modifier.padding(vertical = 12.dp))
 }
-
 
 
 @Preview

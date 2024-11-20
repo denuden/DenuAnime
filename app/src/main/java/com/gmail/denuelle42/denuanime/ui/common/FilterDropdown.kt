@@ -36,6 +36,7 @@ fun FilterDropdown(
     type: List<String>,
     secondaryType: List<String> = emptyList(),
     shape: Shape = ButtonDefaults.textShape,
+    isEnabled : Boolean = true,
     onFilterClick: (String, String?) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -45,6 +46,7 @@ fun FilterDropdown(
 
     Box(modifier = modifier) {
         TextButton(
+            enabled = isEnabled,
             shape = shape,
             onClick = {
                 expanded = true
