@@ -596,7 +596,6 @@ fun RecommendationsSection(
             )
         }
     }
-
     Spacer(modifier = Modifier.padding(vertical = 12.dp))
 }
 
