@@ -1,15 +1,9 @@
 package com.gmail.denuelle42.denuanime
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
@@ -37,8 +31,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,7 +56,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
     val currentRoute = navBackStackEntry?.destination?.route
     val screenType = (MainScreens::class.java.toString()).substringAfterLast(" ")
 
-    // holds state of topborcontent should be shown
+    // holds state if topborcontent should be shown
     var topBarState by rememberSaveable { (mutableStateOf(false)) }
 
     //detects current route changes, then set topbarstate
@@ -113,27 +107,15 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
                 )
             },
             topBar = {
-                AnimatedVisibility(
-                    visible = topBarState,
-                    enter = slideInVertically { initialOffset ->
-                        initialOffset
-                    } + expandVertically(
-                        // Expand from the bottom.
-                        expandFrom = Alignment.Top
-                    ) + fadeIn(
-                        // Fade in with the initial alpha of 0.3f.
-                        initialAlpha = 0.3f
-                    ),
-                    exit = slideOutVertically(targetOffsetY = { it }) + shrinkVertically() + fadeOut()
-                ) {
-                    TopAppBarContent(onClickNavigationMenu = {
-                        scope.launch {
-                            drawerState.apply {
-                                if (isClosed) open() else close()
-                            }
+                TopAppBarContent(onClickNavigationMenu = {
+                    scope.launch {
+                        drawerState.apply {
+                            if (isClosed) open() else close()
                         }
-                    })
-                }
+                    }
+                }, topBarState = topBarState, onPopBackStack = {
+                    navController.popBackStack()
+                })
             },
         ) { contentPadding ->
             // Screen content
@@ -146,37 +128,58 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBarContent(modifier: Modifier = Modifier, onClickNavigationMenu : () -> Unit,) {
+fun TopAppBarContent(
+    modifier: Modifier = Modifier,
+    onClickNavigationMenu: () -> Unit,
+    topBarState: Boolean,
+    onPopBackStack: () -> Unit
+) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
             titleContentColor = MaterialTheme.colorScheme.onSurface,
         ),
         title = {
-            Text("DenuAnime")
+            if (topBarState) {
+                Text("DenuAnime")
+            }
         },
         navigationIcon = {
-            IconButton(onClick = {
-               onClickNavigationMenu()
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Menu Bar"
-                )
+            if (topBarState) {
+                IconButton(onClick = onClickNavigationMenu) {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = "Menu Bar"
+                    )
+                }
+            } else {
+                IconButton(
+                    onClick = onPopBackStack,
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
             }
+
         },
+
         actions = {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = stringResource(R.string.search)
-                )
-            }
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = stringResource(R.string.favorite)
-                )
+            if (topBarState) {
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = stringResource(R.string.search)
+                    )
+                }
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        imageVector = Icons.Default.Favorite,
+                        contentDescription = stringResource(R.string.favorite)
+                    )
+                }
             }
         },
         modifier = modifier
@@ -192,7 +195,7 @@ private fun MainScreenPreview() {
         ) {
             TopAppBarContent(onClickNavigationMenu = {
 
-            })
+            }, topBarState = false, onPopBackStack = {})
         }
     }
 }

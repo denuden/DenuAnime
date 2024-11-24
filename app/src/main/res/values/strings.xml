@@ -30,4 +30,6 @@
     <string name="no_anime_found">No Anime Found</string>
     <string name="no_recommendations_found">No recommendations found.</string>
     <string name="no_genres_found">No genres found.</string>
+    <string name="unknown_anime_title">Unknown anime title</string>
+    <string name="no_results_found">No results found</string>
 </resources>

@@ -7,20 +7,20 @@ import com.gmail.denuelle42.denuanime.data.repositories.anime.response.RecentEpi
 
 data class HomeScreenState(
     val topPeopleList: List<People>? = null,
-    val isGetTopPeopleSearchLoading: Boolean = true,
+    val isGetTopPeopleSearchLoading: Boolean = false,
 
     val animeList : List<AnimeDetails>? = null,
-    val isGetAnimeListLoading : Boolean = true,
+    val isGetAnimeListLoading : Boolean = false,
 
     val animeGenres : List<Genre>? = null,
-    val isGetAnimeGenresLoading : Boolean = true,
+    val isGetAnimeGenresLoading : Boolean = false,
 
     val recommendationsList : List<AnimeDetails>? = null,
     val recommendationsShown : List<AnimeDetails>? = null,
-    val isGetRecentRecommendationsLoading : Boolean = true,
+    val isGetRecentRecommendationsLoading : Boolean = false,
 
     val episodesAndSeasonsList : List<RecentEpisodesList>? = null,
-    val isEpisodesAndSeasonsLoading : Boolean = true,
+    val isEpisodesAndSeasonsLoading : Boolean = false,
 
 
 )

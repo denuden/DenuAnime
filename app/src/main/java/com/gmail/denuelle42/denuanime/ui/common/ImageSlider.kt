@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -78,7 +78,7 @@ fun ImageSlider(
         flingBehavior = rememberSnapFlingBehavior(lazyListState = state),
         modifier = modifier
     ) {
-        itemsIndexed(images) { index, image ->
+        items(images) { image ->
             Box(
                 modifier = Modifier
                     .background(color = animatedColor)
@@ -172,7 +172,7 @@ fun ImageSlider(
 private fun ImageSliderPreview() {
     DenuAnimeTheme {
         ImageSlider(
-            images = listOf("", ""), modifier = Modifier
+            images = listOf("", "", ""), modifier = Modifier
                 .fillMaxWidth()
                 .height(250.dp)
         )

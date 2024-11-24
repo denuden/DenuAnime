@@ -6,23 +6,23 @@ import com.gmail.denuelle42.denuanime.data.remote.models.people.Voices
 
 data class PeopleScreenState(
     val peopleList : List<People>? = null,
-    val isGetPeopleSearchLoading : Boolean = true,
+    val isGetPeopleSearchLoading : Boolean = false,
 
     val personDetails : People? = null,
-    val isGetPersonByFullIdLoading : Boolean = true,
-    val isGetPersonByIdLoading : Boolean = true,
+    val isGetPersonByFullIdLoading : Boolean = false,
+    val isGetPersonByIdLoading : Boolean = false,
 
     val personAnimeList : List<PeopleAnime>? = null,
-    val isGetPersonAnimeLoading : Boolean = true,
+    val isGetPersonAnimeLoading : Boolean = false,
 
     val personVoicesList : List<Voices>? = null,
-    val isGetPersonVoicesLoading : Boolean = true,
+    val isGetPersonVoicesLoading : Boolean = false,
 
     val personMangaList : List<Voices>? = null,
-    val isGetPersonMangaLoading : Boolean = true,
+    val isGetPersonMangaLoading : Boolean = false,
 
     val personPicturesList : List<Voices>? = null,
-    val isGetPersonPicturesLoading : Boolean = true,
+    val isGetPersonPicturesLoading : Boolean = false,
 
 
     )

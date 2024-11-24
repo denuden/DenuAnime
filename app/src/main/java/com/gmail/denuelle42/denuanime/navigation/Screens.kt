@@ -31,4 +31,6 @@ sealed class MainScreens : NavigationScreens {
 sealed class PeopleScreens : NavigationScreens {
     @Serializable
     data object PeopleNavigation : PeopleScreens()
+    @Serializable
+    data object PeopleDetailsNavigation : PeopleScreens()
 }

@@ -1,6 +1,5 @@
 package com.gmail.denuelle42.denuanime.ui.people.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,19 +23,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.gmail.denuelle42.denuanime.R
-import com.gmail.denuelle42.denuanime.data.remote.models.people.People
+import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
+import com.gmail.denuelle42.denuanime.data.remote.models.people.Character
+import com.gmail.denuelle42.denuanime.data.remote.models.people.Voices
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
-import com.gmail.denuelle42.denuanime.utils.formatIsoDateAsLongDate
 
 @Composable
-fun PeopleItemCardList(modifier: Modifier = Modifier, people: People, onClickItem : () -> Unit) {
+fun AnimeVoicesItemCardList(modifier: Modifier = Modifier, voices: Voices) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
         ),
-        modifier = modifier.clickable {
-            onClickItem()
-        }
+        modifier = modifier
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -44,8 +42,8 @@ fun PeopleItemCardList(modifier: Modifier = Modifier, people: People, onClickIte
                 .padding(12.dp)
                 .fillMaxWidth()) {
             AsyncImage(
-                model = people.images?.jpg?.image_url,
-                contentDescription = people.name,
+                model = voices.character?.images?.jpg?.image_url,
+                contentDescription = voices.character?.name,
                 placeholder = painterResource(R.drawable.baseline_image_24),
                 contentScale = ContentScale.Crop,
                 error = painterResource(R.drawable.baseline_image_not_supported_24),
@@ -58,12 +56,12 @@ fun PeopleItemCardList(modifier: Modifier = Modifier, people: People, onClickIte
                 .weight(1f)
                 .padding(horizontal = 8.dp)) {
                 Text(
-                    text = people.name ?: stringResource(R.string.unknown_name),
+                    text = voices.character?.name ?: stringResource(R.string.unknown_name),
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.padding(vertical = 2.dp))
                 Text(
-                    text = "${people.given_name} ${people.family_name.orEmpty()}",
+                    text = voices.anime?.title ?: stringResource(R.string.unknown_anime_title),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Normal
                 )
@@ -71,16 +69,8 @@ fun PeopleItemCardList(modifier: Modifier = Modifier, people: People, onClickIte
 
             Column(modifier) {
                 Text(
-                    text = stringResource(R.string.birthday),
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.align(Alignment.End)
-                )
-                Spacer(modifier = Modifier.padding(vertical = 2.dp))
-                Text(
-                    text =  formatIsoDateAsLongDate(people.birthday, customMessage = "-- -- --"),
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Normal,
+                    text =  voices.role ?: "--- role",
+                    style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.align(Alignment.End)
                 )
             }
@@ -92,11 +82,10 @@ fun PeopleItemCardList(modifier: Modifier = Modifier, people: People, onClickIte
 @Composable
 private fun PeopleItemCardListPreview() {
     DenuAnimeTheme {
-        PeopleItemCardList(people = People(
-            name = "Tomokazu Seki",
-            family_name = "関",
-            given_name = "智一",
-            birthday = "1975-01-28T00:00:00+00:00"
-        )){}
+        AnimeVoicesItemCardList(voices = Voices(
+            character = Character(name = "Liu, Ryuushou"),
+            anime = AnimeDetails(title = "Taisou Zamurai"),
+            role = "Supporting"
+        ))
     }
 }

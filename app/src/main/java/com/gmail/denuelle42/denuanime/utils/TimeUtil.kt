@@ -40,39 +40,43 @@ fun formatTimestampAsMonthDayNamed(timestamp: Long) : String {
 }
 
 // ======================= Counterpart Functions of Timestamp to ISO 8601 Date Formats ==================
-fun formatIsoDateAsDateTime(isoDate: String): String {
+fun formatIsoDateAsDateTime(isoDate: String?, customMessage : String = "Invalid Date"): String {
+    if (isoDate == null) return customMessage
     val isoDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
     isoDateFormat.timeZone = TimeZone.getTimeZone("UTC")
     val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     dateFormat.timeZone = TimeZone.getDefault()
     val date = isoDateFormat.parse(isoDate)
-    return if (date != null) dateFormat.format(date) else "Invalid Date"
+    return if (date != null) dateFormat.format(date) else customMessage
 }
 
-fun formatIsoDateAsLongDate(isoDate: String): String {
+fun formatIsoDateAsLongDate(isoDate: String?, customMessage : String = "Invalid Date"): String {
+    if (isoDate == null) return customMessage
     val isoDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
     isoDateFormat.timeZone = TimeZone.getTimeZone("UTC")
     val dateFormat = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
     dateFormat.timeZone = TimeZone.getDefault()
     val date = isoDateFormat.parse(isoDate)
-    return if (date != null) dateFormat.format(date) else "Invalid Date"
+    return if (date != null) dateFormat.format(date) else customMessage
 }
 
-fun formatIsoDateAsLongDateTime(isoDate: String): String {
+fun formatIsoDateAsLongDateTime(isoDate: String?, customMessage : String = "Invalid Date"): String {
+    if (isoDate == null) return customMessage
     val isoDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
     isoDateFormat.timeZone = TimeZone.getTimeZone("UTC")
     val dateFormat = SimpleDateFormat("MMMM dd, yyyy hh:mm a", Locale.getDefault())
     dateFormat.timeZone = TimeZone.getDefault()
     val date = isoDateFormat.parse(isoDate)
-    return if (date != null) dateFormat.format(date) else "Invalid Date"
+    return if (date != null) dateFormat.format(date) else customMessage
 }
 
-fun formatIsoDateAsMonthDayNamed(isoDate: String): String {
+fun formatIsoDateAsMonthDayNamed(isoDate: String?, customMessage : String = "Invalid Date"): String {
+    if (isoDate == null) return customMessage
     val isoDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
     isoDateFormat.timeZone = TimeZone.getTimeZone("UTC")
     val dateFormat = SimpleDateFormat("MMMM dd", Locale.getDefault())
     dateFormat.timeZone = TimeZone.getDefault()
     val date = isoDateFormat.parse(isoDate)
-    return if (date != null) dateFormat.format(date) else "Invalid Date"
+    return if (date != null) dateFormat.format(date) else customMessage
 }
 

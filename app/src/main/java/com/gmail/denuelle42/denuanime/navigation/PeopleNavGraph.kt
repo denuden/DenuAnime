@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.gmail.denuelle42.denuanime.ui.people.PersonDetailsScreen
 import com.gmail.denuelle42.denuanime.ui.people.PeopleScreen
 
 fun NavGraphBuilder.addPeopleNavGraph(
@@ -15,7 +16,12 @@ fun NavGraphBuilder.addPeopleNavGraph(
                 onPopBackStack = { navController.popBackStack() },
                 onNavigate = { navController.navigate(it) }
             )
-
+        }
+        composable<PeopleScreens.PeopleDetailsNavigation> {
+            PersonDetailsScreen(
+                onPopBackStack = { navController.popBackStack() },
+                onNavigate = { navController.navigate(it) }
+            )
         }
     }
 }

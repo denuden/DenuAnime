@@ -13,6 +13,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -45,12 +46,13 @@ class PeopleViewModel @Inject constructor(
         .filter { it.isNotEmpty() } // Skip empty inputs
 
     fun onQueryChanged(query: String) {
+        _stateFlow.update { it.copy(isGetPeopleSearchLoading = true) }
         _searchQuery.value = query
     }
 
     fun onEvent(event: PeopleScreenEvents) {
         when(event){
-            is PeopleScreenEvents.GetPeopleSearch -> {
+            is PeopleScreenEvents.OnGetPeopleSearch -> {
                 viewModelScope.launch {
                     peopleUseCase.getPeopleSearch(event.request).asResult().onEach { res ->
                         when(res){
@@ -59,7 +61,7 @@ class PeopleViewModel @Inject constructor(
                             ResultState.Loading -> _stateFlow.update { it.copy(isGetPeopleSearchLoading = true) }
                             is ResultState.Success -> _stateFlow.update { it.copy( peopleList = res.data.data) }
                         }
-                    }
+                    }.collect()
                 }
             }
             else -> Unit
