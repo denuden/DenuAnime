@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import android.view.View
-import android.widget.EditText
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
@@ -22,27 +20,14 @@ import androidx.compose.ui.platform.debugInspectorInfo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-fun View.show() {
-    visibility = View.VISIBLE
-}
-
-fun View.gone() {
-    visibility = View.GONE
-}
-
-fun Context.toast(message: String) {
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-}
 
 fun String.debug(message: String) {
     Log.d(this, message)
 }
 
-fun EditText.modifyText(numberText: String) {
-    this.setText(numberText)
-    this.setSelection(numberText.length)
-}
-
+/**
+ * Clear Focus from a composable like textfield
+ */
 fun clearFocus(focusManager: FocusManager){
     focusManager.clearFocus()
 }
@@ -65,7 +50,7 @@ fun Modifier.clickableDelayed(
     var isClickable by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
 
-   clickable(enabled = isClickable) {
+    clickable(enabled = isClickable) {
         if (isClickable) {
             isClickable = false
             onClick()
@@ -79,12 +64,15 @@ fun Modifier.clickableDelayed(
 }
 
 
+/**
+ * Go to specified URL, parse an action if an app can open it outside the application
+ */
 fun Context.goURL(url: String) {
     try {
         val myIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(myIntent)
     } catch (e: ActivityNotFoundException) {
-        this.toast("No application can handle this request. Please install a webbrowser")
+        Toast.makeText(this, "No application can handle this request. Please install a web browser", Toast.LENGTH_SHORT).show()
         e.printStackTrace()
     }
 }

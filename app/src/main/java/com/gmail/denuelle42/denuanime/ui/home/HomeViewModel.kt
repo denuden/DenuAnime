@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gmail.denuelle42.bscode.util.ResultState
-import com.gmail.denuelle42.bscode.util.asResult
+import com.gmail.denuelle42.denuanime.utils.ResultState
+import com.gmail.denuelle42.denuanime.utils.asResult
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetAnimeSearchRequest
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetTopAnimeRequest

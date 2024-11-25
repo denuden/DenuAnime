@@ -28,6 +28,9 @@ object RetrofitModule {
         }
     }
 
+    /**
+     * Provides custom httpclient for adding interceptors
+     */
     @Provides
     @Singleton
     fun provideOkHttpClient(

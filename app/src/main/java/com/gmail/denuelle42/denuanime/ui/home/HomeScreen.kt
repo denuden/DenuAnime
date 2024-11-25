@@ -39,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,10 +56,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.repeatOnLifecycle
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
@@ -81,8 +79,11 @@ import com.gmail.denuelle42.denuanime.ui.home.components.EpisodesAndSeasonsTab
 import com.gmail.denuelle42.denuanime.ui.home.components.PeopleList
 import com.gmail.denuelle42.denuanime.ui.home.components.Recommendations
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.ObserveAsEvents
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
+import com.gmail.denuelle42.denuanime.utils.SnackBarController
 import com.gmail.denuelle42.denuanime.utils.calculateScrolledDistance
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -94,8 +95,9 @@ fun HomeScreen(
     val homeScreenState by viewModel.homeScreenState.collectAsStateWithLifecycle()
     val peopleState by viewModel.peopleState.collectAsStateWithLifecycle()
 
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
     HomeScreenContent(
         homeScreenState = homeScreenState,
         peopleState = peopleState,
@@ -105,20 +107,18 @@ fun HomeScreen(
         selectedEpisodesAndSeasonTab = viewModel.getSelectedEpisodesAndSeasonTab()  // tab for episodes and season state
     )
 
-    LaunchedEffect(Unit) {
-        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.channel.collect { event ->
-                when (event) {
-                    is OneTimeEvents.OnNavigate -> onNavigate(event.route)
-                    OneTimeEvents.OnPopBackStack -> onPopBackStack()
-                    is OneTimeEvents.ShowSnackbar -> {
-                        TODO()
-                    }
-
-                    is OneTimeEvents.ShowToast -> {
-                        Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
-                    }
+    //One time events listener
+    ObserveAsEvents(flow = viewModel.channel) { event ->
+        when (event) {
+            is OneTimeEvents.OnNavigate -> onNavigate(event.route)
+            OneTimeEvents.OnPopBackStack -> onPopBackStack()
+            is OneTimeEvents.ShowSnackbar ->  {
+                scope.launch {
+                    SnackBarController.sendEvent(event.snackbarEvent)
                 }
+            }
+            is OneTimeEvents.ShowToast -> {
+                Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
             }
         }
     }

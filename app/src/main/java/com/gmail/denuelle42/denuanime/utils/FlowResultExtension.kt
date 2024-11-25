@@ -1,7 +1,12 @@
-package com.gmail.denuelle42.bscode.util
+package com.gmail.denuelle42.denuanime.utils
 
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.retryWhen
 import java.io.IOException
 
 
@@ -14,7 +19,8 @@ private const val RETRY_ATTEMPT_COUNT = 3
 
 sealed interface ResultState<out T> {
     data class Success<T>(val data: T) : ResultState<T>
-    data class Error(val exception: Throwable? = null, val message : String = "") : ResultState<Nothing>
+    data class Error(val exception: Throwable? = null, val message : String = "") :
+        ResultState<Nothing>
     object Loading : ResultState<Nothing>
     object Completed : ResultState<Nothing>
 }

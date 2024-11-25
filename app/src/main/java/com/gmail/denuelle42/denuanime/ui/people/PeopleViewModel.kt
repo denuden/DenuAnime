@@ -3,10 +3,11 @@ package com.gmail.denuelle42.denuanime.ui.people
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gmail.denuelle42.bscode.util.ResultState
-import com.gmail.denuelle42.bscode.util.asResult
 import com.gmail.denuelle42.denuanime.domain.repositories.people.PeopleUseCase
+import com.gmail.denuelle42.denuanime.navigation.PeopleScreens
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
+import com.gmail.denuelle42.denuanime.utils.ResultState
+import com.gmail.denuelle42.denuanime.utils.asResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
@@ -63,6 +64,23 @@ class PeopleViewModel @Inject constructor(
                         }
                     }.collect()
                 }
+            }
+
+            is PeopleScreenEvents.OnGetPersonFullById -> {
+                viewModelScope.launch {
+                    peopleUseCase.getPersonFullById(event.id).asResult().onEach { res ->
+                        when(res){
+                            ResultState.Completed -> _stateFlow.update { it.copy(isGetPersonByFullIdLoading = false) }
+                            is ResultState.Error -> Log.e(TAG, res.exception.toString())
+                            ResultState.Loading -> _stateFlow.update { it.copy(isGetPersonByFullIdLoading = true) }
+                            is ResultState.Success -> _stateFlow.update { it.copy( personDetails = res.data.data) }
+                        }
+                    }.collect()
+                }
+            }
+
+            is PeopleScreenEvents.OnNavigateToPersonDetailsScreen -> {
+                sendEvent(OneTimeEvents.OnNavigate(PeopleScreens.PeopleDetailsNavigation(event.id)))
             }
             else -> Unit
         }

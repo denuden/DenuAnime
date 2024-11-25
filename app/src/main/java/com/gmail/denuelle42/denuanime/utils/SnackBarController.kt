@@ -13,6 +13,10 @@ data class SnackbarAction(
     val action : () -> Unit
 )
 
+/**
+ * Making Snackback Controller that can be called from anywhere to trigger
+ * snackbar events
+ */
 object SnackBarController {
     private val _events = Channel<SnackbarEvent>()
     val events = _events.receiveAsFlow()

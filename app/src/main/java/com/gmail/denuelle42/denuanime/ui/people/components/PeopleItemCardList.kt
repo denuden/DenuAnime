@@ -1,6 +1,5 @@
 package com.gmail.denuelle42.denuanime.ui.people.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +25,7 @@ import coil3.compose.AsyncImage
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.people.People
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.clickableDelayed
 import com.gmail.denuelle42.denuanime.utils.formatIsoDateAsLongDate
 
 @Composable
@@ -34,7 +34,7 @@ fun PeopleItemCardList(modifier: Modifier = Modifier, people: People, onClickIte
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
         ),
-        modifier = modifier.clickable {
+        modifier = modifier.clickableDelayed {
             onClickItem()
         }
     ) {

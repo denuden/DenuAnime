@@ -1,44 +1,46 @@
-//package com.gmail.denuelle42.denuanime.utils
-//
-//import android.content.Context
-//import android.graphics.Bitmap
-//import android.graphics.Matrix
-//import android.net.Uri
-//import android.os.Environment
-//import android.util.Log
+package com.gmail.denuelle42.denuanime.utils
+
 //import androidmads.library.qrgenearator.QRGContents
 //import androidmads.library.qrgenearator.QRGEncoder
 //import androidx.camera.core.CameraSelector
 //import androidx.camera.core.ImageProxy
-//import java.io.File
-//import java.io.FileOutputStream
-//
-//fun convertImageUriToFile(context: Context, uri: Uri?): File {
-//    // Get the input stream from the content URI
-//    val inputStream = uri?.let { context.contentResolver.openInputStream(it) }
-//
-//    // Generate a file name for the image
-//    val fileName = "${System.currentTimeMillis()}.jpg"
-//
-//    // Get the directory where you want to save the image
-//    val directory = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-//
-//    // Create a new file in the directory with the generated file name
-//    val file = File(directory, fileName)
-//
-//    // Create an output stream for the file
-//    val outputStream = FileOutputStream(file)
-//
-//    // Copy the contents of the input stream to the output stream
-//    inputStream?.copyTo(outputStream)
-//
-//    // Close the streams
-//    inputStream?.close()
-//    outputStream.close()
-//
-//    return file
-//}
-//
+import android.content.Context
+import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Environment
+import java.io.File
+import java.io.FileOutputStream
+
+
+/**
+ * Converts Image Uri to File
+ */
+fun convertImageUriToFile(context: Context, uri: Uri?): File {
+    // Get the input stream from the content URI
+    val inputStream = uri?.let { context.contentResolver.openInputStream(it) }
+
+    // Generate a file name for the image
+    val fileName = "${System.currentTimeMillis()}.jpg"
+
+    // Get the directory where you want to save the image
+    val directory = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+
+    // Create a new file in the directory with the generated file name
+    val file = File(directory, fileName)
+
+    // Create an output stream for the file
+    val outputStream = FileOutputStream(file)
+
+    // Copy the contents of the input stream to the output stream
+    inputStream?.copyTo(outputStream)
+
+    // Close the streams
+    inputStream?.close()
+    outputStream.close()
+
+    return file
+}
+
 //fun generateQRCode(context: Context, data: String, color: Int): Bitmap {
 //    val resources = context.resources
 //    val displayMetrics = resources.displayMetrics
@@ -76,14 +78,17 @@
 //
 //    return rotatedBitmap
 //}
-//
-//fun Bitmap.centerCrop(desiredWidth : Int, desiredHeight : Int) : Bitmap {
-//    val xStart = (width - desiredWidth) / 2
-//    val yStart = (height - desiredHeight) / 2
-//    if (xStart < 0 || yStart < 0 || desiredHeight > width || desiredHeight > height){
-//        throw IllegalArgumentException("Invalid Arguments for center cropping")
-//    }
-//
-//    return Bitmap.createBitmap(this, xStart, yStart, desiredWidth, desiredHeight)
-//}
-//
+
+/**
+ * Center crop a bitmap
+ */
+fun Bitmap.centerCrop(desiredWidth : Int, desiredHeight : Int) : Bitmap {
+    val xStart = (width - desiredWidth) / 2
+    val yStart = (height - desiredHeight) / 2
+    if (xStart < 0 || yStart < 0 || desiredHeight > width || desiredHeight > height){
+        throw IllegalArgumentException("Invalid Arguments for center cropping")
+    }
+
+    return Bitmap.createBitmap(this, xStart, yStart, desiredWidth, desiredHeight)
+}
+

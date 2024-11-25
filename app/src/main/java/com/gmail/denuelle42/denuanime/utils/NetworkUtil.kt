@@ -11,6 +11,10 @@ import java.io.File
 
 class NetworkUtil {
     companion object {
+
+        /*
+         * Check if the device has internet connection or not, either wifi, cellular or ethernet
+         */
         fun hasInternetConnection(context: Context): Boolean {
             val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
@@ -27,10 +31,16 @@ class NetworkUtil {
 }
 
 
+/**
+ * Pass a mime type to a request body for multipart form
+ */
 fun File.asNetWorkRequestBody(mimeType: String): RequestBody {
     return this.asRequestBody(mimeType.toMediaTypeOrNull())
 }
 
+/**
+ * Make a request body from a string
+ */
 fun String?.createPartFromString(): RequestBody {
     return this.orEmpty().toRequestBody("text/plain".toMediaTypeOrNull())
 }

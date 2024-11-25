@@ -37,9 +37,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.gmail.denuelle42.bscode.util.ObserveAsEvents
 import com.gmail.denuelle42.denuanime.navigation.MainScreens
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.ObserveAsEvents
 import com.gmail.denuelle42.denuanime.utils.SnackBarController
 import kotlinx.coroutines.launch
 

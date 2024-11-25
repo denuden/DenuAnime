@@ -1,5 +1,6 @@
 package com.gmail.denuelle42.denuanime.ui.people
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -53,8 +54,9 @@ import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 fun PersonDetailsScreen(
     onPopBackStack: () -> Unit,
     onNavigate: (NavigationScreens) -> Unit,
+    id : Int,
 ) {
-
+    Log.d("fewgw", id.toString())
     PersonDetailsScreenContent()
 }
 
@@ -67,7 +69,6 @@ fun PersonDetailsScreenContent(modifier: Modifier = Modifier) {
     val tabTitles = listOf("Voices")
 
     LazyColumn(state = lazyListState) {
-
         //Image
         item {
             ImageSlider(

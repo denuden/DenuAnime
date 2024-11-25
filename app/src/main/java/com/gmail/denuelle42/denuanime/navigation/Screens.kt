@@ -1,5 +1,6 @@
 package com.gmail.denuelle42.denuanime.navigation
 
+import com.gmail.denuelle42.denuanime.data.remote.models.SampleModel
 import kotlinx.serialization.Serializable
 
 /**
@@ -7,6 +8,8 @@ import kotlinx.serialization.Serializable
  * article/home, article/view
  */
 sealed class RootGraphs {
+    @Serializable
+    data object SampleGraph : RootGraphs()
     @Serializable
     data object MainGraph : RootGraphs()
     @Serializable
@@ -18,6 +21,12 @@ sealed class RootGraphs {
  */
 sealed interface NavigationScreens
 
+sealed class SampleScreens : NavigationScreens {
+    @Serializable
+    data object SampleNavigation : SampleScreens()
+    @Serializable
+    data class SampleDetailsNavigation(val sampleModel: SampleModel) : SampleScreens()
+}
 
 sealed class MainScreens : NavigationScreens {
     @Serializable
@@ -32,5 +41,5 @@ sealed class PeopleScreens : NavigationScreens {
     @Serializable
     data object PeopleNavigation : PeopleScreens()
     @Serializable
-    data object PeopleDetailsNavigation : PeopleScreens()
+    data class PeopleDetailsNavigation(val id : Int) : PeopleScreens()
 }

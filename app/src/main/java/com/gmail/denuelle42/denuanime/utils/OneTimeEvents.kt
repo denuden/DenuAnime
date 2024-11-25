@@ -2,7 +2,9 @@ package com.gmail.denuelle42.denuanime.utils
 
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 
-
+/**
+ * One time events that are only triggered once, to be used in Channel
+ */
 sealed class OneTimeEvents {
     data class OnNavigate(val route : NavigationScreens) : OneTimeEvents()
     object OnPopBackStack : OneTimeEvents()
