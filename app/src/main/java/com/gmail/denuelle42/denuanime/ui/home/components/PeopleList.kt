@@ -1,7 +1,6 @@
 package com.gmail.denuelle42.denuanime.ui.home.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gmail.denuelle42.denuanime.data.remote.models.people.People
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.clickableDelayed
 import com.gmail.denuelle42.denuanime.utils.formatIsoDateAsLongDate
 
 @Composable
@@ -53,7 +53,7 @@ fun PeopleList(
                 fontWeight = FontWeight.Light,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier.clip(MaterialTheme.shapes.small).clickable {
+                modifier = Modifier.clip(MaterialTheme.shapes.small).clickableDelayed {
                     onClickSeeMore()
                 }.padding(6.dp)
             )

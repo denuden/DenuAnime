@@ -48,7 +48,7 @@ fun PeopleScreen(
     val peopleScreenState by viewModel.stateFlow.collectAsStateWithLifecycle()
     val uiState = peopleScreenState
 
-
+    // Collects the query from search bar, with debounced applied(delayed event)
     LaunchedEffect(Unit) {
         viewModel.debouncedQuery.collect { query ->
             viewModel.onEvent(PeopleScreenEvents.OnGetPeopleSearch(GetPeopleSearchRequest(q = query)))
