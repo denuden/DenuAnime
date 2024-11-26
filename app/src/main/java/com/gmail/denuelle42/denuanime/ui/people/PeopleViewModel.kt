@@ -73,7 +73,7 @@ class PeopleViewModel @Inject constructor(
                             ResultState.Completed -> _stateFlow.update { it.copy(isGetPersonByFullIdLoading = false) }
                             is ResultState.Error -> Log.e(TAG, res.exception.toString())
                             ResultState.Loading -> _stateFlow.update { it.copy(isGetPersonByFullIdLoading = true) }
-                            is ResultState.Success -> _stateFlow.update { it.copy( personDetails = res.data.data) }
+                            is ResultState.Success -> _stateFlow.update { it.copy( personDetails = res.data) }
                         }
                     }.collect()
                 }

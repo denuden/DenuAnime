@@ -65,7 +65,6 @@ import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetTopAnim
 import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonNowRequest
 import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonUpcomingRequest
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
-import com.gmail.denuelle42.denuanime.navigation.PeopleScreens
 import com.gmail.denuelle42.denuanime.ui.common.AnimeListItemCard
 import com.gmail.denuelle42.denuanime.ui.common.DetailedAnimeItemCard
 import com.gmail.denuelle42.denuanime.ui.common.FilterDropdown
@@ -143,7 +142,10 @@ fun HomeScreenContent(
                 isLoading = peopleState.isGetTopPeopleSearchLoading,
                 topPeopleList = peopleState.topPeopleList.orEmpty(),
                 onClickSeeMore = {
-                    onEvent(HomeScreenEvents.OnNavigateToSeeMorePeople(PeopleScreens.PeopleNavigation))
+                    onEvent(HomeScreenEvents.OnNavigateToSeeMorePeople)
+                },
+                onClickPersonItem = {
+                    onEvent(HomeScreenEvents.OnNavigateToPersonDetails(it))
                 })
         }
         item {
@@ -242,7 +244,8 @@ fun TopPeopleSection(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     topPeopleList: List<People>,
-    onClickSeeMore: () -> Unit
+    onClickSeeMore: () -> Unit,
+    onClickPersonItem: (Int) -> Unit,
 ) {
     /**
      * TOP  PEOPLE SECTION
@@ -258,7 +261,8 @@ fun TopPeopleSection(
                 items = topPeopleList,
                 title = stringResource(R.string.top_poeple),
                 shouldShowBirthDate = true,
-                onClickSeeMore = onClickSeeMore
+                onClickSeeMore = onClickSeeMore,
+                onClickPersonItem = onClickPersonItem
             )
         } else {
             Box( //// if list is empty, then show an empty placeholder

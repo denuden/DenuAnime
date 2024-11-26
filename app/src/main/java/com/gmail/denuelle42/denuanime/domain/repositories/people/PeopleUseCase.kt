@@ -12,6 +12,8 @@ import com.gmail.denuelle42.denuanime.data.repositories.people.response.GetPerso
 import com.gmail.denuelle42.denuanime.di.modules.IoDispatcher
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -31,8 +33,20 @@ class PeopleUseCase @Inject constructor(
 
     fun getPersonFullById(id : Int) : Flow<GetPersonFullByIdResponse>{
         return flow {
-            val response = peopleRepository.getPersonFullById(id)
-            emit(response)
+            // Run both repository calls concurrently using coroutine context
+            val (response, picturesResponse) = coroutineScope {
+                val responseDeferred = async { peopleRepository.getPersonFullById(id) }
+                val picturesDeferred = async { peopleRepository.getPersonPictures(id) }
+                Pair(responseDeferred.await(), picturesDeferred.await())
+            }
+
+            // Combine the results
+            val formatted = if (picturesResponse.data?.isNotEmpty() == true) {
+                response.copy(pictures = picturesResponse.data)
+            } else {
+                response
+            }
+            emit(formatted)
         }.flowOn(ioDispatcher)
     }
     fun getPersonById(id : Int) : Flow<GetPersonByIdResponse>{

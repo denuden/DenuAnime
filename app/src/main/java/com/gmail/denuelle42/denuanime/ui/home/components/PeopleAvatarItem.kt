@@ -28,13 +28,23 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.clickableDelayed
 
 @Composable
-fun PeopleAvatarItem(modifier: Modifier = Modifier, image : Any, name : String, date : String? = null) {
+fun PeopleAvatarItem(
+    modifier: Modifier = Modifier,
+    id : Int,
+    image: Any,
+    name: String,
+    date: String? = null,
+    onClickPersonItem: (Int) -> Unit
+) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        modifier = modifier.clickableDelayed {
+            onClickPersonItem(id)
+        }
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
@@ -74,9 +84,10 @@ private fun PeopleAvatarItemPreview() {
     DenuAnimeTheme {
         Surface(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)) {
             PeopleAvatarItem(
+                id = 0,
                 image = "",
                 name = "Hiroshi Kamiya"
-            )
+            ){}
         }
     }
 }

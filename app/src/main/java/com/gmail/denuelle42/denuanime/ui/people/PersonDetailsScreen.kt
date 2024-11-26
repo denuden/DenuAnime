@@ -1,6 +1,5 @@
 package com.gmail.denuelle42.denuanime.ui.people
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
@@ -36,18 +36,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
-import com.gmail.denuelle42.denuanime.data.remote.models.people.Character
-import com.gmail.denuelle42.denuanime.data.remote.models.people.Voices
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.ui.common.ImageSlider
 import com.gmail.denuelle42.denuanime.ui.people.components.AnimeVoicesItemCardList
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.ComposableLifecycle
+import com.gmail.denuelle42.denuanime.utils.clickableDelayed
+import com.gmail.denuelle42.denuanime.utils.formatIsoDateAsLongDate
+import com.gmail.denuelle42.denuanime.utils.goURL
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,24 +63,43 @@ fun PersonDetailsScreen(
     onPopBackStack: () -> Unit,
     onNavigate: (NavigationScreens) -> Unit,
     id : Int,
+    viewModel: PeopleViewModel = hiltViewModel()
 ) {
-    Log.d("fewgw", id.toString())
-    PersonDetailsScreenContent()
+
+    val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
+
+    ComposableLifecycle { _, event ->
+        when(event) {
+            Lifecycle.Event.ON_RESUME -> {
+                viewModel.onEvent(PeopleScreenEvents.OnGetPersonFullById(id))
+            }
+            else -> Unit
+        }
+    }
+
+    PersonDetailsScreenContent(uiState = uiState)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PersonDetailsScreenContent(modifier: Modifier = Modifier) {
+fun PersonDetailsScreenContent(
+    modifier: Modifier = Modifier,
+    uiState: PeopleScreenState
+) {
+    val pictures = uiState.personDetails?.pictures
+    val data = uiState.personDetails?.data
+
     val lazyListState = rememberLazyListState()
     var isAboutContentExpanded by remember { mutableStateOf(false) }
     var tabState by remember { mutableIntStateOf(0) }
     val tabTitles = listOf("Voices")
 
+    val context = LocalContext.current
     LazyColumn(state = lazyListState) {
         //Image
         item {
             ImageSlider(
-                images = listOf("", "", "", ""),
+                images = pictures.orEmpty(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
@@ -84,18 +111,22 @@ fun PersonDetailsScreenContent(modifier: Modifier = Modifier) {
             Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
                 Row {
                     Text(
-                        "Hiroshi Kamiya",
+                        data?.name ?: stringResource(R.string.unknown_name),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
+
+                    val givenName = data?.given_name?.takeIf { it.isNotEmpty() } ?: "---"
+                    val familyName = data?.family_name?.takeIf { it.isNotEmpty() } ?: "---"
+
                     Text(
-                        "(神谷 浩史)", modifier = Modifier.padding(start = 6.dp),
+                        "(${givenName} ${familyName})", modifier = Modifier.padding(start = 6.dp),
                         style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Normal
                     )
                 }
 
                 Text(
-                    "Alternate Names: ヒロC, HiroC, Kamiyan",
+                    "Alternate Names: ${data?.alternate_names?.takeIf { it.isNotEmpty() }?.joinToString(", ") ?: "---"}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Light
                 )
@@ -110,7 +141,7 @@ fun PersonDetailsScreenContent(modifier: Modifier = Modifier) {
                         contentDescription = "Birthday"
                     )
                     Text(
-                        text = "September 5, 2001",
+                        text = formatIsoDateAsLongDate(data?.birthday),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Normal
                     )
@@ -123,10 +154,10 @@ fun PersonDetailsScreenContent(modifier: Modifier = Modifier) {
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.FavoriteBorder,
-                        contentDescription = "Birthday"
+                        contentDescription = "Favorite"
                     )
                     Text(
-                        text = "10,020",
+                        text = data?.favorites.toString(),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Normal
                     )
@@ -139,16 +170,21 @@ fun PersonDetailsScreenContent(modifier: Modifier = Modifier) {
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Link,
-                        contentDescription = "Birthday",
+                        contentDescription = "Link",
                         tint = Color.Blue
                     )
                     Text(
-                        text = "https://myanimelist.net/people/118/Hiroshi_Kamiya",
+                        text = data?.url?.takeIf { it.isNotEmpty() } ?: "----",
                         color = Color.Blue,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Normal,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.clickableDelayed {
+                            data?.url?.let {
+                                context.goURL(data.url)
+                            }
+                        }
                     )
                 }
                 Spacer(modifier = Modifier.height(12.dp))
@@ -159,7 +195,7 @@ fun PersonDetailsScreenContent(modifier: Modifier = Modifier) {
                         .animateContentSize()
                 ) {
                     Text(
-                        "Birth place: Matsudo, Chiba Prefecture, Japan\nHeight: 167 cm (5'6\")\nWeight: 53 kg (117 lbs)\nBlood type: A\n\nKamiya Hiroshi went to Aoni Juku and decided to pursue voice acting. Since then, he's been affiliated with Aoni Production from his debut in 1994 to present.\n\nKamiya Hiroshi hosts several radio programs, one of the oldest and most prevalent programs he hosts together with a fellow seiyuu Ono Daisuke is Kamiya Hiroshi Ono Daisuke no DearGirl: Stories (神谷浩史・小野大輔のDearGirl～Stories～) since April 2007. The program they hosted together won \"Best Personality Awards\" in the 9th Annual Seiyuu Awards in 2015.\n\nHe and Ono Daisuke are vocalists of MasochistiC Ono BanD (MOB) that debuted in Nippon Budoukan in 2013 through the DearGirl: Stories Festival Carnival Matsuri. MOB went on hiatus in 2015 but the band announced their coming back on the 10th-anniversary celebration of his and Ono Daisuke's radio program, that was held on July 25, 2016.\n\nIn May 2010, he and Miyu Irino banded a Kiramune-unit called KAmiYU, for Mokei Senshi Gunpla Builders Beginning G theme song. First Mini-album \"link-up\" was released on August 3, 2011.\n\nAwards:\n- 2nd Seiyuu Awards (2008) - Best Supporting Actor Award\n- 3rd Seiyuu Awards (2009) - Best Actor and Best Personality Awards\n- Tokyo Anime Awards (2010) - Voice Actor Award\n- 6th Seiyuu Awards (2012) - Most Votes Award\n- 7th Seiyuu Awards (2013) - Most Votes Award\n- 8th Seiyuu Awards (2014) - Most Votes Award\n- 9th Seiyuu Awards (2015) - Best Personality and Most Votes Awards\n- 10th Seiyuu Awards (2016) - Most Votes Award - winning the award for 5 consecutive times earned him induction into Seiyuu Awards' Hall of Fame\n- 13th Seiyuu Awards (2019) - Most Votes Award\n- 14th Seiyuu Awards (2020) - Most Votes Award\n\nProfile: Aoni\nInstagram: @hiroshi1975kamiya",
+                        text = data?.about?.takeIf { it.isNotEmpty() } ?: "-----",
                         style = MaterialTheme.typography.bodyLarge,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -209,15 +245,17 @@ fun PersonDetailsScreenContent(modifier: Modifier = Modifier) {
         }
 
         //Tab items list
-        items(6) {
-            AnimeVoicesItemCardList(
-                voices = Voices(
-                    character = Character(name = "Liu, Ryuushou"),
-                    anime = AnimeDetails(title = "Taisou Zamurai"),
-                    role = "Supporting"
-                ),
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-            )
+        if(data?.voices?.isNotEmpty() == true){
+            items(data.voices) { voice ->
+                AnimeVoicesItemCardList(
+                    voices = voice,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                )
+            }
+        } else {
+            item {
+                Text("No voices found",  textAlign = TextAlign.Center,modifier = Modifier.padding(vertical = 24.dp, horizontal = 8.dp).fillMaxWidth())
+            }
         }
     }
 }
@@ -226,7 +264,7 @@ fun PersonDetailsScreenContent(modifier: Modifier = Modifier) {
 private fun PeopleDetailsReview() {
     DenuAnimeTheme {
         Surface(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)) {
-            PersonDetailsScreenContent(modifier = Modifier.fillMaxSize(),)
+            PersonDetailsScreenContent(modifier = Modifier.fillMaxSize(), uiState = PeopleScreenState())
         }
     }
 }

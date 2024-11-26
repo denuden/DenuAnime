@@ -5,8 +5,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gmail.denuelle42.denuanime.utils.ResultState
-import com.gmail.denuelle42.denuanime.utils.asResult
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetAnimeSearchRequest
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetTopAnimeRequest
@@ -17,7 +15,10 @@ import com.gmail.denuelle42.denuanime.domain.repositories.genre.GenreUseCase
 import com.gmail.denuelle42.denuanime.domain.repositories.people.PeopleUseCase
 import com.gmail.denuelle42.denuanime.domain.repositories.recommendations.RecommendationsUseCase
 import com.gmail.denuelle42.denuanime.domain.repositories.season.SeasonUseCase
+import com.gmail.denuelle42.denuanime.navigation.PeopleScreens
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
+import com.gmail.denuelle42.denuanime.utils.ResultState
+import com.gmail.denuelle42.denuanime.utils.asResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -395,9 +396,11 @@ class HomeViewModel @Inject constructor(
                     }.collect()
                 }
             }
-
             is HomeScreenEvents.OnNavigateToSeeMorePeople -> {
-                sendEvent(OneTimeEvents.OnNavigate(event.route))
+                sendEvent(OneTimeEvents.OnNavigate(PeopleScreens.PeopleNavigation))
+            }
+            is HomeScreenEvents.OnNavigateToPersonDetails -> {
+                sendEvent(OneTimeEvents.OnNavigate(PeopleScreens.PeopleDetailsNavigation(event.id)))
             }
         }
     }

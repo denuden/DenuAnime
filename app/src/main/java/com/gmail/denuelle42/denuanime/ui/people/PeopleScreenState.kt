@@ -3,12 +3,13 @@ package com.gmail.denuelle42.denuanime.ui.people
 import com.gmail.denuelle42.denuanime.data.remote.models.people.People
 import com.gmail.denuelle42.denuanime.data.remote.models.people.PeopleAnime
 import com.gmail.denuelle42.denuanime.data.remote.models.people.Voices
+import com.gmail.denuelle42.denuanime.data.repositories.people.response.GetPersonFullByIdResponse
 
 data class PeopleScreenState(
     val peopleList : List<People>? = null,
     val isGetPeopleSearchLoading : Boolean = false,
 
-    val personDetails : People? = null,
+    val personDetails : GetPersonFullByIdResponse? = null,
     val isGetPersonByFullIdLoading : Boolean = false,
     val isGetPersonByIdLoading : Boolean = false,
 

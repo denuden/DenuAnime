@@ -31,7 +31,8 @@ fun PeopleList(
     items: List<People>,
     title: String,
     shouldShowBirthDate: Boolean,
-    onClickSeeMore: () -> Unit
+    onClickPersonItem: (Int) -> Unit,
+    onClickSeeMore: () -> Unit,
 ) {
     val state = rememberLazyListState()
     Column {
@@ -67,9 +68,13 @@ fun PeopleList(
         ) {
             items(items) { people ->
                 PeopleAvatarItem(
+                    id = people.mal_id ?: 0,
                     image = people.images?.jpg?.image_url.orEmpty(),
                     name = people.name.orEmpty().ifEmpty { "No Name" },
-                    date = if(shouldShowBirthDate) formatIsoDateAsLongDate(people.birthday.orEmpty()) else null
+                    date = if(shouldShowBirthDate) formatIsoDateAsLongDate(people.birthday.orEmpty()) else null,
+                    onClickPersonItem = {
+                        onClickPersonItem(it)
+                    }
                 )
             }
         }

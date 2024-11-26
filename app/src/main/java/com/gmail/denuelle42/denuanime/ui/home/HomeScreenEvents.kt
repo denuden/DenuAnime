@@ -7,7 +7,6 @@ import com.gmail.denuelle42.denuanime.data.repositories.genre.request.GetAnimeGe
 import com.gmail.denuelle42.denuanime.data.repositories.people.request.GetPeopleSearchRequest
 import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonNowRequest
 import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonUpcomingRequest
-import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 
 sealed class HomeScreenEvents {
     //API Related
@@ -26,5 +25,6 @@ sealed class HomeScreenEvents {
     data class OnGetSeasonUpcoming(val request : GetSeasonUpcomingRequest) : HomeScreenEvents()
 
     //Navigation
-    data class OnNavigateToSeeMorePeople(val route: NavigationScreens) : HomeScreenEvents()
+    object OnNavigateToSeeMorePeople : HomeScreenEvents()
+    data class OnNavigateToPersonDetails(val id :Int) : HomeScreenEvents()
 }

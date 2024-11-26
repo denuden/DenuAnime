@@ -1,11 +1,6 @@
 package com.gmail.denuelle42.denuanime.utils
 
-import android.content.ActivityNotFoundException
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,16 +58,3 @@ fun Modifier.clickableDelayed(
     }
 }
 
-
-/**
- * Go to specified URL, parse an action if an app can open it outside the application
- */
-fun Context.goURL(url: String) {
-    try {
-        val myIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        startActivity(myIntent)
-    } catch (e: ActivityNotFoundException) {
-        Toast.makeText(this, "No application can handle this request. Please install a web browser", Toast.LENGTH_SHORT).show()
-        e.printStackTrace()
-    }
-}
