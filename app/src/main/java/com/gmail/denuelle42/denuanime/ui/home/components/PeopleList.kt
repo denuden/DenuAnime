@@ -56,7 +56,7 @@ fun PeopleList(
                 color = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier.clip(MaterialTheme.shapes.small).clickableDelayed {
                     onClickSeeMore()
-                }.padding(6.dp)
+                }
             )
         }
 

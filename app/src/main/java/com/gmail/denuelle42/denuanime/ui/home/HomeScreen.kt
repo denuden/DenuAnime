@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ButtonDefaults
@@ -62,6 +63,7 @@ import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetai
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.data.remote.models.people.People
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetTopAnimeRequest
+import com.gmail.denuelle42.denuanime.data.repositories.anime.response.RecentEpisodesList
 import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonNowRequest
 import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonUpcomingRequest
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
@@ -174,68 +176,15 @@ fun HomeScreenContent(
             )
         }
 
-        // ========= START OF RELATED COMPONENTS ==============
-        item {
-            /**
-             * EPISODES AND SEASONS SECTION
-             */
-            EpisodesAndSeasonsTab(
-                modifier = Modifier.padding(horizontal = 8.dp),
-                state = selectedEpisodesAndSeasonTab,
-                isEnabled = !homeScreenState.isEpisodesAndSeasonsLoading
-            ) { tabIndex ->
-                when (tabIndex) {
-                    0 -> onEvent(HomeScreenEvents.OnGetRecentEpisodes)
-                    1 -> onEvent(HomeScreenEvents.OnGetSeasonNow(GetSeasonNowRequest(continuing = true)))
-                    2 -> onEvent(
-                        HomeScreenEvents.OnGetSeasonUpcoming(
-                            GetSeasonUpcomingRequest()
-                        )
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.padding(bottom = 8.dp))
-        }
-
-        if (!homeScreenState.isEpisodesAndSeasonsLoading) { //if its not loading then show the list
-            if (homeScreenState.episodesAndSeasonsList?.isNotEmpty() == true) { // if the list is not empty then show it
-                items(homeScreenState.episodesAndSeasonsList) { anime ->
-                    AnimeListItemCard(
-                        animeDetails = anime.entry ?: AnimeDetails(),
-                        modifier = Modifier.padding(vertical = 3.dp, horizontal = 8.dp),
-                        recentEpisodesList = anime.episodes.orEmpty()
-                    )
-                }
-            } else { // if list is empty, then show an empty placeholder
-                item {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .padding(vertical = 4.dp, horizontal = 8.dp)
-                            .height(60.dp)
-                            .fillMaxWidth()
-                            .background(
-                                color = Color.LightGray,
-                                shape = MaterialTheme.shapes.small
-                            )
-                    ) {
-                        Text(text = stringResource(R.string.no_anime_found))
-                    }
-                }
-            }
-
-        } else { // if loading, show skeleton
-            items(5) {
-                SkeletonEpisodesAndSeasonsList(
-                    modifier = Modifier.padding(
-                        vertical = 2.dp,
-                        horizontal = 8.dp
-                    )
-                )
-            }
-        }
-
-        // ========= END OF RELATED COMPONENTS ==============
+        /**
+         * EPISODES AND SEASONS SECTION
+         */
+        episodesAndSeasonsSection(
+            selectedEpisodesAndSeasonTab = selectedEpisodesAndSeasonTab,
+            isLoading = homeScreenState.isEpisodesAndSeasonsLoading,
+            episodesAndSeasonsList = homeScreenState.episodesAndSeasonsList.orEmpty(),
+            onEvent = onEvent
+        )
     }
 }
 
@@ -601,6 +550,72 @@ fun RecommendationsSection(
         }
     }
     Spacer(modifier = Modifier.padding(vertical = 12.dp))
+}
+
+
+fun LazyListScope.episodesAndSeasonsSection(
+    selectedEpisodesAndSeasonTab: Int,
+    isLoading: Boolean,
+    episodesAndSeasonsList : List<RecentEpisodesList>,
+    onEvent: (HomeScreenEvents) -> Unit,
+) {
+    item {
+        EpisodesAndSeasonsTab(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            state = selectedEpisodesAndSeasonTab,
+            isEnabled = !isLoading //should be enabled if not loading
+        ) { tabIndex ->
+            when (tabIndex) {
+                0 -> onEvent(HomeScreenEvents.OnGetRecentEpisodes)
+                1 -> onEvent(HomeScreenEvents.OnGetSeasonNow(GetSeasonNowRequest(continuing = true)))
+                2 -> onEvent(
+                    HomeScreenEvents.OnGetSeasonUpcoming(
+                        GetSeasonUpcomingRequest()
+                    )
+                )
+            }
+        }
+        Spacer(modifier = Modifier.padding(bottom = 8.dp))
+    }
+
+    if (!isLoading) { //if its not loading then show the list
+        if (episodesAndSeasonsList.isNotEmpty()) { // if the list is not empty then show it
+            items(episodesAndSeasonsList) { anime ->
+                AnimeListItemCard(
+                    animeDetails = anime.entry ?: AnimeDetails(),
+                    modifier = Modifier.padding(vertical = 3.dp, horizontal = 8.dp),
+                    recentEpisodesList = anime.episodes.orEmpty()
+                )
+            }
+        } else { // if list is empty, then show an empty placeholder
+            item {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .padding(vertical = 4.dp, horizontal = 8.dp)
+                        .height(60.dp)
+                        .fillMaxWidth()
+                        .background(
+                            color = Color.LightGray,
+                            shape = MaterialTheme.shapes.small
+                        )
+                ) {
+                    Text(text = stringResource(R.string.no_anime_found))
+                }
+            }
+        }
+
+    } else { // if loading, show skeleton
+        items(5) {
+            SkeletonEpisodesAndSeasonsList(
+                modifier = Modifier.padding(
+                    vertical = 2.dp,
+                    horizontal = 8.dp
+                )
+            )
+        }
+    }
+
 }
 
 

@@ -7,23 +7,23 @@ import com.gmail.denuelle42.denuanime.data.repositories.people.response.GetPerso
 
 data class PeopleScreenState(
     val peopleList : List<People>? = null,
-    val isGetPeopleSearchLoading : Boolean = false,
+    val isGetPeopleSearchLoading : Boolean = false, //exception to initial loading, because api call isn't fired automatically at launch
 
     val personDetails : GetPersonFullByIdResponse? = null,
-    val isGetPersonByFullIdLoading : Boolean = false,
-    val isGetPersonByIdLoading : Boolean = false,
+    val isGetPersonByFullIdLoading : Boolean = true,
+    val isGetPersonByIdLoading : Boolean = true,
 
     val personAnimeList : List<PeopleAnime>? = null,
-    val isGetPersonAnimeLoading : Boolean = false,
+    val isGetPersonAnimeLoading : Boolean = true,
 
     val personVoicesList : List<Voices>? = null,
-    val isGetPersonVoicesLoading : Boolean = false,
+    val isGetPersonVoicesLoading : Boolean = true,
 
     val personMangaList : List<Voices>? = null,
-    val isGetPersonMangaLoading : Boolean = false,
+    val isGetPersonMangaLoading : Boolean = true,
 
     val personPicturesList : List<Voices>? = null,
-    val isGetPersonPicturesLoading : Boolean = false,
+    val isGetPersonPicturesLoading : Boolean = true,
 
 
     )
