@@ -1,5 +1,6 @@
 package com.gmail.denuelle42.denuanime
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -58,11 +59,16 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
     // holds state if topborcontent should be shown
     var topBarState by rememberSaveable { (mutableStateOf(false)) }
 
+    // holds title of top bar
+    var topBarTitle by remember { mutableStateOf("") }
+
     //detects current route changes, then set topbarstate
     //if visible depending on route
     LaunchedEffect(currentRoute) {
         //will show topbarcontent if route is from mainscreens (E.G. Home)
         topBarState = currentRoute?.contains(screenType) == true
+        Log.d("gwegwe", currentRoute.toString())
+        topBarTitle = getTopBarTitle(currentRoute.toString())
     }
 
     //stating snackbar anywhere so it can be called from any screen
@@ -106,7 +112,9 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
                 )
             },
             topBar = {
-                TopAppBarContent(onClickNavigationMenu = {
+                TopAppBarContent(
+                    title = topBarTitle,
+                    onClickNavigationMenu = {
                     scope.launch {
                         drawerState.apply {
                             if (isClosed) open() else close()
@@ -131,6 +139,7 @@ fun TopAppBarContent(
     modifier: Modifier = Modifier,
     onClickNavigationMenu: () -> Unit,
     topBarState: Boolean,
+    title : String,
     onPopBackStack: () -> Unit
 ) {
     TopAppBar(
@@ -139,9 +148,7 @@ fun TopAppBarContent(
             titleContentColor = MaterialTheme.colorScheme.onSurface,
         ),
         title = {
-            if (topBarState) {
-                Text("DenuAnime")
-            }
+            Text(title)
         },
         navigationIcon = {
             if (topBarState) {
@@ -193,7 +200,7 @@ private fun MainScreenPreview() {
         ) {
             TopAppBarContent(onClickNavigationMenu = {
 
-            }, topBarState = false, onPopBackStack = {})
+            }, topBarState = false, onPopBackStack = {}, title = "")
         }
     }
 }

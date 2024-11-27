@@ -240,7 +240,7 @@ fun Details(modifier: Modifier = Modifier, data : People, context : Context) {
             shape = MaterialTheme.shapes.medium,
             contentPadding = PaddingValues(vertical = 4.dp, horizontal = 2.dp)
         ) {
-            Text("See more")
+            Text(if(isAboutContentExpanded) "Hide" else "See more")
         }
     }
 }
