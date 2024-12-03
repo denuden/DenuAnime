@@ -3,10 +3,8 @@ package com.gmail.denuelle42.denuanime.ui.anime.components
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,7 +23,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,8 +40,6 @@ fun AnimeHeader(
     title: String,
     titleJp: String,
     titleEn: String,
-    rated: String,
-    source: String,
 ) {
     var backgroundColor by remember { mutableIntStateOf(0) }
     // Animate the background color
@@ -80,30 +75,12 @@ fun AnimeHeader(
         }
         Spacer(modifier = Modifier.height(6.dp))
         Column(modifier = Modifier.padding(8.dp)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = title, style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(2.5f)
-                )
 
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = source,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Light,
-                        modifier = Modifier.align(Alignment.End)
-                    )
-                    Text(
-                        text = rated,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Light,
-                        modifier = Modifier.align(Alignment.End),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
+            Text(
+                text = title, style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+            )
+
 
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -133,8 +110,6 @@ private fun AnimeImageBannerPreview() {
             title = "wqearstdtfjgzsreestrre ",
             titleJp = "dsvs e ea gae ae ew awe",
             titleEn = "dgerver e er re er",
-            rated = "PG-13 - Teens 13 or older",
-            source = "Manga"
         )
     }
 
