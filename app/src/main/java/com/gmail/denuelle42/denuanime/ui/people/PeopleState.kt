@@ -5,7 +5,7 @@ import com.gmail.denuelle42.denuanime.data.remote.models.people.PeopleAnime
 import com.gmail.denuelle42.denuanime.data.remote.models.people.Voices
 import com.gmail.denuelle42.denuanime.data.repositories.people.response.GetPersonFullByIdResponse
 
-data class PeopleScreenState(
+data class PeopleState(
     val peopleList : List<People>? = null,
     val isGetPeopleSearchLoading : Boolean = false, //exception to initial loading, because api call isn't fired automatically at launch
 

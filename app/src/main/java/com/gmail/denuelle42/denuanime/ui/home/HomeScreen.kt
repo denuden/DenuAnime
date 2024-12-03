@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,7 +61,6 @@ import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.data.remote.models.people.People
-import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetTopAnimeRequest
 import com.gmail.denuelle42.denuanime.data.repositories.anime.response.RecentEpisodesList
 import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonNowRequest
 import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonUpcomingRequest
@@ -84,6 +82,7 @@ import com.gmail.denuelle42.denuanime.utils.ObserveAsEvents
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
 import com.gmail.denuelle42.denuanime.utils.SnackBarController
 import com.gmail.denuelle42.denuanime.utils.calculateScrolledDistance
+import com.gmail.denuelle42.denuanime.utils.clickableDelayed
 import kotlinx.coroutines.launch
 
 @Composable
@@ -162,7 +161,9 @@ fun HomeScreenContent(
             AnimeCardListSection(
                 isLoading = homeScreenState.isGetAnimeListLoading,
                 animeList = homeScreenState.animeList.orEmpty(),
-                click = { onEvent(HomeScreenEvents.OnGetTopAnime(GetTopAnimeRequest())) }
+                onClickItem = {
+
+                }
             )
         }
         item {
@@ -352,7 +353,7 @@ fun AnimeCardListSection(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     animeList: List<AnimeDetails>,
-    click: () -> Unit
+    onClickItem: () -> Unit
 ) {
     //Whole Device wdith subtracted its 1/4
     val configuration = LocalConfiguration.current
@@ -393,8 +394,8 @@ fun AnimeCardListSection(
                             animeDetails = anime,
                             modifier = Modifier
                                 .heightIn(min = 400.dp, max = 600.dp)
-                                .clickable {
-                                    click()
+                                .clickableDelayed {
+                                    onClickItem()
                                 }
                         )
                     }

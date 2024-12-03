@@ -2,21 +2,16 @@ package com.gmail.denuelle42.denuanime.ui.common
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -106,31 +101,8 @@ fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDeta
                         )
                     )
             )
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier
-                    .padding(12.dp)
-                    .align(Alignment.TopStart)
-            ) {
-                animeDetails.genres?.forEach { genre ->
-                    if (genre.name.orEmpty().isNotEmpty()) {
-                        AssistChip(
-                            onClick = {},
-                            label = {
-                                Text(
-                                    genre.name.orEmpty(),
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    maxLines = 1,
-                                )
-                            },
-                            colors = AssistChipDefaults.assistChipColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                            border = BorderStroke(width = 0.dp, color = Color.White),
-                            modifier = Modifier.heightIn(min = 24.dp, max = 28.dp)
-                        )
-                    }
-                }
-            }
+
+           GenreChips(genres = animeDetails.genres.orEmpty(), modifier = Modifier.align(Alignment.TopStart).padding(12.dp))
 
             Column(
                 modifier = Modifier

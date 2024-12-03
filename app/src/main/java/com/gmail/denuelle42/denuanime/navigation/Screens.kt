@@ -13,6 +13,8 @@ sealed class RootGraphs {
     @Serializable
     data object MainGraph : RootGraphs()
     @Serializable
+    data object AnimeGraph : RootGraphs()
+    @Serializable
     data object PeopleGraph : RootGraphs()
 }
 
@@ -42,4 +44,10 @@ sealed class PeopleScreens : NavigationScreens {
     data object PeopleNavigation : PeopleScreens()
     @Serializable
     data class PeopleDetailsNavigation(val id : Int) : PeopleScreens()
+}
+
+sealed class AnimeScreens : NavigationScreens {
+    @Serializable
+    data class AnimeDetailsNavigation(val id : Int) : AnimeScreens()
+
 }

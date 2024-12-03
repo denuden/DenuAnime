@@ -33,7 +33,7 @@ class PeopleViewModel @Inject constructor(
     private val _channel = Channel<OneTimeEvents>()
     val channel = _channel.receiveAsFlow()
 
-    private val _stateFlow = MutableStateFlow<PeopleScreenState>(PeopleScreenState())
+    private val _stateFlow = MutableStateFlow<PeopleState>(PeopleState())
     val stateFlow = _stateFlow.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
@@ -51,9 +51,9 @@ class PeopleViewModel @Inject constructor(
         _searchQuery.value = query
     }
 
-    fun onEvent(event: PeopleScreenEvents) {
+    fun onEvent(event: PeopleEvents) {
         when(event){
-            is PeopleScreenEvents.OnGetPeopleSearch -> {
+            is PeopleEvents.OnGetPeopleSearch -> {
                 viewModelScope.launch {
                     peopleUseCase.getPeopleSearch(event.request).asResult().onEach { res ->
                         when(res){
@@ -66,7 +66,7 @@ class PeopleViewModel @Inject constructor(
                 }
             }
 
-            is PeopleScreenEvents.OnGetPersonFullById -> {
+            is PeopleEvents.OnGetPersonFullById -> {
                 viewModelScope.launch {
                     peopleUseCase.getPersonFullById(event.id).asResult().onEach { res ->
                         when(res){
@@ -79,7 +79,7 @@ class PeopleViewModel @Inject constructor(
                 }
             }
 
-            is PeopleScreenEvents.OnNavigateToPersonDetailsScreen -> {
+            is PeopleEvents.OnNavigateToPersonDetailsScreen -> {
                 sendEvent(OneTimeEvents.OnNavigate(PeopleScreens.PeopleDetailsNavigation(event.id)))
             }
             else -> Unit

@@ -60,7 +60,7 @@ fun PeopleScreen(
     // Collects the query from search bar, with debounced applied(delayed event)
     LaunchedEffect(Unit) {
         viewModel.debouncedQuery.collect { query ->
-            viewModel.onEvent(PeopleScreenEvents.OnGetPeopleSearch(GetPeopleSearchRequest(q = query)))
+            viewModel.onEvent(PeopleEvents.OnGetPeopleSearch(GetPeopleSearchRequest(q = query)))
         }
     }
 
@@ -89,9 +89,9 @@ fun PeopleScreen(
 @Composable
 fun PeopleScreenContent(
     modifier: Modifier = Modifier,
-    uiState: PeopleScreenState,
-    onSearchQueryChanged: (String) -> Unit ,
-    onEvent : (PeopleScreenEvents) -> Unit
+    uiState: PeopleState,
+    onSearchQueryChanged: (String) -> Unit,
+    onEvent : (PeopleEvents) -> Unit
 ) {
     var searchState by remember { mutableStateOf("") }
     val lazyState = rememberLazyListState()
@@ -144,7 +144,7 @@ fun PeopleScreenContent(
                         modifier = Modifier.padding(vertical = 4.dp)
                     ){
                         //TODO
-                        onEvent(PeopleScreenEvents.OnNavigateToPersonDetailsScreen(it.mal_id ?: -1))
+                        onEvent(PeopleEvents.OnNavigateToPersonDetailsScreen(it.mal_id ?: -1))
                     }
                 }
             } else { //if empty, show placeholder
@@ -168,7 +168,7 @@ fun PeopleScreenContent(
 private fun PeopleScreenPreview() {
     DenuAnimeTheme {
         Surface(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)) {
-            PeopleScreenContent(uiState = PeopleScreenState(), onSearchQueryChanged = {}, onEvent = {})
+            PeopleScreenContent(uiState = PeopleState(), onSearchQueryChanged = {}, onEvent = {})
         }
     }
 }

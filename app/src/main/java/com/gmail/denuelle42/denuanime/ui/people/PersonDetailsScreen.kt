@@ -79,7 +79,7 @@ fun PersonDetailsScreen(
     ComposableLifecycle { _, event ->
         when(event) {
             Lifecycle.Event.ON_RESUME -> {
-                viewModel.onEvent(PeopleScreenEvents.OnGetPersonFullById(id))
+                viewModel.onEvent(PeopleEvents.OnGetPersonFullById(id))
             }
             else -> Unit
         }
@@ -91,7 +91,7 @@ fun PersonDetailsScreen(
 @Composable
 fun PersonDetailsScreenContent(
     modifier: Modifier = Modifier,
-    uiState: PeopleScreenState
+    uiState: PeopleState
 ) {
     val pictures = uiState.personDetails?.pictures
     val data = uiState.personDetails?.data
@@ -301,7 +301,7 @@ fun LazyListScope.voicesList(voices : List<Voices>) {
 private fun PeopleDetailsReview() {
     DenuAnimeTheme {
         Surface(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)) {
-            PersonDetailsScreenContent(modifier = Modifier.fillMaxSize(), uiState = PeopleScreenState())
+            PersonDetailsScreenContent(modifier = Modifier.fillMaxSize(), uiState = PeopleState())
         }
     }
 }
