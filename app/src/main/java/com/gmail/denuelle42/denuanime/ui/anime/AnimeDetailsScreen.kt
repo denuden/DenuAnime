@@ -30,6 +30,7 @@ import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Trailer
 import com.gmail.denuelle42.denuanime.ui.anime.components.AiredInfoSection
 import com.gmail.denuelle42.denuanime.ui.anime.components.AnimeHeader
 import com.gmail.denuelle42.denuanime.ui.anime.components.BroadcastInfoSection
+import com.gmail.denuelle42.denuanime.ui.anime.components.SynopsisSection
 import com.gmail.denuelle42.denuanime.ui.common.GenreChips
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.orEmpty
@@ -62,6 +63,9 @@ fun AnimeDetailsScreenContent(modifier: Modifier = Modifier, uiState: AnimeState
             val genres =
                 animeDetails?.genres.orEmpty() + animeDetails?.themes.orEmpty() + animeDetails?.demographics.orEmpty()
             GenreChips(genres = genres)
+
+            //Synopsis
+            SynopsisSection(synopsis = animeDetails?.synopsis, modifier = Modifier.padding(top = 8.dp))
 
             //Info about Airing
             AiredInfoSection(

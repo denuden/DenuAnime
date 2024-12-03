@@ -226,7 +226,7 @@ fun Details(modifier: Modifier = Modifier, data : People, context : Context) {
                 .animateContentSize()
         ) {
             Text(
-                text = data?.about?.takeIf { it.isNotEmpty() } ?: "-----",
+                text = data.about?.takeIf { it.isNotEmpty() } ?: "-----",
                 style = MaterialTheme.typography.bodyLarge,
                 overflow = TextOverflow.Ellipsis
             )
