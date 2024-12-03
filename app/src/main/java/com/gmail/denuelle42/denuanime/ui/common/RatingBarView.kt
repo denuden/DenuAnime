@@ -20,6 +20,7 @@ fun RatingBarView(modifier: Modifier = Modifier, rating : Float, scale : Float) 
                 // Sets uteners for View -> Compose communication
                 setOnClickListener {
                 }
+                stepSize = 0.1f
                 scaleX = scale
                 scaleY = scale
             }

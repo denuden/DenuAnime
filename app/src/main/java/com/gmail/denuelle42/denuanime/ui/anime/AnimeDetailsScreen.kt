@@ -99,7 +99,7 @@ fun AiredInfoSection(modifier: Modifier = Modifier, context: Context, animeDetai
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inverseSurface),
         modifier = modifier
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
             Text(
                 text = "${animeDetails.season.orEmpty("--")} ${animeDetails.year ?: "--"} | ${
                     animeDetails.status.orEmpty(
@@ -161,7 +161,7 @@ fun AiredInfoSection(modifier: Modifier = Modifier, context: Context, animeDetai
                         .fillMaxHeight()
                 )
             }
-            Spacer(modifier = Modifier.padding(vertical = 3.dp))
+            Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -175,8 +175,8 @@ fun AiredInfoSection(modifier: Modifier = Modifier, context: Context, animeDetai
                     .align(Alignment.CenterHorizontally)
             ) {
                 RatingBarView(
-                    rating = 5f,
-                    scale = 1.2f,
+                    rating = animeDetails.score?.toFloat() ?: 0f,
+                    scale = 1.3f,
                 )
             }
         }
