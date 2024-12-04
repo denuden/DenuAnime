@@ -30,6 +30,7 @@ import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Trailer
 import com.gmail.denuelle42.denuanime.ui.anime.components.AiredInfoSection
 import com.gmail.denuelle42.denuanime.ui.anime.components.AnimeHeader
 import com.gmail.denuelle42.denuanime.ui.anime.components.BroadcastInfoSection
+import com.gmail.denuelle42.denuanime.ui.anime.components.OtherListingsSection
 import com.gmail.denuelle42.denuanime.ui.anime.components.SynopsisSection
 import com.gmail.denuelle42.denuanime.ui.common.GenreChips
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
@@ -81,6 +82,9 @@ fun AnimeDetailsScreenContent(modifier: Modifier = Modifier, uiState: AnimeState
                 animeDetails = animeDetails ?: AnimeDetails(),
                 modifier = Modifier.padding(top = 8.dp)
             )
+
+            //Other listings
+            OtherListingsSection(animeDetails = animeDetails ?: AnimeDetails(),  modifier = Modifier.padding(top = 8.dp))
         }
     }
 }
