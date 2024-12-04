@@ -28,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.gmail.denuelle42.denuanime.data.remote.models.BaseImages
 import com.gmail.denuelle42.denuanime.data.remote.models.ImageType
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Aired
@@ -72,9 +71,8 @@ fun BroadcastInfoSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                 Text(
                     text = "${"Broadcast".uppercase()}\non\n${animeDetails.broadcast?.string.orEmpty("-----")}",
                     color = MaterialTheme.colorScheme.onTertiary,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     textAlign = TextAlign.Center,
-                    fontSize = 14.sp,
                 )
             }
         }
@@ -110,8 +108,8 @@ fun BroadcastInfoSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                             text = "${animeDetails.episodes ?: 0} EPISODES",
                             color = MaterialTheme.colorScheme.onTertiaryContainer,
                             textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 13.sp,
+                            style = MaterialTheme.typography.titleSmall,
+
                         )
                     }
 
@@ -129,8 +127,7 @@ fun BroadcastInfoSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                             text = animeDetails.duration.orEmpty("----").uppercase(),
                             color = MaterialTheme.colorScheme.onTertiaryContainer,
                             textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 13.sp,
+                            style = MaterialTheme.typography.titleSmall,
                         )
                     }
                 }
@@ -145,7 +142,7 @@ fun BroadcastInfoSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp)
+                    modifier = Modifier.padding(12.dp).fillMaxSize()
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Category,
@@ -156,15 +153,17 @@ fun BroadcastInfoSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                         text = "${animeDetails.type.orEmpty("--").uppercase()}/${animeDetails.source.orEmpty("--").uppercase()}",
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 13.sp,
-                    )
+                        style = MaterialTheme.typography.titleSmall,
+
+                        )
                     Text(
                         text = animeDetails.rating.orEmpty("---").uppercase(),
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 13.sp,
-                    )
+                        style = MaterialTheme.typography.titleSmall,
+
+                        )
                 }
             }
         }

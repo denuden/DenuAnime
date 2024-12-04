@@ -32,7 +32,7 @@ fun ChipWithHeader(modifier: Modifier = Modifier, title: String, body: String) {
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
             fontWeight = FontWeight.Normal,
             textAlign = TextAlign.Center
@@ -49,7 +49,7 @@ fun ChipWithHeader(modifier: Modifier = Modifier, title: String, body: String) {
         ) {
             Text(
                 text = body,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center

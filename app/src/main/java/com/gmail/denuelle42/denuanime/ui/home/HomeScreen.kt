@@ -162,7 +162,7 @@ fun HomeScreenContent(
                 isLoading = homeScreenState.isGetAnimeListLoading,
                 animeList = homeScreenState.animeList.orEmpty(),
                 onClickItem = {
-
+                    onEvent(HomeScreenEvents.OnNavigateToAnimeDetails(it))
                 }
             )
         }
@@ -353,7 +353,7 @@ fun AnimeCardListSection(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     animeList: List<AnimeDetails>,
-    onClickItem: () -> Unit
+    onClickItem: (Int) -> Unit
 ) {
     //Whole Device wdith subtracted its 1/4
     val configuration = LocalConfiguration.current
@@ -395,7 +395,7 @@ fun AnimeCardListSection(
                             modifier = Modifier
                                 .heightIn(min = 400.dp, max = 600.dp)
                                 .clickableDelayed {
-                                    onClickItem()
+                                    onClickItem(anime.mal_id ?: 0)
                                 }
                         )
                     }

@@ -44,7 +44,7 @@ fun AiredInfoSection(modifier: Modifier = Modifier, context: Context, animeDetai
                         "---"
                     )
                 }".uppercase(Locale.getDefault()),
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 3.sp
             )
@@ -114,7 +114,7 @@ fun AiredInfoSection(modifier: Modifier = Modifier, context: Context, animeDetai
             ) {
                 RatingBarView(
                     rating = animeDetails.score?.toFloat() ?: 0f,
-                    scale = 1.3f,
+                    scale = 1.4f,
                 )
             }
         }

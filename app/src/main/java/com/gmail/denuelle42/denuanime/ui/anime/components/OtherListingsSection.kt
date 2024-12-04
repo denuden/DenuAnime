@@ -2,10 +2,14 @@ package com.gmail.denuelle42.denuanime.ui.anime.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Surface
@@ -16,10 +20,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,8 +38,16 @@ import com.gmail.denuelle42.denuanime.utils.orEmpty
 @Composable
 fun OtherListingsSection(modifier: Modifier = Modifier, animeDetails: AnimeDetails) {
     var state by remember { mutableIntStateOf(0) }
-    val titles = listOf("Studio", "Producers", "Licensor", "Opening Themes", "Ending Themes", "External", "Streaming")
-    val context  = LocalContext.current
+    val titles = listOf(
+        "Studio",
+        "Producers",
+        "Licensor",
+        "Opening Themes",
+        "Ending Themes",
+        "External",
+        "Streaming"
+    )
+    val context = LocalContext.current
     Column(modifier = modifier) {
         PrimaryScrollableTabRow(selectedTabIndex = state) {
             titles.forEachIndexed { index, title ->
@@ -48,9 +61,9 @@ fun OtherListingsSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        when(state){
+        when (state) {
             0 -> {
-                if(animeDetails.studios.isNullOrEmpty()){
+                if (animeDetails.studios.isNullOrEmpty()) {
                     Text(
                         text = "No Studios Found",
                         style = MaterialTheme.typography.bodyMedium,
@@ -59,19 +72,30 @@ fun OtherListingsSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                     )
                 } else {
                     animeDetails.studios.forEach {
-                        Text(
-                            text = it.name.orEmpty("-----"),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp).clickableDelayed {
-                                context.goURL(it.url.orEmpty())
-                            }
-                        )
+                        Row(
+                            modifier = Modifier
+                                .padding(vertical = 8.dp, horizontal = 12.dp)
+                                .clip(MaterialTheme.shapes.small)
+                                .clickableDelayed {
+                                    context.goURL(it.url.orEmpty())
+                                }
+                                .padding(horizontal = 6.dp)
+                        ) {
+                            Text(
+                                text = it.name.orEmpty("-----"),
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Normal,
+                                textDecoration = TextDecoration.Underline,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,contentDescription = null)
+                        }
                     }
                 }
             }
+
             1 -> {
-                if(animeDetails.producers.isNullOrEmpty()){
+                if (animeDetails.producers.isNullOrEmpty()) {
                     Text(
                         text = "No Producers Found",
                         style = MaterialTheme.typography.bodyMedium,
@@ -79,20 +103,31 @@ fun OtherListingsSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                         modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp)
                     )
                 } else {
-                    animeDetails.producers.onEach {
-                        Text(
-                            text = it.name.orEmpty("-----"),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp).clickableDelayed {
-                                context.goURL(it.url.orEmpty())
-                            }
-                        )
+                    animeDetails.producers.forEach {
+                        Row(
+                            modifier = Modifier
+                                .padding(vertical = 8.dp, horizontal = 12.dp)
+                                .clip(MaterialTheme.shapes.small)
+                                .clickableDelayed {
+                                    context.goURL(it.url.orEmpty())
+                                }
+                                .padding(horizontal = 6.dp)
+                        ) {
+                            Text(
+                                text = it.name.orEmpty("-----"),
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Normal,
+                                textDecoration = TextDecoration.Underline,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,contentDescription = null)
+                        }
                     }
                 }
             }
+
             2 -> {
-                if(animeDetails.licensors.isNullOrEmpty()){
+                if (animeDetails.licensors.isNullOrEmpty()) {
                     Text(
                         text = "No Licensors Found",
                         style = MaterialTheme.typography.bodyMedium,
@@ -100,20 +135,31 @@ fun OtherListingsSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                         modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp)
                     )
                 } else {
-                    animeDetails.licensors.onEach {
-                        Text(
-                            text = it.name.orEmpty("-----"),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp).clickableDelayed {
-                                context.goURL(it.url.orEmpty())
-                            }
-                        )
+                    animeDetails.licensors.forEach {
+                        Row(
+                            modifier = Modifier
+                                .padding(vertical = 8.dp, horizontal = 12.dp)
+                                .clip(MaterialTheme.shapes.small)
+                                .clickableDelayed {
+                                    context.goURL(it.url.orEmpty())
+                                }
+                                .padding(horizontal = 6.dp)
+                        ) {
+                            Text(
+                                text = it.name.orEmpty("-----"),
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Normal,
+                                textDecoration = TextDecoration.Underline,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,contentDescription = null)
+                        }
                     }
                 }
             }
+
             3 -> {
-                if(animeDetails.theme?.openings.isNullOrEmpty()){
+                if (animeDetails.theme?.openings.isNullOrEmpty()) {
                     Text(
                         text = "No Openings Found",
                         style = MaterialTheme.typography.bodyMedium,
@@ -131,8 +177,9 @@ fun OtherListingsSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                     }
                 }
             }
+
             4 -> {
-                if(animeDetails.theme?.endings.isNullOrEmpty()){
+                if (animeDetails.theme?.endings.isNullOrEmpty()) {
                     Text(
                         text = "No Endings Found",
                         style = MaterialTheme.typography.bodyMedium,
@@ -150,8 +197,9 @@ fun OtherListingsSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                     }
                 }
             }
+
             5 -> {
-                if(animeDetails.external.isNullOrEmpty()){
+                if (animeDetails.external.isNullOrEmpty()) {
                     Text(
                         text = "No External Found",
                         style = MaterialTheme.typography.bodyMedium,
@@ -159,20 +207,31 @@ fun OtherListingsSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                         modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp)
                     )
                 } else {
-                    animeDetails.external.onEach {
-                        Text(
-                            text = it.name.orEmpty("-----"),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp).clickableDelayed {
-                                context.goURL(it.url.orEmpty())
-                            }
-                        )
+                    animeDetails.external.forEach {
+                        Row(
+                            modifier = Modifier
+                                .padding(vertical = 8.dp, horizontal = 12.dp)
+                                .clip(MaterialTheme.shapes.small)
+                                .clickableDelayed {
+                                    context.goURL(it.url.orEmpty())
+                                }
+                                .padding(horizontal = 6.dp)
+                        ) {
+                            Text(
+                                text = it.name.orEmpty("-----"),
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Normal,
+                                textDecoration = TextDecoration.Underline,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,contentDescription = null)
+                        }
                     }
                 }
             }
+
             6 -> {
-                if(animeDetails.streaming.isNullOrEmpty()){
+                if (animeDetails.streaming.isNullOrEmpty()) {
                     Text(
                         text = "No Streaming Found",
                         style = MaterialTheme.typography.bodyMedium,
@@ -180,24 +239,29 @@ fun OtherListingsSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                         modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp)
                     )
                 } else {
-                    animeDetails.streaming.onEach {
-                        Text(
-                            text = it.name.orEmpty("-----"),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp).clickableDelayed {
-                                context.goURL(it.url.orEmpty())
-                            }
-                        )
+                    animeDetails.streaming.forEach {
+                        Row(
+                            modifier = Modifier
+                                .padding(vertical = 8.dp, horizontal = 12.dp)
+                                .clip(MaterialTheme.shapes.small)
+                                .clickableDelayed {
+                                    context.goURL(it.url.orEmpty())
+                                }
+                                .padding(horizontal = 6.dp)
+                        ) {
+                            Text(
+                                text = it.name.orEmpty("-----"),
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Normal,
+                                textDecoration = TextDecoration.Underline,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,contentDescription = null)
+                        }
                     }
                 }
             }
         }
-        Text(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = "Text tab ${state + 1} selected",
-            style = MaterialTheme.typography.bodyLarge
-        )
     }
 
 }

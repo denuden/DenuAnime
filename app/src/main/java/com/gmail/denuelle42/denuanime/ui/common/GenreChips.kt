@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.MaterialTheme
@@ -14,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -32,6 +32,7 @@ fun GenreChips(modifier: Modifier = Modifier, genres : List<Genre>, color: Color
                             genre.name.orEmpty(),
                             color = color,
                             style = MaterialTheme.typography.labelSmall,
+                            fontSize = 12.sp,
                             maxLines = 1,
                         )
                     },

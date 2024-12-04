@@ -27,4 +27,5 @@ sealed class HomeScreenEvents {
     //Navigation
     object OnNavigateToSeeMorePeople : HomeScreenEvents()
     data class OnNavigateToPersonDetails(val id :Int) : HomeScreenEvents()
+    data class OnNavigateToAnimeDetails(val id :Int) : HomeScreenEvents()
 }

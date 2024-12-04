@@ -2,6 +2,7 @@ package com.gmail.denuelle42.denuanime.data.repositories.anime
 
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetAnimeSearchRequest
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetTopAnimeRequest
+import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetAnimeFullByIdResponse
 import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetAnimeSearchResponse
 import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetRecentEpisodesResponse
 import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetTopAnimeResponse
@@ -68,6 +69,16 @@ class AnimeRepository @Inject constructor(
 
     suspend fun getRecentEpisodes() : GetRecentEpisodesResponse {
         val response = animeAPI.getRecentEpisodes()
+
+        if(response.code() != HttpURLConnection.HTTP_OK){
+            throw HttpException(response)
+        }
+
+        return response.body() ?: throw NullPointerException("Response data is empty")
+    }
+
+    suspend fun getAnimeFullById(id : Int) : GetAnimeFullByIdResponse {
+        val response = animeAPI.getAnimeFullById(id)
 
         if(response.code() != HttpURLConnection.HTTP_OK){
             throw HttpException(response)

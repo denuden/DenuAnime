@@ -1,17 +1,23 @@
-package com.gmail.denuelle42.denuanime
+package com.gmail.denuelle42.denuanime.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.gmail.denuelle42.denuanime.navigation.RootGraphs
-import com.gmail.denuelle42.denuanime.navigation.addMainNavGraph
-import com.gmail.denuelle42.denuanime.navigation.addPeopleNavGraph
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
    NavHost(navController = navController, startDestination = RootGraphs.MainGraph){
       addMainNavGraph(navController)
       addPeopleNavGraph(navController)
+
+      //**==============NOTE
+      /**
+       * ADD AN INITIAL VALUE TO ROUTE WITH ARGUMENTS WHEN PASSING IT AS A START DESTINATION
+       * See more at addAnimeNavGraph() file
+       * Sample **
+       *  navigation<RootGraphs.AnimeGraph>(startDestination = AnimeScreens.AnimeDetailsNavigation(id = 0)){}
+       */
+      addAnimeNavGraph(navController)
    }
 }
 

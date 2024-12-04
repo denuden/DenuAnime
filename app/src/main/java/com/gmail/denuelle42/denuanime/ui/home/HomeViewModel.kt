@@ -15,6 +15,7 @@ import com.gmail.denuelle42.denuanime.domain.repositories.genre.GenreUseCase
 import com.gmail.denuelle42.denuanime.domain.repositories.people.PeopleUseCase
 import com.gmail.denuelle42.denuanime.domain.repositories.recommendations.RecommendationsUseCase
 import com.gmail.denuelle42.denuanime.domain.repositories.season.SeasonUseCase
+import com.gmail.denuelle42.denuanime.navigation.AnimeScreens
 import com.gmail.denuelle42.denuanime.navigation.PeopleScreens
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
 import com.gmail.denuelle42.denuanime.utils.ResultState
@@ -401,6 +402,9 @@ class HomeViewModel @Inject constructor(
             }
             is HomeScreenEvents.OnNavigateToPersonDetails -> {
                 sendEvent(OneTimeEvents.OnNavigate(PeopleScreens.PeopleDetailsNavigation(event.id)))
+            }
+            is HomeScreenEvents.OnNavigateToAnimeDetails -> {
+                sendEvent(OneTimeEvents.OnNavigate(AnimeScreens.AnimeDetailsNavigation(event.id)))
             }
         }
     }

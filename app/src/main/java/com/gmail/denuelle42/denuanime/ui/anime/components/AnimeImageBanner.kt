@@ -25,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.palette.graphics.Palette
 import coil3.compose.AsyncImage
 import coil3.toBitmap
@@ -77,7 +76,7 @@ fun AnimeHeader(
         Column(modifier = Modifier.padding(8.dp)) {
 
             Text(
-                text = title, style = MaterialTheme.typography.titleMedium,
+                text = title, style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
             )
 
@@ -85,15 +84,13 @@ fun AnimeHeader(
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = titleJp,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Light,
-                fontSize = 11.sp
             )
             Text(
                 text = titleEn,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Light,
-                fontSize = 11.sp
             )
         }
     }

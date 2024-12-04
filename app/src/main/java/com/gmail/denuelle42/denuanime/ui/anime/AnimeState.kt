@@ -5,6 +5,6 @@ import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetai
 
 @Keep
 data class AnimeState(
-    val id : Int? = null,
-    val animeDetails: AnimeDetails? = null
+    val animeDetails: AnimeDetails? = null,
+    val isGetAnimeFullByIdLoading : Boolean = true,
 )

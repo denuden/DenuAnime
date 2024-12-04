@@ -10,4 +10,6 @@ sealed class OneTimeEvents {
     object OnPopBackStack : OneTimeEvents()
     data class ShowSnackbar(val snackbarEvent: SnackbarEvent)  : OneTimeEvents()
     data class ShowToast(val message : String)  : OneTimeEvents()
+
+
 }

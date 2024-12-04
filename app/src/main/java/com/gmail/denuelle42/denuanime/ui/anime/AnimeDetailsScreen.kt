@@ -1,6 +1,7 @@
 package com.gmail.denuelle42.denuanime.ui.anime
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,10 +11,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gmail.denuelle42.denuanime.data.remote.models.BaseImages
 import com.gmail.denuelle42.denuanime.data.remote.models.ImageType
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Aired
@@ -27,6 +33,7 @@ import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Streaming
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Studio
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.ThemeSong
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Trailer
+import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.ui.anime.components.AiredInfoSection
 import com.gmail.denuelle42.denuanime.ui.anime.components.AnimeHeader
 import com.gmail.denuelle42.denuanime.ui.anime.components.BroadcastInfoSection
@@ -34,11 +41,51 @@ import com.gmail.denuelle42.denuanime.ui.anime.components.OtherListingsSection
 import com.gmail.denuelle42.denuanime.ui.anime.components.SynopsisSection
 import com.gmail.denuelle42.denuanime.ui.common.GenreChips
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.ComposableLifecycle
+import com.gmail.denuelle42.denuanime.utils.ObserveAsEvents
+import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
+import com.gmail.denuelle42.denuanime.utils.SnackBarController
 import com.gmail.denuelle42.denuanime.utils.orEmpty
+import kotlinx.coroutines.launch
 
 @Composable
-fun AnimeDetailsScreen(modifier: Modifier = Modifier) {
+fun AnimeDetailsScreen(
+    onPopBackStack: () -> Unit,
+    onNavigate: (NavigationScreens) -> Unit,
+    id : Int,
+    viewModel: AnimeViewModel = hiltViewModel()
+) {
 
+    val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+
+    ObserveAsEvents(flow = viewModel.channel) { event ->
+        when (event) {
+            is OneTimeEvents.OnNavigate -> onNavigate(event.route)
+            OneTimeEvents.OnPopBackStack -> onPopBackStack()
+            is OneTimeEvents.ShowSnackbar ->  {
+                scope.launch {
+                    SnackBarController.sendEvent(event.snackbarEvent)
+                }
+            }
+            is OneTimeEvents.ShowToast -> {
+                Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    ComposableLifecycle { _, lifecycleEvent ->
+        when(lifecycleEvent){
+            Lifecycle.Event.ON_RESUME -> {
+                viewModel.onEvent(AnimeEvents.OnGetAnimeFullById(id))
+            }
+            else -> Unit
+        }
+    }
+
+    AnimeDetailsScreenContent(uiState = uiState)
 }
 
 @SuppressLint("ResourceAsColor")
@@ -84,7 +131,7 @@ fun AnimeDetailsScreenContent(modifier: Modifier = Modifier, uiState: AnimeState
             )
 
             //Other listings
-            OtherListingsSection(animeDetails = animeDetails ?: AnimeDetails(),  modifier = Modifier.padding(top = 8.dp))
+            OtherListingsSection(animeDetails = animeDetails ?: AnimeDetails(),  modifier = Modifier.padding(top = 8.dp, bottom = 50.dp))
         }
     }
 }

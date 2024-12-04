@@ -6,5 +6,5 @@ import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetai
 
 @Keep
 data class GetAnimeFullByIdResponse(
-    val animeDetails: AnimeDetails? = null
+    val `data`: AnimeDetails? = null
 )

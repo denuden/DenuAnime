@@ -1,6 +1,7 @@
 package com.gmail.denuelle42.denuanime.ui.people
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
@@ -37,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,11 +63,14 @@ import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonPeopleDetailsSc
 import com.gmail.denuelle42.denuanime.ui.people.components.AnimeVoicesItemCardList
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.ComposableLifecycle
+import com.gmail.denuelle42.denuanime.utils.ObserveAsEvents
+import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
+import com.gmail.denuelle42.denuanime.utils.SnackBarController
 import com.gmail.denuelle42.denuanime.utils.clickableDelayed
 import com.gmail.denuelle42.denuanime.utils.formatIsoDateAsLongDate
 import com.gmail.denuelle42.denuanime.utils.goURL
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PersonDetailsScreen(
     onPopBackStack: () -> Unit,
@@ -73,11 +78,27 @@ fun PersonDetailsScreen(
     id : Int,
     viewModel: PeopleViewModel = hiltViewModel()
 ) {
-
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
-    ComposableLifecycle { _, event ->
-        when(event) {
+    ObserveAsEvents(flow = viewModel.channel) { event ->
+        when (event) {
+            is OneTimeEvents.OnNavigate -> onNavigate(event.route)
+            OneTimeEvents.OnPopBackStack -> onPopBackStack()
+            is OneTimeEvents.ShowSnackbar ->  {
+                scope.launch {
+                    SnackBarController.sendEvent(event.snackbarEvent)
+                }
+            }
+            is OneTimeEvents.ShowToast -> {
+                Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    ComposableLifecycle { _, lifecycleEvent ->
+        when(lifecycleEvent) {
             Lifecycle.Event.ON_RESUME -> {
                 viewModel.onEvent(PeopleEvents.OnGetPersonFullById(id))
             }

@@ -26,7 +26,7 @@ fun SynopsisSection(modifier: Modifier = Modifier, synopsis: String?) {
     Column(modifier = modifier) {
         Column(
             modifier = Modifier
-                .height(if (isAboutContentExpanded) Dp.Unspecified else 100.dp)
+                .height(if (isAboutContentExpanded) Dp.Unspecified else 120.dp)
                 .animateContentSize()
         ) {
             Text(
