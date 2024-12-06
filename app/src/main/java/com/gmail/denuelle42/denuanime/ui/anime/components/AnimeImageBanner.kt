@@ -9,6 +9,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.OpenInFull
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +44,7 @@ fun AnimeHeader(
     title: String,
     titleJp: String,
     titleEn: String,
+    onEnlargeImage: () -> Unit
 ) {
     var backgroundColor by remember { mutableIntStateOf(0) }
     // Animate the background color
@@ -53,7 +59,7 @@ fun AnimeHeader(
             modifier = Modifier
                 .background(color = animatedColor)
                 .fillMaxWidth()
-                .height(250.dp),
+                .height(300.dp),
         ) {
             AsyncImage(
                 model = image,
@@ -71,7 +77,20 @@ fun AnimeHeader(
                 },
                 modifier = Modifier.matchParentSize()
             )
+
+            IconButton(
+                onClick = onEnlargeImage,
+                colors = IconButtonDefaults.iconButtonColors(   containerColor = Color.Black.copy(
+                    alpha = 0.5f
+                )),
+                modifier = Modifier.padding(4.dp).align(Alignment.TopEnd)
+            ) { Icon(
+                imageVector = Icons.Default.OpenInFull,
+                contentDescription = stringResource(R.string.enlarge_image),
+                tint = Color.White,
+            ) }
         }
+
         Spacer(modifier = Modifier.height(6.dp))
         Column(modifier = Modifier.padding(8.dp)) {
 
@@ -107,7 +126,7 @@ private fun AnimeImageBannerPreview() {
             title = "wqearstdtfjgzsreestrre ",
             titleJp = "dsvs e ea gae ae ew awe",
             titleEn = "dgerver e er re er",
-        )
+        ){}
     }
 
 }

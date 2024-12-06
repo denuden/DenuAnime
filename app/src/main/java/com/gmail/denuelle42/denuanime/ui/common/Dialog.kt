@@ -160,5 +160,5 @@ fun FullScreenDialog(showDialog: Boolean, onClose: () -> Unit, content: @Composa
 @Preview
 @Composable
 fun DialogPreview() {
-    ErrorDialog(text = "Error", showDialog = true) {}
+    FullScreenDialog(showDialog = true, onClose = {}) {}
 }

@@ -2,6 +2,9 @@ package com.gmail.denuelle42.denuanime.ui.anime
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,14 +15,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
+import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.BaseImages
 import com.gmail.denuelle42.denuanime.data.remote.models.ImageType
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Aired
@@ -39,7 +50,9 @@ import com.gmail.denuelle42.denuanime.ui.anime.components.AnimeHeader
 import com.gmail.denuelle42.denuanime.ui.anime.components.BroadcastInfoSection
 import com.gmail.denuelle42.denuanime.ui.anime.components.OtherListingsSection
 import com.gmail.denuelle42.denuanime.ui.anime.components.SynopsisSection
+import com.gmail.denuelle42.denuanime.ui.common.FullScreenDialog
 import com.gmail.denuelle42.denuanime.ui.common.GenreChips
+import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonAnimeDetailsScreen
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.ComposableLifecycle
 import com.gmail.denuelle42.denuanime.utils.ObserveAsEvents
@@ -60,6 +73,7 @@ fun AnimeDetailsScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
+    var isImageEnlarged by rememberSaveable { mutableStateOf(false) }
 
     ObserveAsEvents(flow = viewModel.channel) { event ->
         when (event) {
@@ -85,54 +99,83 @@ fun AnimeDetailsScreen(
         }
     }
 
-    AnimeDetailsScreenContent(uiState = uiState)
+
+    AnimeDetailsScreenContent(uiState = uiState, onEnlargeImage = {
+        isImageEnlarged = !isImageEnlarged
+    })
+
+    FullScreenDialog(showDialog = isImageEnlarged, onClose = { isImageEnlarged = false }) {
+        AsyncImage(
+            model =  uiState.animeDetails?.images?.jpg?.large_image_url.orEmpty(),
+            placeholder = painterResource(R.drawable.baseline_image_24),
+            contentDescription = stringResource(R.string.anime_banner),
+            contentScale = ContentScale.Fit,
+            error = painterResource(R.drawable.baseline_image_not_supported_24),
+        )
+    }
 }
 
 @SuppressLint("ResourceAsColor")
 @Composable
-fun AnimeDetailsScreenContent(modifier: Modifier = Modifier, uiState: AnimeState) {
+fun AnimeDetailsScreenContent(modifier: Modifier = Modifier, uiState: AnimeState, onEnlargeImage : () -> Unit) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 
     val animeDetails = uiState.animeDetails
 
-    Column(modifier = modifier.verticalScroll(scrollState)) {
-        AnimeHeader(
-            image = animeDetails?.images?.jpg?.large_image_url.orEmpty(),
-            modifier = Modifier
-                .fillMaxWidth(),
-            title = animeDetails?.title.orEmpty("---"),
-            titleEn = animeDetails?.title_english.orEmpty("---"),
-            titleJp = animeDetails?.title_japanese.orEmpty("---"),
-        )
-
-        Column(modifier = Modifier.padding(horizontal = 8.dp)) {
-            //Genres + Themes + Demographics
-            val genres =
-                animeDetails?.genres.orEmpty() + animeDetails?.themes.orEmpty() + animeDetails?.demographics.orEmpty()
-            GenreChips(genres = genres)
-
-            //Synopsis
-            SynopsisSection(synopsis = animeDetails?.synopsis, modifier = Modifier.padding(top = 8.dp))
-
-            //Info about Airing
-            AiredInfoSection(
+    AnimatedVisibility(
+        visible = !uiState.isGetAnimeFullByIdLoading,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Column(modifier = modifier.verticalScroll(scrollState)) {
+            AnimeHeader(
+                image = animeDetails?.images?.jpg?.large_image_url.orEmpty(),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                context = context,
-                animeDetails = animeDetails ?: AnimeDetails()
+                    .fillMaxWidth(),
+                title = animeDetails?.title.orEmpty("---"),
+                titleEn = animeDetails?.title_english.orEmpty("---"),
+                titleJp = animeDetails?.title_japanese.orEmpty("---"),
+                onEnlargeImage = onEnlargeImage
             )
 
-            //Broadcast Info
-            BroadcastInfoSection(
-                animeDetails = animeDetails ?: AnimeDetails(),
-                modifier = Modifier.padding(top = 8.dp)
-            )
+            Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+                //Genres + Themes + Demographics
+                val genres =
+                    animeDetails?.genres.orEmpty() + animeDetails?.themes.orEmpty() + animeDetails?.demographics.orEmpty()
+                GenreChips(genres = genres)
 
-            //Other listings
-            OtherListingsSection(animeDetails = animeDetails ?: AnimeDetails(),  modifier = Modifier.padding(top = 8.dp, bottom = 50.dp))
+                //Synopsis
+                SynopsisSection(synopsis = animeDetails?.synopsis, modifier = Modifier.padding(top = 8.dp))
+
+                //Info about Airing
+                AiredInfoSection(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    context = context,
+                    animeDetails = animeDetails ?: AnimeDetails()
+                )
+
+                //Broadcast Info
+                BroadcastInfoSection(
+                    animeDetails = animeDetails ?: AnimeDetails(),
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+
+                //Other listings
+                OtherListingsSection(animeDetails = animeDetails ?: AnimeDetails(),  modifier = Modifier.padding(top = 8.dp, bottom = 50.dp))
+            }
         }
+    }
+
+
+    AnimatedVisibility(
+        visible = uiState.isGetAnimeFullByIdLoading,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        SkeletonAnimeDetailsScreen()
     }
 }
 
@@ -280,7 +323,7 @@ private fun AnimeDetailsScreenPreview() {
                         )
                     )
                 )
-            )
+            ){}
         }
     }
 }

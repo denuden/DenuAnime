@@ -12,7 +12,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 /**
  * Coil Image Loader with cache
  */
-class ImageLoader(@ApplicationContext val applicationContext : Context): SingletonImageLoader.Factory {
+class CoilUtils(@ApplicationContext val applicationContext : Context): SingletonImageLoader.Factory {
     override fun newImageLoader(context: PlatformContext): coil3.ImageLoader {
         return coil3.ImageLoader.Builder(context)
             .crossfade(true)
@@ -30,3 +30,8 @@ class ImageLoader(@ApplicationContext val applicationContext : Context): Singlet
             .build()
     }
 }
+
+/**
+ * Async Image With error handlers
+ */
+
