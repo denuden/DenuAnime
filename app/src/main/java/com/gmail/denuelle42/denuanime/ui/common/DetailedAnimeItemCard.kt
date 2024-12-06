@@ -28,21 +28,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.palette.graphics.Palette
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.allowHardware
-import coil3.request.crossfade
-import coil3.toBitmap
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.AsyncImageWithBackgroundPalette
 
 @OptIn(ExperimentalLayoutApi::class)
 @SuppressLint("ResourceAsColor")
@@ -72,24 +65,11 @@ fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDeta
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize(),
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(animeDetails.images?.jpg?.large_image_url)
-                    .allowHardware(false)
-                    .crossfade(true)
-                    .build(),
-                placeholder = painterResource(R.drawable.baseline_image_24),
-                contentDescription = stringResource(R.string.anime_banner),
+            AsyncImageWithBackgroundPalette(
+              model =  animeDetails.images?.jpg?.large_image_url,
+                onPaletteBuilderSuccess = { backgroundColor = it},
+                shouldShowEnlargeButton = false,
                 contentScale = ContentScale.Crop,
-                error = painterResource(R.drawable.baseline_image_not_supported_24),
-                onSuccess = { result ->
-                    val bitmap = result.result.image.toBitmap()
-                    Palette.Builder(bitmap).generate { palette ->
-                        // Consume the palette.
-                        backgroundColor =
-                            palette?.getDominantColor(R.color.black) ?: R.color.black
-                    }
-                },
                 modifier = Modifier.matchParentSize()
             )
             Box(

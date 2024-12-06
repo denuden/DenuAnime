@@ -2,7 +2,6 @@ package com.gmail.denuelle42.denuanime.utils
 
 import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.debugInspectorInfo
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -58,7 +56,6 @@ fun Modifier.clickableDelayed(
             }
         }
     }
-        .padding(4.dp)
 }
 
 /**

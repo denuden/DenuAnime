@@ -3,34 +3,36 @@ package com.gmail.denuelle42.denuanime.ui.anime
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.BaseImages
 import com.gmail.denuelle42.denuanime.data.remote.models.ImageType
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Aired
@@ -54,6 +56,7 @@ import com.gmail.denuelle42.denuanime.ui.common.FullScreenDialog
 import com.gmail.denuelle42.denuanime.ui.common.GenreChips
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonAnimeDetailsScreen
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.AsyncImageWithBackgroundPalette
 import com.gmail.denuelle42.denuanime.utils.ComposableLifecycle
 import com.gmail.denuelle42.denuanime.utils.ObserveAsEvents
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
@@ -73,7 +76,14 @@ fun AnimeDetailsScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    var isImageEnlarged by rememberSaveable { mutableStateOf(false) }
+    var shouldShowFullScreenImage by rememberSaveable { mutableStateOf(false) }
+    var backgroundColor by remember { mutableIntStateOf(0) }
+    // Animate the background color
+    val animatedColor by animateColorAsState(
+        targetValue = Color(backgroundColor),
+        label = "Background Color"
+    )
+
 
     ObserveAsEvents(flow = viewModel.channel) { event ->
         when (event) {
@@ -101,17 +111,19 @@ fun AnimeDetailsScreen(
 
 
     AnimeDetailsScreenContent(uiState = uiState, onEnlargeImage = {
-        isImageEnlarged = !isImageEnlarged
+        shouldShowFullScreenImage = true // show full screen image
     })
 
-    FullScreenDialog(showDialog = isImageEnlarged, onClose = { isImageEnlarged = false }) {
-        AsyncImage(
-            model =  uiState.animeDetails?.images?.jpg?.large_image_url.orEmpty(),
-            placeholder = painterResource(R.drawable.baseline_image_24),
-            contentDescription = stringResource(R.string.anime_banner),
-            contentScale = ContentScale.Fit,
-            error = painterResource(R.drawable.baseline_image_not_supported_24),
-        )
+    FullScreenDialog(showDialog = shouldShowFullScreenImage, onClose = { shouldShowFullScreenImage = false }) {
+        Box(modifier = Modifier.background(color = animatedColor)){
+            AsyncImageWithBackgroundPalette(
+                model = uiState.animeDetails?.images?.jpg?.large_image_url.orEmpty(),
+                onEnlargeImage = { shouldShowFullScreenImage = false }, //since this is from fullscreen, make it a close button instead of enlarge
+                enlargeImageIcon = Icons.Default.Close,
+                onPaletteBuilderSuccess = { backgroundColor = it },
+                modifier = Modifier.matchParentSize()
+            )
+        }
     }
 }
 

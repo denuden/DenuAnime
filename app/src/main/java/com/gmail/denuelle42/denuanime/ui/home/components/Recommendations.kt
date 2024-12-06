@@ -36,8 +36,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -46,9 +44,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.AsyncImageWithErrorHandler
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -246,12 +244,9 @@ fun RecommendationsImage(modifier: Modifier = Modifier, image: Any, imageSize: D
                 shape = CircleShape,
             ),
         ) {
-            AsyncImage(
+            AsyncImageWithErrorHandler(
                 model = imageHolder,
-                placeholder = painterResource(R.drawable.baseline_image_24),
-                contentDescription = stringResource(R.string.anime_banner),
-                contentScale = ContentScale.Crop,
-                error = painterResource(R.drawable.baseline_image_not_supported_24),
+                shouldShowEnlargeButton = false,
                 modifier = Modifier
                     .size(imageSize)
                     .clip(CircleShape)

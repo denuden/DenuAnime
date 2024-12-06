@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -29,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -36,21 +38,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.palette.graphics.Palette
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.allowHardware
-import coil3.request.crossfade
-import coil3.toBitmap
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.ImageType
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.AsyncImageWithBackgroundPalette
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -68,6 +61,9 @@ fun ImageSlider(
     var selectedImage by remember { mutableIntStateOf(0) }
 
     val scope = rememberCoroutineScope()
+
+    var shouldShowFullScreenImage by remember { mutableStateOf(false) }
+
     // Get the visible item and store it as the selected item
     LaunchedEffect(state) {
         snapshotFlow { state.firstVisibleItemIndex }.collect {  // use the new index
@@ -90,6 +86,15 @@ fun ImageSlider(
         )
     )
 
+    FullScreenDialog(showDialog = shouldShowFullScreenImage, onClose = { shouldShowFullScreenImage = false }) {
+        AsyncImageWithBackgroundPalette(
+            model = images.getOrNull(selectedImage)?.jpg?.image_url.orEmpty(),
+            onEnlargeImage = { shouldShowFullScreenImage = false }, //since this is from fullscreen, make it a close button instead of enlarge
+            enlargeImageIcon = Icons.Default.Close,
+            onPaletteBuilderSuccess = { }
+        )
+    }
+
     Box(
         modifier = Modifier
             .background(color = animatedColor)
@@ -100,29 +105,15 @@ fun ImageSlider(
             modifier = modifier
         ) {
             items(images) { image ->
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(image.jpg?.image_url.orEmpty())
-                        .allowHardware(false)
-                        .crossfade(true)
-                        .build(),
-                    placeholder = painterResource(R.drawable.baseline_image_24),
-                    contentDescription = stringResource(R.string.anime_banner),
-                    contentScale = ContentScale.Fit,
-                    error = painterResource(R.drawable.baseline_image_not_supported_24),
-                    onSuccess = { result ->
-                        val bitmap = result.result.image.toBitmap()
+                AsyncImageWithBackgroundPalette(
+                    model = image.jpg?.image_url.orEmpty(),
+                    onEnlargeImage = { shouldShowFullScreenImage = true },
+                    onPaletteBuilderSuccess = { dominantColor ->
+                        colorCache[image.jpg?.image_url.orEmpty()] = dominantColor  //set color with image as key
 
-                        Palette.Builder(bitmap).generate { palette ->
-                            val dominantColor =
-                                palette?.getDominantColor(R.color.black) ?: R.color.black
-
-                            colorCache[image.jpg?.image_url.orEmpty()] = dominantColor  //set color with image as key
-
-                            // Update background color if this image is currently visible
-                            if (images[selectedImage] == image) {
-                                backgroundColor = dominantColor
-                            }
+                        // Update background color if this image is currently visible
+                        if (images[selectedImage] == image) {
+                            backgroundColor = dominantColor
                         }
                     },
                     modifier = Modifier.fillParentMaxSize()

@@ -383,7 +383,7 @@ fun AnimeCardListSection(
                     state = carouselState,
                     preferredItemWidth = screenWidthDp,
                     itemSpacing = 4.dp,
-                    contentPadding = PaddingValues(horizontal = 8.dp),
+                    contentPadding = PaddingValues(8.dp)
                 ) { index ->
 
                     //since carousel state is not changing fast enough along with the list size,
@@ -625,7 +625,11 @@ fun LazyListScope.episodesAndSeasonsSection(
 private fun HomeScreenPreview() {
     DenuAnimeTheme {
         Surface(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-
+            AnimeCardListSection(
+                isLoading = false,
+animeList = listOf(AnimeDetails(), AnimeDetails() ),
+                onClickItem = {}
+            )
         }
     }
 }

@@ -14,20 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
-import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.AsyncImageAvatarWithErrorHandler
 import com.gmail.denuelle42.denuanime.utils.clickableDelayed
 
 @Composable
@@ -46,17 +39,11 @@ fun PeopleAvatarItem(
             onClickPersonItem(id)
         }
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(image)
-                .crossfade(true)
-                .build(),
-            placeholder = painterResource(R.drawable.baseline_account_circle_24),
-            contentDescription = stringResource(R.string.voice_actor_actress),
-            contentScale = ContentScale.Crop,
-            error = painterResource(R.drawable.baseline_account_circle_24),
-            modifier = Modifier
-                .width(80.dp)
+        AsyncImageAvatarWithErrorHandler(
+            model = image,
+            shouldShowEnlargeButton = false,
+            contentDescription = name,
+            modifier = Modifier.width(80.dp)
                 .height(80.dp)
                 .clip(CircleShape)
         )

@@ -15,18 +15,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.data.remote.models.people.Character
 import com.gmail.denuelle42.denuanime.data.remote.models.people.Voices
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.AsyncImageWithErrorHandler
 
 @Composable
 fun AnimeVoicesItemCardList(modifier: Modifier = Modifier, voices: Voices) {
@@ -41,12 +39,9 @@ fun AnimeVoicesItemCardList(modifier: Modifier = Modifier, voices: Voices) {
             modifier = Modifier
                 .padding(12.dp)
                 .fillMaxWidth()) {
-            AsyncImage(
+            AsyncImageWithErrorHandler(
                 model = voices.character?.images?.jpg?.image_url,
                 contentDescription = voices.character?.name,
-                placeholder = painterResource(R.drawable.baseline_image_24),
-                contentScale = ContentScale.Crop,
-                error = painterResource(R.drawable.baseline_image_not_supported_24),
                 modifier = Modifier
                     .size(80.dp)
                     .clip(CircleShape)
