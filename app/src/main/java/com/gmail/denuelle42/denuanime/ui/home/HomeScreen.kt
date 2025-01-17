@@ -500,8 +500,8 @@ fun RecommendationsSection(
         ) {
             if (list.isNotEmpty()) {
                 Recommendations(
-                    isPrevButtonDisabled = currentStartPage > 0,
-                    isNextButtonDisabled = currentStartPage < maxRecommendationsListSize,
+                    isPrevButtonEnabled = currentStartPage > 0,
+                    isNextButtonEnabled = currentStartPage + 7 < maxRecommendationsListSize,
                     onClickPrevButton = {
                         onEvent(
                             HomeScreenEvents.OnSelectPreviousAnimeRecommendations(
@@ -515,9 +515,10 @@ fun RecommendationsSection(
                         updateCurrentStartPage(currentStartPage + 7)//update local state after viewmodel process
 
                     },
-                    list = list.map {
-                        Pair(it.images?.jpg?.image_url.orEmpty(), it.title ?: "Unknown Title")
+                    onClickImage = {
+                        onEvent(HomeScreenEvents.OnNavigateToAnimeDetails(it))
                     },
+                    list = list,
                 )
             } else { // if list is empty, then show an empty placeholder
                 Box(

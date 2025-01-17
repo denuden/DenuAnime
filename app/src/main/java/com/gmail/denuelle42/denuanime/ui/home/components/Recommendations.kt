@@ -45,22 +45,25 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gmail.denuelle42.denuanime.R
+import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.AsyncImageWithErrorHandler
+import com.gmail.denuelle42.denuanime.utils.clickableDelayed
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Recommendations(
     modifier: Modifier = Modifier,
-    isPrevButtonDisabled: Boolean = false,
-    isNextButtonDisabled: Boolean = false,
+    isPrevButtonEnabled: Boolean = false,
+    isNextButtonEnabled: Boolean = false,
+    list: List<AnimeDetails>, //fix size of 7
+    delayMillis: Long = 900L, // 1 second delay
     onClickPrevButton: () -> Unit,
     onClickNextButton: () -> Unit,
-    list: List<Pair<Any, String>>,
-    delayMillis: Long = 900L, // 1 second delay
+    onClickImage: (id : Int) -> Unit,
 ) {
-    //to make sure that button wont be spammed
+    //to make sure that button wont be spammed on next and prev button
     var canClick by remember { mutableStateOf(true) }
     LaunchedEffect(canClick) {
         if (!canClick) {
@@ -82,7 +85,7 @@ fun Recommendations(
                     onClickPrevButton()
                     canClick = false
                 },
-                enabled = isPrevButtonDisabled && canClick,
+                enabled = isPrevButtonEnabled && canClick,
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, stringResource(R.string.prev))
@@ -102,7 +105,7 @@ fun Recommendations(
                     onClickNextButton()
                     canClick = false
                 },
-                enabled = isNextButtonDisabled && canClick,
+                enabled = isNextButtonEnabled && canClick,
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, stringResource(R.string.next))
@@ -111,13 +114,8 @@ fun Recommendations(
         }
         if (list.isNotEmpty()) {
             RecommendationsContent(
-                imageA1 = list[0],
-                imageA2 = list[1],
-                imageB1 = list[2],
-                imageB2 = list[3],
-                imageB3 = list[4],
-                imageC1 = list[5],
-                imageC2 = list[6],
+                list = list,
+                onClickImage = onClickImage
             )
         }
     }
@@ -127,13 +125,8 @@ fun Recommendations(
 @Composable
 fun RecommendationsContent(
     modifier: Modifier = Modifier,
-    imageA1: Pair<Any, String>,
-    imageA2: Pair<Any, String>,
-    imageB1: Pair<Any, String>,
-    imageB2: Pair<Any, String>,
-    imageB3: Pair<Any, String>,
-    imageC1: Pair<Any, String>,
-    imageC2: Pair<Any, String>,
+    list : List<AnimeDetails>, //Fix size of 7
+    onClickImage : (id : Int) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -143,19 +136,29 @@ fun RecommendationsContent(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
-            RecommendationsImage(
-                image = imageA1.first,
-                title = imageA1.second,
-                imageSize = 160.dp,
-                modifier = Modifier.weight(1f, fill = false)
-            )
+            list.getOrNull(0)?.let {
+                RecommendationsImage(
+                    image = it.images?.jpg?.image_url.orEmpty(),
+                    title = it.title.orEmpty(),
+                    imageSize = 160.dp,
+                    modifier = Modifier.weight(1f, fill = false)
+                        .clickableDelayed {
+                            it.mal_id?.let { id -> onClickImage(id) }
+                        }
+                )
+            }
             Spacer(modifier = Modifier.padding(horizontal = 8.dp))
-            RecommendationsImage(
-                image = imageA2.first,
-                title = imageA2.second,
-                imageSize = 160.dp,
-                modifier = Modifier.weight(1f, fill = false)
-            )
+            list.getOrNull(1)?.let {
+                RecommendationsImage(
+                    image = it.images?.jpg?.image_url.orEmpty(),
+                    title = it.title.orEmpty(),
+                    imageSize = 160.dp,
+                    modifier = Modifier.weight(1f, fill = false)
+                        .clickableDelayed {
+                            it.mal_id?.let { id -> onClickImage(id) }
+                        }
+                )
+            }
         }
 
         Row(
@@ -163,26 +166,41 @@ fun RecommendationsContent(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            RecommendationsImage(
-                image = imageB1.first,
-                title = imageB1.second,
-                imageSize = 80.dp,
-                modifier = Modifier.weight(1f, fill = false)
-            )
-            RecommendationsImage(
-                image = imageB2.first,
-                title = imageB2.second,
-                imageSize = 220.dp,
-                modifier = Modifier
-                    .weight(3f, fill = false)
-                    .padding(horizontal = 6.dp)
-            )
-            RecommendationsImage(
-                image = imageB3.first,
-                title = imageB3.second,
-                imageSize = 80.dp,
-                modifier = Modifier.weight(1f, fill = false)
-            )
+            list.getOrNull(2)?.let {
+                RecommendationsImage(
+                    image = it.images?.jpg?.image_url.orEmpty(),
+                    title = it.title.orEmpty(),
+                    imageSize = 80.dp,
+                    modifier = Modifier.weight(1f, fill = false)
+                        .clickableDelayed {
+                            it.mal_id?.let { id -> onClickImage(id) }
+                        }
+                )
+            }
+            list.getOrNull(3)?.let {
+                RecommendationsImage(
+                    image = it.images?.jpg?.image_url.orEmpty(),
+                    title = it.title.orEmpty(),
+                    imageSize = 220.dp,
+                    modifier = Modifier
+                        .weight(3f, fill = false)
+                        .padding(horizontal = 6.dp)
+                        .clickableDelayed {
+                            it.mal_id?.let { id -> onClickImage(id) }
+                        }
+                )
+            }
+            list.getOrNull(4)?.let {
+                RecommendationsImage(
+                    image = it.images?.jpg?.image_url.orEmpty(),
+                    title = it.title.orEmpty(),
+                    imageSize = 80.dp,
+                    modifier = Modifier.weight(1f, fill = false)
+                        .clickableDelayed {
+                            it.mal_id?.let { id -> onClickImage(id) }
+                        }
+                )
+            }
         }
 
         Row(
@@ -190,19 +208,29 @@ fun RecommendationsContent(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
-            RecommendationsImage(
-                image = imageC1.first,
-                title = imageC1.second,
-                imageSize = 160.dp,
-                modifier = Modifier.weight(1f, fill = false)
-            )
+            list.getOrNull(5)?.let {
+                RecommendationsImage(
+                    image = it.images?.jpg?.image_url.orEmpty(),
+                    title = it.title.orEmpty(),
+                    imageSize = 160.dp,
+                    modifier = Modifier.weight(1f, fill = false)
+                        .clickableDelayed {
+                            it.mal_id?.let { id -> onClickImage(id) }
+                        }
+                )
+            }
             Spacer(modifier = Modifier.padding(horizontal = 8.dp))
-            RecommendationsImage(
-                image = imageC2.first,
-                title = imageC2.second,
-                imageSize = 160.dp,
-                modifier = Modifier.weight(1f, fill = false)
-            )
+            list.getOrNull(6)?.let {
+                RecommendationsImage(
+                    image = it.images?.jpg?.image_url.orEmpty(),
+                    title = it.title.orEmpty(),
+                    imageSize = 160.dp,
+                    modifier = Modifier.weight(1f, fill = false)
+                        .clickableDelayed {
+                            it.mal_id?.let { id -> onClickImage(id) }
+                        }
+                )
+            }
         }
     }
 }
@@ -318,14 +346,9 @@ private fun RecommendationsPreview() {
                 onClickNextButton = {},
                 onClickPrevButton = {},
                 list = listOf(
-                    Pair("", " TRH TRHRTH HT RT R RE W WE FWEWFWE"),
-                    Pair("", "RTHRHTR TRH"),
-                    Pair("", " TRHTHTRHTRHT"),
-                    Pair("", " RHR HTR"),
-                    Pair("", "GERG EE EGR "),
-                    Pair("", "GEGGEHWEHS ERG ER ERH HERH"),
-                    Pair("", "GER GERG REG R ERE"),
-                )
+
+                ),
+                onClickImage = {}
             )
         }
 

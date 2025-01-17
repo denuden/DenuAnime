@@ -333,10 +333,20 @@ class HomeViewModel @Inject constructor(
                 }
             }
             is HomeScreenEvents.OnSelectNextAnimeRecommendations -> {
-                if(_homeScreenState.value.recommendationsList?.isNotEmpty() == true){
+                if(_homeScreenState.value.recommendationsList?.isNotEmpty() == true){ //if not empty
                     _homeScreenState.update {
+                        /**
+                         *189 currentPage
+                         * 189  + 7 = 196 > 200 ? false
+                         * 196 = startpage
+                         * 196 + 7 = 203 > 200 ? true
+                         * 200 = endpage
+                         * 196 - 200 shown
+                         */
                         val startPage = if( (event.page + 7) > it.recommendationsList!!.size) it.recommendationsList.size else event.page + 7
-                        it.copy(recommendationsShown = it.recommendationsList.subList(startPage, startPage + 7))
+                        val endPage = if((startPage + 7) > it.recommendationsList.size) it.recommendationsList.size else startPage + 7
+
+                        it.copy(recommendationsShown = it.recommendationsList.subList(startPage, endPage))
                     }
                 } else {
                     sendEvent(OneTimeEvents.ShowToast("No more pages left"))
