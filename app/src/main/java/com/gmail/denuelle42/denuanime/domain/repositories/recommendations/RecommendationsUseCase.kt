@@ -23,7 +23,7 @@ class RecommendationsUseCase @Inject constructor(
                 data.entry?.onEach { anime ->
                     listOfAnime.add(anime)
                 }
-            }
+        }
             emit(listOfAnime)
         }.flowOn(ioDispatcher)
     }

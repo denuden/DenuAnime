@@ -11,6 +11,8 @@ sealed class PeopleEvents {
     data class OnGetPersonManga(val id : Int) : PeopleEvents()
     data class OnGetPersonPictures(val id : Int) : PeopleEvents()
 
+    data class OnSearchQueryChanged(val query : String) : PeopleEvents()
+
     //Navigation
     data class OnNavigateToPersonDetailsScreen(val id : Int) : PeopleEvents()
 }

@@ -37,10 +37,13 @@ fun AnimeListItemCard(
     modifier: Modifier = Modifier,
     animeDetails: AnimeDetails,
     recentEpisodesList: List<Episode> = emptyList(),
+    onClick : (Int) -> Unit
 
 ) {
     OutlinedCard(
-        onClick = {},
+        onClick = {
+            onClick(animeDetails.mal_id ?: 0)
+        },
         modifier = modifier
     ) {
         Row(
@@ -112,6 +115,6 @@ private fun AnimeListItemCardPreview() {
                 ),
 
             )
-        )
+        ){}
     }
 }

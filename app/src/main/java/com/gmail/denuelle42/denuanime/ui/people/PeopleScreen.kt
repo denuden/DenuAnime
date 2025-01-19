@@ -81,7 +81,6 @@ fun PeopleScreen(
     }
     PeopleScreenContent(
         uiState = uiState,
-        onSearchQueryChanged = viewModel::onQueryChanged,
         onEvent = viewModel::onEvent
     )
 }
@@ -90,7 +89,6 @@ fun PeopleScreen(
 fun PeopleScreenContent(
     modifier: Modifier = Modifier,
     uiState: PeopleState,
-    onSearchQueryChanged: (String) -> Unit,
     onEvent : (PeopleEvents) -> Unit
 ) {
     var searchState by remember { mutableStateOf("") }
@@ -106,7 +104,7 @@ fun PeopleScreenContent(
                 value = searchState,
                 onValueChange = {
                     searchState = it
-                    onSearchQueryChanged(it)
+                    onEvent(PeopleEvents.OnSearchQueryChanged(it))
                 },
                 shape = MaterialTheme.shapes.large,
                 colors = TextFieldDefaults.colors(
@@ -168,7 +166,7 @@ fun PeopleScreenContent(
 private fun PeopleScreenPreview() {
     DenuAnimeTheme {
         Surface(modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)) {
-            PeopleScreenContent(uiState = PeopleState(), onSearchQueryChanged = {}, onEvent = {})
+            PeopleScreenContent(uiState = PeopleState(),onEvent = {})
         }
     }
 }

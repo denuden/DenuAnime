@@ -46,13 +46,13 @@ class PeopleViewModel @Inject constructor(
         .distinctUntilChanged() // Ignore if the new query is the same as the last
         .filter { it.isNotEmpty() } // Skip empty inputs
 
-    fun onQueryChanged(query: String) {
-        _stateFlow.update { it.copy(isGetPeopleSearchLoading = true) }
-        _searchQuery.value = query
-    }
 
     fun onEvent(event: PeopleEvents) {
         when(event){
+            is PeopleEvents.OnSearchQueryChanged -> {
+                _stateFlow.update { it.copy(isGetPeopleSearchLoading = true) }
+                _searchQuery.value = event.query
+            }
             is PeopleEvents.OnGetPeopleSearch -> {
                 viewModelScope.launch {
                     peopleUseCase.getPeopleSearch(event.request).asResult().onEach { res ->

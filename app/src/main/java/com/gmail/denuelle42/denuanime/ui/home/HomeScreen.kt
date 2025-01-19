@@ -587,7 +587,9 @@ fun LazyListScope.episodesAndSeasonsSection(
                     animeDetails = anime.entry ?: AnimeDetails(),
                     modifier = Modifier.padding(vertical = 3.dp, horizontal = 8.dp),
                     recentEpisodesList = anime.episodes.orEmpty()
-                )
+                ){
+                    onEvent(HomeScreenEvents.OnNavigateToAnimeDetails(it))
+                }
             }
         } else { // if list is empty, then show an empty placeholder
             item {

@@ -42,6 +42,7 @@ fun AnimeVoicesItemCardList(modifier: Modifier = Modifier, voices: Voices) {
             AsyncImageWithErrorHandler(
                 model = voices.character?.images?.jpg?.image_url,
                 contentDescription = voices.character?.name,
+                shouldShowEnlargeButton = false,
                 modifier = Modifier
                     .size(80.dp)
                     .clip(CircleShape)
