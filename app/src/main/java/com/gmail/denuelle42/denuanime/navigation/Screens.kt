@@ -50,4 +50,7 @@ sealed class AnimeScreens : NavigationScreens {
     @Serializable
     data class AnimeDetailsNavigation(val id : Int) : AnimeScreens()
 
+    @Serializable
+    data object AnimeSearchNavigation : AnimeScreens()
+
 }

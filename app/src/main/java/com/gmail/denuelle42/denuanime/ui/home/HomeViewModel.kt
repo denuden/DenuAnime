@@ -416,6 +416,9 @@ class HomeViewModel @Inject constructor(
             is HomeScreenEvents.OnNavigateToAnimeDetails -> {
                 sendEvent(OneTimeEvents.OnNavigate(AnimeScreens.AnimeDetailsNavigation(event.id)))
             }
+            is HomeScreenEvents.OnNavigateToAnimeSearch -> {
+                sendEvent(OneTimeEvents.OnNavigate(AnimeScreens.AnimeSearchNavigation))
+            }
         }
     }
 

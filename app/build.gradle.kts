@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.gmail.denuelle42.denuanime"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.gmail.denuelle42.denuanime"

@@ -2,7 +2,6 @@ package com.gmail.denuelle42.denuanime.ui.common
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,10 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
@@ -33,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.annotation.ExperimentalCoilApi
@@ -111,22 +106,6 @@ fun AnimeItemCard(modifier: Modifier = Modifier, image: Any, title : String) {
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowDown, contentDescription = stringResource(R.string.more_information),
-                    tint = Color.White,
-                    modifier = Modifier.padding(start = 6.dp).align(Alignment.Bottom)
-                )
-            }
-        }
-        Column(
-            modifier = Modifier
-                .background(color = MaterialTheme.colorScheme.background)
-                .animateContentSize()
-                .fillMaxWidth()
-                .padding(if(expanded) 8.dp else 0.dp)
-        ) {
-            if(expanded) {
-                Text("Sample Text", style = MaterialTheme.typography.bodyMedium)
             }
         }
     }

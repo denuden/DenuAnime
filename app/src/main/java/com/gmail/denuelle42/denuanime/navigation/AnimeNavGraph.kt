@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.gmail.denuelle42.denuanime.ui.anime.AnimeDetailsScreen
+import com.gmail.denuelle42.denuanime.ui.anime.AnimeSearchScreen
 
 fun NavGraphBuilder.addAnimeNavGraph(
     navController: NavController
@@ -22,6 +23,13 @@ fun NavGraphBuilder.addAnimeNavGraph(
                 onNavigate = { navController.navigate(it) },
                 onPopBackStack = { navController.popBackStack() },
                 id =  arguments.id
+            )
+        }
+
+        composable<AnimeScreens.AnimeSearchNavigation> {
+            AnimeSearchScreen(
+                onNavigate = { navController.navigate(it) },
+                onPopBackStack = { navController.popBackStack() },
             )
         }
     }

@@ -51,7 +51,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -163,6 +162,9 @@ fun HomeScreenContent(
                 animeList = homeScreenState.animeList.orEmpty(),
                 onClickItem = {
                     onEvent(HomeScreenEvents.OnNavigateToAnimeDetails(it))
+                },
+                onClickSeeMore = {
+                    onEvent(HomeScreenEvents.OnNavigateToAnimeSearch)
                 }
             )
         }
@@ -353,7 +355,8 @@ fun AnimeCardListSection(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     animeList: List<AnimeDetails>,
-    onClickItem: (Int) -> Unit
+    onClickItem: (Int) -> Unit,
+    onClickSeeMore : () -> Unit,
 ) {
     //Whole Device wdith subtracted its 1/4
     val configuration = LocalConfiguration.current
@@ -407,10 +410,15 @@ fun AnimeCardListSection(
                     fontWeight = FontWeight.Light,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.tertiary,
-                    textAlign = TextAlign.End,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .align(Alignment.End)
                         .padding(top = 4.dp, end = 12.dp)
+                        .clip(MaterialTheme.shapes.small)
+                        .clickableDelayed {
+                            onClickSeeMore()
+                        }
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+
                 )
             }
         } else { // if list is empty, then show an empty placeholder
@@ -631,7 +639,8 @@ private fun HomeScreenPreview() {
             AnimeCardListSection(
                 isLoading = false,
 animeList = listOf(AnimeDetails(), AnimeDetails() ),
-                onClickItem = {}
+                onClickItem = {},
+                onClickSeeMore = {}
             )
         }
     }
