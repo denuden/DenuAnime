@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,7 +31,8 @@ import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 @Composable
 fun FilterDropdown(
     modifier: Modifier = Modifier,
-    buttonLabel: String,
+    icon : ImageVector = Icons.Default.FilterAlt,
+    buttonLabel: String? = null,
     typeLabel : String? = null,
     secondaryTypeLabel : String? = null,
     type: List<String>,
@@ -52,8 +54,10 @@ fun FilterDropdown(
                 expanded = true
             },
         ) {
-            Icon(imageVector = Icons.Default.FilterAlt, contentDescription = buttonLabel)
-            Text(text = buttonLabel)
+            Icon(imageVector = icon, contentDescription = buttonLabel.orEmpty())
+            if (buttonLabel != null) {
+                Text(text = buttonLabel)
+            }
         }
 
         DropdownMenu(

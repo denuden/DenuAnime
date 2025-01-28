@@ -46,9 +46,9 @@ fun DetailedAnimeListItemCardContent(modifier: Modifier = Modifier) {
                 model = "https://cdn.dribbble.com/userupload/15382945/file/original-d075517ff1d6d72e7d57d69eca231090.png?resize=752x&vertical=center",
                 shouldShowEnlargeButton = false,
                 modifier = Modifier
-                    .size(60.dp)
+                    .size(50.dp)
                     .clip(CircleShape)
-                    .padding(end = 6.dp)
+                    .padding(end = 8.dp)
             )
 
             Column {

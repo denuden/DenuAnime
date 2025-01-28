@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -31,7 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.ui.common.DetailedAnimeListItemCard
+import com.gmail.denuelle42.denuanime.ui.common.FilterDropdown
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
 @Composable
@@ -56,15 +58,20 @@ fun AnimeSearchScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
-    var searchState by rememberSaveable { mutableStateOf("") }
+    var searchState by remember { mutableStateOf("") }
     val lazyState = rememberLazyListState()
-    var expanded by rememberSaveable { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
 
     val recentSearches = listOf(
         "Shingeki", "Good life anime", "spice of life"
     )
 
-    Box(Modifier.fillMaxSize().semantics { isTraversalGroup = true }) {
+    var selectedListViewType by remember { mutableStateOf(ViewTypes.VIEW_TYPE_CARD_ROW) }
+
+    Box(
+        Modifier
+            .fillMaxSize()
+            .semantics { isTraversalGroup = true }) {
         SearchBar(
             modifier = Modifier.align(Alignment.TopCenter),
             inputField = {
@@ -78,7 +85,15 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
                     onExpandedChange = { expanded = it },
                     placeholder = { Text("Hinted search text") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    trailingIcon = { Icon(Icons.Default.MoreVert, contentDescription = null) },
+                    trailingIcon = {
+                        FilterDropdown(
+                            icon = Icons.Default.MoreVert,
+                            type = listOf("Card Thumbnails", "Card Row", "List"),
+                            onFilterClick = { type, _ ->
+
+                            }
+                        )
+                    },
                 )
             },
             expanded = expanded,
@@ -91,16 +106,17 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
                     modifier = Modifier.height(4.dp)
                 )
                 repeat(recentSearches.size) { index ->
-                    val resultText =  recentSearches[index]
+                    val resultText = recentSearches[index]
                     ListItem(
                         headlineContent = { Text(resultText) },
                         supportingContent = { Text("01.24.25") },
                         leadingContent = { Icon(Icons.Filled.Schedule, contentDescription = null) },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         modifier =
-                        Modifier.clickable {
-                            expanded = false
-                        }
+                        Modifier
+                            .clickable {
+                                expanded = false
+                            }
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                     )
@@ -115,12 +131,44 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
             modifier = Modifier,
         ) {
             val list = List(100) { "Text $it" }
-            items(count = list.size) {
-                DetailedAnimeListItemCard()
-                Spacer(modifier.height(4.dp))
+            when (selectedListViewType) {
+                ViewTypes.VIEW_TYPE_CARD_ROW -> {
+                    cardRow(list)
+                }
+                ViewTypes.VIEW_TYPE_CARD_THUMBNAIL -> {
+                    items(count = list.size) {
+                        DetailedAnimeListItemCard()
+                    }
+                }
+                ViewTypes.VIEW_TYPE_LIST -> {
+                    items(count = list.size) {
+                        DetailedAnimeListItemCard()
+                    }
+                }
             }
         }
     }
+}
+
+/**
+ * View Type Card Row
+ */
+fun LazyListScope.cardRow(list : List<String>){
+    items(count = list.size) {
+        DetailedAnimeListItemCard()
+        Spacer(Modifier.height(4.dp))
+    }
+}
+
+fun LazyListScope.cardThumbnail(list : List<String>){
+
+}
+
+
+object ViewTypes {
+    const val VIEW_TYPE_CARD_ROW = "VIEW_TYPE_CARD_ROW"
+    const val VIEW_TYPE_CARD_THUMBNAIL = "VIEW_TYPE_CARD_THUMBNAIL"
+    const val VIEW_TYPE_LIST = "VIEW_TYPE_LIST"
 }
 
 @Preview
