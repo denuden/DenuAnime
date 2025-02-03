@@ -1,4 +1,4 @@
-package com.gmail.denuelle42.denuanime.ui.common
+package com.gmail.denuelle42.denuanime.ui.common.cards
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState

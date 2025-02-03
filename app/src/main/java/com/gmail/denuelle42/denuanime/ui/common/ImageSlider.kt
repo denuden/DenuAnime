@@ -42,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.ImageType
+import com.gmail.denuelle42.denuanime.ui.common.dialog.FullScreenDialog
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.AsyncImageWithBackgroundPalette
 import kotlinx.coroutines.launch
@@ -86,7 +87,7 @@ fun ImageSlider(
         )
     )
 
-    FullScreenDialog(showDialog = shouldShowFullScreenImage, onClose = { shouldShowFullScreenImage = false }) {
+    FullScreenDialog(showDialog = shouldShowFullScreenImage, onDismissRequest = { shouldShowFullScreenImage = false }) {
         AsyncImageWithBackgroundPalette(
             model = images.getOrNull(selectedImage)?.jpg?.image_url.orEmpty(),
             onEnlargeImage = { shouldShowFullScreenImage = false }, //since this is from fullscreen, make it a close button instead of enlarge

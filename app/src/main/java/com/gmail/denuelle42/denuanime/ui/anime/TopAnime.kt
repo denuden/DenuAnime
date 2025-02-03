@@ -15,7 +15,7 @@ import com.gmail.denuelle42.denuanime.data.remote.models.BaseImages
 import com.gmail.denuelle42.denuanime.data.remote.models.ImageType
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
-import com.gmail.denuelle42.denuanime.ui.common.AnimeItemCard
+import com.gmail.denuelle42.denuanime.ui.common.cards.AnimeItemCard
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
 @Composable

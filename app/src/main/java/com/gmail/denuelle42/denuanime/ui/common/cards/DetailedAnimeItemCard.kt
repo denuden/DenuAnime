@@ -1,4 +1,4 @@
-package com.gmail.denuelle42.denuanime.ui.common
+package com.gmail.denuelle42.denuanime.ui.common.cards
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
+import com.gmail.denuelle42.denuanime.ui.common.chips.GenreChips
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.AsyncImageWithBackgroundPalette
 

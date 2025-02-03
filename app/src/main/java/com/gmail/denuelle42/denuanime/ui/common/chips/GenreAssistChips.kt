@@ -1,4 +1,4 @@
-package com.gmail.denuelle42.denuanime.ui.common
+package com.gmail.denuelle42.denuanime.ui.common.chips
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement

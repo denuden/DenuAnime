@@ -64,9 +64,7 @@ fun FilterDropdown(
             expanded = expanded,
             onDismissRequest = {
                 expanded = false
-                onFilterClick(selectedType, selectedSecondaryType)
             }) {
-
             Row {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(text = typeLabel ?: "", fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start=6.dp))
@@ -75,6 +73,8 @@ fun FilterDropdown(
                             text = { Text(item) },
                             onClick = {
                                 selectedType = type[index]
+                                onFilterClick(selectedType, selectedSecondaryType)
+                                expanded = false
                             },
                             leadingIcon = {
                                 if (selectedType == item) {
@@ -90,7 +90,6 @@ fun FilterDropdown(
                     }
                 }
 
-
                 if (secondaryType.isNotEmpty()) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(text = secondaryTypeLabel ?: "", fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start=6.dp))
@@ -99,6 +98,8 @@ fun FilterDropdown(
                                 text = { Text(item) },
                                 onClick = {
                                     selectedSecondaryType = secondaryType[index]
+                                    onFilterClick(selectedType, selectedSecondaryType)
+                                    expanded = false
                                 },
                                 leadingIcon = {
                                     if (selectedSecondaryType == item) {

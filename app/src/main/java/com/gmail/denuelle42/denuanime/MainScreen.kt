@@ -1,6 +1,5 @@
 package com.gmail.denuelle42.denuanime
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -69,7 +68,6 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
     LaunchedEffect(currentRoute) {
         //will show topbarcontent if route is from mainscreens (E.G. Home)
         topBarState = currentRoute?.contains(screenType) == true
-        Log.d("gwegwe", currentRoute.toString())
         topBarTitle = getTopBarTitle(currentRoute.toString())
     }
 
@@ -170,7 +168,6 @@ fun TopAppBarContent(
                     )
                 }
             }
-
         },
 
         actions = {

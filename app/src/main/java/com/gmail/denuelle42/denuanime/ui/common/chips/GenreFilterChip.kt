@@ -1,4 +1,4 @@
-package com.gmail.denuelle42.denuanime.ui.home.components
+package com.gmail.denuelle42.denuanime.ui.common.chips
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,7 +21,7 @@ import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 
 @Composable
-fun CategoriesFilterChip(
+fun GenreFilterChip(
     modifier: Modifier = Modifier,
     categoryList: List<Genre>,
     isEnabled: Boolean = true,
@@ -36,7 +36,7 @@ fun CategoriesFilterChip(
                 enabled = isEnabled,
                 onClick = {
                     onSelectedCategory(category)
-                  },
+                },
                 label = {
                     Text(category.name ?: "Unknown")
                 },
@@ -61,6 +61,12 @@ fun CategoriesFilterChip(
 @Composable
 private fun CategoriesFilterChipPreview() {
     DenuAnimeTheme {
-        CategoriesFilterChip(categoryList = emptyList()){}
+        GenreFilterChip(
+            categoryList = listOf(
+                Genre(name = "wegwe"),
+                Genre(name = "wegwe"),
+                Genre(name = "wegwe"),
+            )
+        ) { }
     }
 }

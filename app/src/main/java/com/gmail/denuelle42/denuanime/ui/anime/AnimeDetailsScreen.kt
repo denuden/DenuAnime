@@ -52,8 +52,8 @@ import com.gmail.denuelle42.denuanime.ui.anime.components.AnimeHeader
 import com.gmail.denuelle42.denuanime.ui.anime.components.BroadcastInfoSection
 import com.gmail.denuelle42.denuanime.ui.anime.components.OtherListingsSection
 import com.gmail.denuelle42.denuanime.ui.anime.components.SynopsisSection
-import com.gmail.denuelle42.denuanime.ui.common.FullScreenDialog
-import com.gmail.denuelle42.denuanime.ui.common.GenreChips
+import com.gmail.denuelle42.denuanime.ui.common.chips.GenreChips
+import com.gmail.denuelle42.denuanime.ui.common.dialog.FullScreenDialog
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonAnimeDetailsScreen
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.AsyncImageWithBackgroundPalette
@@ -68,7 +68,7 @@ import kotlinx.coroutines.launch
 fun AnimeDetailsScreen(
     onPopBackStack: () -> Unit,
     onNavigate: (NavigationScreens) -> Unit,
-    id : Int,
+    id: Int,
     viewModel: AnimeViewModel = hiltViewModel()
 ) {
 
@@ -89,11 +89,12 @@ fun AnimeDetailsScreen(
         when (event) {
             is OneTimeEvents.OnNavigate -> onNavigate(event.route)
             OneTimeEvents.OnPopBackStack -> onPopBackStack()
-            is OneTimeEvents.ShowSnackbar ->  {
+            is OneTimeEvents.ShowSnackbar -> {
                 scope.launch {
                     SnackBarController.sendEvent(event.snackbarEvent)
                 }
             }
+
             is OneTimeEvents.ShowToast -> {
                 Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
             }
@@ -101,10 +102,11 @@ fun AnimeDetailsScreen(
     }
 
     ComposableLifecycle { _, lifecycleEvent ->
-        when(lifecycleEvent){
+        when (lifecycleEvent) {
             Lifecycle.Event.ON_RESUME -> {
                 viewModel.onEvent(AnimeEvents.OnGetAnimeFullById(id))
             }
+
             else -> Unit
         }
     }
@@ -114,11 +116,15 @@ fun AnimeDetailsScreen(
         shouldShowFullScreenImage = true // show full screen image
     })
 
-    FullScreenDialog(showDialog = shouldShowFullScreenImage, onClose = { shouldShowFullScreenImage = false }) {
-        Box(modifier = Modifier.background(color = animatedColor)){
+    FullScreenDialog(
+        showDialog = shouldShowFullScreenImage,
+        onDismissRequest = { shouldShowFullScreenImage = false }) {
+        Box(modifier = Modifier.background(color = animatedColor)) {
             AsyncImageWithBackgroundPalette(
                 model = uiState.animeDetails?.images?.jpg?.large_image_url.orEmpty(),
-                onEnlargeImage = { shouldShowFullScreenImage = false }, //since this is from fullscreen, make it a close button instead of enlarge
+                onEnlargeImage = {
+                    shouldShowFullScreenImage = false
+                }, //since this is from fullscreen, make it a close button instead of enlarge
                 enlargeImageIcon = Icons.Default.Close,
                 onPaletteBuilderSuccess = { backgroundColor = it },
                 modifier = Modifier.matchParentSize()
@@ -129,7 +135,11 @@ fun AnimeDetailsScreen(
 
 @SuppressLint("ResourceAsColor")
 @Composable
-fun AnimeDetailsScreenContent(modifier: Modifier = Modifier, uiState: AnimeState, onEnlargeImage : () -> Unit) {
+fun AnimeDetailsScreenContent(
+    modifier: Modifier = Modifier,
+    uiState: AnimeState,
+    onEnlargeImage: () -> Unit
+) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 
@@ -158,7 +168,10 @@ fun AnimeDetailsScreenContent(modifier: Modifier = Modifier, uiState: AnimeState
                 GenreChips(genres = genres)
 
                 //Synopsis
-                SynopsisSection(synopsis = animeDetails?.synopsis, modifier = Modifier.padding(top = 8.dp))
+                SynopsisSection(
+                    synopsis = animeDetails?.synopsis,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
 
                 //Info about Airing
                 AiredInfoSection(
@@ -176,7 +189,10 @@ fun AnimeDetailsScreenContent(modifier: Modifier = Modifier, uiState: AnimeState
                 )
 
                 //Other listings
-                OtherListingsSection(animeDetails = animeDetails ?: AnimeDetails(),  modifier = Modifier.padding(top = 8.dp, bottom = 50.dp))
+                OtherListingsSection(
+                    animeDetails = animeDetails ?: AnimeDetails(),
+                    modifier = Modifier.padding(top = 8.dp, bottom = 50.dp)
+                )
             }
         }
     }
@@ -335,7 +351,7 @@ private fun AnimeDetailsScreenPreview() {
                         )
                     )
                 )
-            ){}
+            ) {}
         }
     }
 }

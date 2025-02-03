@@ -64,15 +64,15 @@ import com.gmail.denuelle42.denuanime.data.repositories.anime.response.RecentEpi
 import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonNowRequest
 import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonUpcomingRequest
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
-import com.gmail.denuelle42.denuanime.ui.common.AnimeListItemCard
-import com.gmail.denuelle42.denuanime.ui.common.DetailedAnimeItemCard
+import com.gmail.denuelle42.denuanime.ui.common.cards.AnimeListItemCard
+import com.gmail.denuelle42.denuanime.ui.common.chips.GenreFilterChip
+import com.gmail.denuelle42.denuanime.ui.common.cards.DetailedAnimeItemCard
 import com.gmail.denuelle42.denuanime.ui.common.FilterDropdown
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonAnimeDetailsCard
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonEpisodesAndSeasonsList
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonGenreList
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonPeopleList
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonRecommendationsList
-import com.gmail.denuelle42.denuanime.ui.home.components.CategoriesFilterChip
 import com.gmail.denuelle42.denuanime.ui.home.components.EpisodesAndSeasonsTab
 import com.gmail.denuelle42.denuanime.ui.home.components.PeopleList
 import com.gmail.denuelle42.denuanime.ui.home.components.Recommendations
@@ -312,14 +312,14 @@ fun AnimeGenresSection(
             visible = !isLoading
         ) {
             if (genres.isNotEmpty()) {
-                CategoriesFilterChip(
+                GenreFilterChip(
                     modifier = Modifier.fillMaxWidth(),
                     categoryList = genres,
                     isEnabled = isEnabled
                 ) { genre ->
                     if (genre.mal_id == null) { // check if genre is null, show an error
                         //TODO show toast
-                        return@CategoriesFilterChip
+                        return@GenreFilterChip
                     }
                     onEvent(HomeScreenEvents.OnSelectAnimeGenre(genre))
                 }
@@ -358,7 +358,7 @@ fun AnimeCardListSection(
     onClickItem: (Int) -> Unit,
     onClickSeeMore : () -> Unit,
 ) {
-    //Whole Device wdith subtracted its 1/4
+    //Whole Device width
     val configuration = LocalConfiguration.current
     val screenWidthDp = remember { configuration.screenWidthDp.dp }
 

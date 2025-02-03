@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.ui.common.RatingBarView
+import com.gmail.denuelle42.denuanime.ui.common.chips.ChipWithHeader
 import com.gmail.denuelle42.denuanime.utils.orEmpty
 import java.util.Locale
 

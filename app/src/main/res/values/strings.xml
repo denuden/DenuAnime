@@ -33,4 +33,5 @@
     <string name="unknown_anime_title">Unknown anime title</string>
     <string name="no_results_found">No results found</string>
     <string name="enlarge_image">Enlarge Image</string>
+    <string name="no_search_results_found">No search results found.</string>
 </resources>

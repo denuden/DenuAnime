@@ -1,4 +1,4 @@
-package com.gmail.denuelle42.denuanime.ui.anime.components
+package com.gmail.denuelle42.denuanime.ui.common.chips
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
