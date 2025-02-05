@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
+import com.gmail.denuelle42.denuanime.ui.anime.components.FullSearchFilters
 import com.gmail.denuelle42.denuanime.ui.common.FilterDropdown
 import com.gmail.denuelle42.denuanime.ui.common.cards.AnimeItemCard
 import com.gmail.denuelle42.denuanime.ui.common.cards.AnimeListItemCard
@@ -87,8 +88,7 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
     ModalBottomSheetDialog(showDialog = showFilterDialog, onDismissRequest = {
         showFilterDialog = false
     }) {
-        Column {
-        }
+        FullSearchFilters(modifier = Modifier.padding(vertical = 16.dp, horizontal = 24.dp))
     }
 
     Box(
