@@ -16,10 +16,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.people.People
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.clickableDelayed
@@ -49,14 +51,16 @@ fun PeopleList(
                 modifier = Modifier
             )
             Text(
-                text = "See more",
+                text = stringResource(R.string.btn_see_more),
                 textDecoration = TextDecoration.Underline,
                 fontWeight = FontWeight.Light,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier.clip(MaterialTheme.shapes.small).clickableDelayed {
-                    onClickSeeMore()
-                }
+                modifier = Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .clickableDelayed {
+                        onClickSeeMore()
+                    }
             )
         }
 
@@ -70,7 +74,7 @@ fun PeopleList(
                 PeopleAvatarItem(
                     id = people.mal_id ?: 0,
                     image = people.images?.jpg?.image_url.orEmpty(),
-                    name = people.name.orEmpty().ifEmpty { "No Name" },
+                    name = people.name.orEmpty().ifEmpty { stringResource(R.string.error_no_name) },
                     date = if(shouldShowBirthDate) formatIsoDateAsLongDate(people.birthday.orEmpty()) else null,
                     onClickPersonItem = {
                         onClickPersonItem(it)

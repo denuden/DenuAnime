@@ -88,12 +88,12 @@ fun Recommendations(
                 enabled = isPrevButtonEnabled && canClick,
                 modifier = Modifier.weight(1f)
             ) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, stringResource(R.string.prev))
-                Text(stringResource(R.string.prev))
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, stringResource(R.string.btn_prev))
+                Text(stringResource(R.string.btn_prev))
             }
 
             Text(
-                text = stringResource(R.string.recommendations).uppercase(),
+                text = stringResource(R.string.label_recommendations).uppercase(),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
@@ -108,8 +108,8 @@ fun Recommendations(
                 enabled = isNextButtonEnabled && canClick,
                 modifier = Modifier.weight(1f)
             ) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, stringResource(R.string.next))
-                Text(stringResource(R.string.next))
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, stringResource(R.string.btn_next))
+                Text(stringResource(R.string.btn_next))
             }
         }
         if (list.isNotEmpty()) {

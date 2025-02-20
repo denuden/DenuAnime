@@ -24,10 +24,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.BaseImages
 import com.gmail.denuelle42.denuanime.data.remote.models.ImageType
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Aired
@@ -69,7 +71,7 @@ fun BroadcastInfoSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "${"Broadcast".uppercase()}\non\n${animeDetails.broadcast?.string.orEmpty("-----")}",
+                    text = "${stringResource(R.string.label_broadcast).uppercase()}\non\n${animeDetails.broadcast?.string.orEmpty("-----")}",
                     color = MaterialTheme.colorScheme.onTertiary,
                     style = MaterialTheme.typography.titleSmall,
                     textAlign = TextAlign.Center,
@@ -105,7 +107,7 @@ fun BroadcastInfoSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                             contentDescription = null,
                         )
                         Text(
-                            text = "${animeDetails.episodes ?: 0} EPISODES",
+                            text = "${animeDetails.episodes ?: 0} ${stringResource(R.string.label_episodes).uppercase()}" ,
                             color = MaterialTheme.colorScheme.onTertiaryContainer,
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.titleSmall,
@@ -142,7 +144,9 @@ fun BroadcastInfoSection(modifier: Modifier = Modifier, animeDetails: AnimeDetai
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(12.dp).fillMaxSize()
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .fillMaxSize()
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Category,

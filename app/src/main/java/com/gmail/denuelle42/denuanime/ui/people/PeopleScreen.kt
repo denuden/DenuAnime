@@ -118,10 +118,10 @@ fun PeopleScreenContent(
                 ),
                 trailingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Search, contentDescription = stringResource( R.string.search)
+                        imageVector = Icons.Default.Search, contentDescription = stringResource( R.string.label_search)
                     )
                 },
-                label = { Text(stringResource( R.string.search))  },
+                label = { Text(stringResource( R.string.label_search))  },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -148,7 +148,7 @@ fun PeopleScreenContent(
             } else { //if empty, show placeholder
                 item {
                     Text(
-                        text = stringResource(R.string.no_results_found),
+                        text = stringResource(R.string.error_no_results_found),
                         style = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center,
                         modifier = Modifier

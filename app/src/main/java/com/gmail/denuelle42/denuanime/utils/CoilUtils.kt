@@ -65,7 +65,7 @@ class CoilUtils(@ApplicationContext val applicationContext: Context) :
 @Composable
 fun AsyncImageAvatarWithErrorHandler(
     modifier: Modifier = Modifier, model: Any?, onEnlargeImage: () -> Unit = {},
-    contentDescription: String? = stringResource(R.string.anime_banner),
+    contentDescription: String? = stringResource(R.string.label_anime_banner),
     contentScale: ContentScale = ContentScale.Crop,
     shouldShowEnlargeButton: Boolean = true,
 ) {
@@ -114,7 +114,7 @@ fun AsyncImageAvatarWithErrorHandler(
 fun AsyncImageWithErrorHandler(
     modifier: Modifier = Modifier, model: Any?, onEnlargeImage: () -> Unit = {},
     contentScale: ContentScale = ContentScale.Crop,
-    contentDescription: String? = stringResource(R.string.anime_banner),
+    contentDescription: String? = stringResource(R.string.label_anime_banner),
     shouldShowEnlargeButton: Boolean = true,
 ) {
     Box(
@@ -163,7 +163,7 @@ fun AsyncImageWithErrorHandler(
 fun AsyncImageWithBackgroundPalette(
     modifier: Modifier = Modifier,
     model: Any?,
-    contentDescription: String? = stringResource(R.string.anime_banner),
+    contentDescription: String? = stringResource(R.string.label_anime_banner),
     onEnlargeImage: () -> Unit = {},
     enlargeImageIcon : ImageVector = Icons.Default.OpenInFull,
     shouldShowEnlargeButton: Boolean = true,

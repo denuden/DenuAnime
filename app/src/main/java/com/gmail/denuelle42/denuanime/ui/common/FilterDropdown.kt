@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,12 +40,12 @@ fun FilterDropdown(
     secondaryType: List<String> = emptyList(),
     shape: Shape = ButtonDefaults.textShape,
     isEnabled : Boolean = true,
-    onFilterClick: (String, String?) -> Unit,
+    onFilterClick: (Int, Int?) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    var selectedType by remember { mutableStateOf(type[0]) }
-    var selectedSecondaryType by remember { mutableStateOf(if (secondaryType.isNotEmpty()) secondaryType[0] else null) }
+    var selectedType by remember { mutableIntStateOf(0) }
+    var selectedSecondaryType by remember { mutableStateOf(if (secondaryType.isNotEmpty()) 0 else null) }
 
     Box(modifier = modifier) {
         TextButton(
@@ -72,12 +73,12 @@ fun FilterDropdown(
                         DropdownMenuItem(
                             text = { Text(item) },
                             onClick = {
-                                selectedType = type[index]
+                                selectedType = index
                                 onFilterClick(selectedType, selectedSecondaryType)
                                 expanded = false
                             },
                             leadingIcon = {
-                                if (selectedType == item) {
+                                if (selectedType == index) {
                                     Icon(
                                         imageVector = Icons.Default.Check,
                                         contentDescription = null,
@@ -97,12 +98,12 @@ fun FilterDropdown(
                             DropdownMenuItem(
                                 text = { Text(item) },
                                 onClick = {
-                                    selectedSecondaryType = secondaryType[index]
+                                    selectedSecondaryType = index
                                     onFilterClick(selectedType, selectedSecondaryType)
                                     expanded = false
                                 },
                                 leadingIcon = {
-                                    if (selectedSecondaryType == item) {
+                                    if (selectedSecondaryType == index) {
                                         Icon(
                                             imageVector = Icons.Default.Check,
                                             contentDescription = null,

@@ -1,8 +1,10 @@
 package com.gmail.denuelle42.denuanime.navigation
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.gmail.denuelle42.denuanime.R
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
@@ -26,7 +28,7 @@ fun AppNavigation(navController: NavHostController) {
  * Gets proper top app bar title
  * based on current nvigation
  */
-fun getTopBarTitle(currentRoute : String) : String{
+fun getTopBarTitle(currentRoute : String, context : Context) : String{
    //Get route name as package  and get the last one the get the class name
    val route = currentRoute.substringAfterLast(".")
 
@@ -35,8 +37,9 @@ fun getTopBarTitle(currentRoute : String) : String{
 
    //check route with specific route under items in sealed class NavigationScreens (not RootGraphs)
    return when(cleaned){
-      "PeopleNavigation" -> "Search People"
-      "PeopleDetailsNavigation" -> "Details"
-      else -> "DenuAnime"
+      context.getString(R.string.nav_peoplenavigation) -> context.getString(R.string.screen_search_people)
+      context.getString(R.string.nav_peopledetailsnavigation) -> context.getString(R.string.screen_details)
+      context.getString(R.string.nav_animesearchnavigation) -> context.getString(R.string.screen_search_anime)
+      else ->  context.getString(R.string.app_name)
    }
 }

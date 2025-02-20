@@ -22,9 +22,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.ui.common.RatingBarView
 import com.gmail.denuelle42.denuanime.ui.common.chips.ChipWithHeader
@@ -72,28 +74,28 @@ fun AiredInfoSection(modifier: Modifier = Modifier, context: Context, animeDetai
                 modifier = Modifier.height(IntrinsicSize.Min)
             ) {
                 ChipWithHeader(
-                    title = "Rating/Score",
+                    title = stringResource(R.string.label_rating_score),
                     body = (animeDetails.score ?: 0.00).toString(),
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
                 )
                 ChipWithHeader(
-                    title = "Scored by",
+                    title = stringResource(R.string.label_scored_by),
                     body = "%,d".format((animeDetails.scored_by ?: 0)),
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
                 )
                 ChipWithHeader(
-                    title = "Rank",
+                    title = stringResource(R.string.label_rank),
                     body = (animeDetails.rank ?: 0.00).toString(),
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
                 )
                 ChipWithHeader(
-                    title = "Popularity",
+                    title = stringResource(R.string.label_popularity),
                     body = (animeDetails.popularity ?: 0.00).toString(),
                     modifier = Modifier
                         .weight(1f)

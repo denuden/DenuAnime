@@ -83,7 +83,9 @@ fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDeta
                     )
             )
 
-           GenreChips(genres = animeDetails.genres.orEmpty(), modifier = Modifier.align(Alignment.TopStart).padding(12.dp))
+           GenreChips(genres = animeDetails.genres.orEmpty(), modifier = Modifier
+               .align(Alignment.TopStart)
+               .padding(12.dp))
 
             Column(
                 modifier = Modifier
@@ -92,7 +94,7 @@ fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDeta
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = animeDetails.title ?: stringResource(R.string.nondescript),
+                    text = animeDetails.title ?: stringResource(R.string.error_nondescript),
                     color = Color.White,
                     style = MaterialTheme.typography.titleMedium,
                 )
@@ -104,14 +106,14 @@ fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDeta
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "${animeDetails.episodes ?: "Unknown"} eps",
+                        text = "${animeDetails.episodes ?: stringResource(R.string.error_unknown)} eps",
                         color = Color.White.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelMedium
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 3.dp))
                     Text(
                         text = animeDetails.status.orEmpty()
-                            .ifEmpty { "Unknown" },
+                            .ifEmpty { stringResource(R.string.error_unknown) },
                         color = Color.White.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelMedium
                     )
@@ -128,19 +130,19 @@ fun DetailedAnimeItemCard(modifier: Modifier = Modifier, animeDetails: AnimeDeta
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Score: ${animeDetails.score ?: "--"}",
+                        text = "${stringResource(R.string.label_score)}: ${animeDetails.score ?: "--"}",
                         color = Color.White.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelMedium
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 3.dp))
                     Text(
-                        text = "Rank ${animeDetails.rank ?: "--" }",
+                        text = "${stringResource(R.string.label_rank)} ${animeDetails.rank ?: "--" }",
                         color = Color.White.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelMedium
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 3.dp))
                     Text(
-                        text = animeDetails.rating.orEmpty().ifEmpty { "Unknown Rating" },
+                        text = animeDetails.rating.orEmpty().ifEmpty { stringResource(R.string.error_unknown_rating) },
                         color = Color.White.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelMedium
                     )

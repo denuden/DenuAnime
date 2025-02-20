@@ -67,7 +67,7 @@ fun SideBarContent(onNavigate: (NavigationScreens) -> Unit) {
             NavigationDrawerItem(
                 label = {
                     Text(
-                        text = "Home",
+                        text = stringResource(R.string.screen_home),
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 18.sp
                     )
@@ -77,14 +77,14 @@ fun SideBarContent(onNavigate: (NavigationScreens) -> Unit) {
                 icon = {
                     Icon(
                         imageVector = Icons.Default.Home,
-                        contentDescription = stringResource(R.string.home)
+                        contentDescription = stringResource(R.string.screen_home)
                     )
                 }
             )
             NavigationDrawerItem(
                 label = {
                     Text(
-                        text = stringResource(R.string.favorites),
+                        text = stringResource(R.string.screen_favorites),
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 18.sp
                     )
@@ -94,14 +94,14 @@ fun SideBarContent(onNavigate: (NavigationScreens) -> Unit) {
                 icon = {
                     Icon(
                         imageVector = Icons.Default.Favorite,
-                        contentDescription = stringResource(R.string.favorites)
+                        contentDescription = stringResource(R.string.screen_favorites)
                     )
                 }
             )
             NavigationDrawerItem(
                 label = {
                     Text(
-                        text = stringResource(R.string.history),
+                        text = stringResource(R.string.screen_history),
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 18.sp
                     )
@@ -111,7 +111,7 @@ fun SideBarContent(onNavigate: (NavigationScreens) -> Unit) {
                 icon = {
                     Icon(
                         imageVector = Icons.Default.History,
-                        contentDescription = stringResource(R.string.history)
+                        contentDescription = stringResource(R.string.screen_history)
                     )
                 }
             )
@@ -120,7 +120,7 @@ fun SideBarContent(onNavigate: (NavigationScreens) -> Unit) {
             NavigationDrawerItem(
                 label = {
                     Text(
-                        text = stringResource(R.string.categories),
+                        text = stringResource(R.string.screen_categories),
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 18.sp
                     )
@@ -130,13 +130,13 @@ fun SideBarContent(onNavigate: (NavigationScreens) -> Unit) {
                 icon = {
                     Icon(
                         imageVector = Icons.Default.Category,
-                        contentDescription = stringResource(R.string.categories)
+                        contentDescription = stringResource(R.string.screen_categories)
                     )
                 },
                 badge = {
                     Icon(
                         imageVector = if (categoryState) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                        contentDescription = stringResource(R.string.categories)
+                        contentDescription = stringResource(R.string.screen_categories)
                     )
                 }
             )
@@ -175,7 +175,7 @@ fun Categories(modifier: Modifier = Modifier) {
         NavigationDrawerItem(
             label = {
                 Text(
-                    text = stringResource(R.string.anime),
+                    text = stringResource(R.string.screen_anime),
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 18.sp
                 )
@@ -185,13 +185,13 @@ fun Categories(modifier: Modifier = Modifier) {
             icon = {
                 Icon(
                     imageVector = Icons.Default.FiberManualRecord,
-                    contentDescription = stringResource(R.string.anime)
+                    contentDescription = stringResource(R.string.screen_anime)
                 )
             },
             badge = {
                 Icon(
                     imageVector = if (animeSubCategoriesState) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                    contentDescription = stringResource(R.string.anime)
+                    contentDescription = stringResource(R.string.screen_anime)
                 )
             }
         )
@@ -208,7 +208,7 @@ fun Categories(modifier: Modifier = Modifier) {
         NavigationDrawerItem(
             label = {
                 Text(
-                    text = stringResource(R.string.characters),
+                    text = stringResource(R.string.screen_characters),
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 18.sp
                 )
@@ -218,20 +218,20 @@ fun Categories(modifier: Modifier = Modifier) {
             icon = {
                 Icon(
                     imageVector = Icons.Default.FiberManualRecord,
-                    contentDescription = stringResource(R.string.characters)
+                    contentDescription = stringResource(R.string.screen_characters)
                 )
             },
             badge = {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = stringResource(R.string.characters)
+                    contentDescription = stringResource(R.string.screen_characters)
                 )
             }
         )
         NavigationDrawerItem(
             label = {
                 Text(
-                    text = stringResource(R.string.voice_actor_actress),
+                    text = stringResource(R.string.screen_voice_actor_actress),
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 18.sp
                 )
@@ -241,20 +241,20 @@ fun Categories(modifier: Modifier = Modifier) {
             icon = {
                 Icon(
                     imageVector = Icons.Default.FiberManualRecord,
-                    contentDescription = stringResource(R.string.voice_actor_actress)
+                    contentDescription = stringResource(R.string.screen_voice_actor_actress)
                 )
             },
             badge = {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = stringResource(R.string.voice_actor_actress)
+                    contentDescription = stringResource(R.string.screen_voice_actor_actress)
                 )
             }
         )
         NavigationDrawerItem(
             label = {
                 Text(
-                    text = stringResource(R.string.manga),
+                    text = stringResource(R.string.screen_manga),
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 18.sp
                 )
@@ -264,13 +264,13 @@ fun Categories(modifier: Modifier = Modifier) {
             icon = {
                 Icon(
                     imageVector = Icons.Default.FiberManualRecord,
-                    contentDescription = stringResource(R.string.manga)
+                    contentDescription = stringResource(R.string.label_manga)
                 )
             },
             badge = {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = stringResource(R.string.manga)
+                    contentDescription = stringResource(R.string.label_manga)
                 )
             }
         )
@@ -295,7 +295,7 @@ fun AnimeSubCategories(modifier: Modifier = Modifier) {
                 NavigationDrawerItem(
                     label = {
                         Text(
-                            text = stringResource(R.string.episodes),
+                            text = stringResource(R.string.screen_episodes),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Light,
                             fontSize = 18.sp
@@ -307,7 +307,7 @@ fun AnimeSubCategories(modifier: Modifier = Modifier) {
                 NavigationDrawerItem(
                     label = {
                         Text(
-                            text = stringResource(R.string.seasons),
+                            text = stringResource(R.string.screen_seasons),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Light,
                             fontSize = 18.sp
@@ -319,7 +319,7 @@ fun AnimeSubCategories(modifier: Modifier = Modifier) {
                 NavigationDrawerItem(
                     label = {
                         Text(
-                            text = stringResource(R.string.schedules),
+                            text = stringResource(R.string.screen_schedules),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Light,
                             fontSize = 18.sp
@@ -331,7 +331,7 @@ fun AnimeSubCategories(modifier: Modifier = Modifier) {
                 NavigationDrawerItem(
                     label = {
                         Text(
-                            text = stringResource(R.string.genre),
+                            text = stringResource(R.string.screen_genre),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Light,
                             fontSize = 18.sp

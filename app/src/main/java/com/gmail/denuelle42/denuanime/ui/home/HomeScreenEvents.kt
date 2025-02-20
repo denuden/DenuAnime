@@ -17,7 +17,7 @@ sealed class HomeScreenEvents {
     object OnGetAnimeRecommendations : HomeScreenEvents()
     data object OnGetMangaRecommendations : HomeScreenEvents()
     data class OnSelectAnimeGenre(val genre: Genre) : HomeScreenEvents()
-    data class OnChangeAnimeFilters(val type: String, val rating : String) : HomeScreenEvents()
+    data class OnChangeAnimeFilters(val typeIndex: Int, val ratingIndex : Int) : HomeScreenEvents()
     data class OnSelectNextAnimeRecommendations(val page : Int) : HomeScreenEvents()
     data class OnSelectPreviousAnimeRecommendations(val page : Int) : HomeScreenEvents()
     object OnGetRecentEpisodes : HomeScreenEvents()

@@ -38,14 +38,14 @@ fun GenreFilterChip(
                     onSelectedCategory(category)
                 },
                 label = {
-                    Text(category.name ?: "Unknown")
+                    Text(category.name ?: stringResource(R.string.error_unknown))
                 },
                 selected = category.isSelected,
                 leadingIcon = if (category.isSelected) {
                     {
                         Icon(
                             imageVector = Icons.Default.Done,
-                            contentDescription = stringResource(R.string.selected),
+                            contentDescription = stringResource(R.string.label_selected),
                             modifier = Modifier.size(FilterChipDefaults.IconSize)
                         )
                     }

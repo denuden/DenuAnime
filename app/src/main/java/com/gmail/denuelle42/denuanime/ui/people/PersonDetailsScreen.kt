@@ -163,7 +163,7 @@ fun Details(modifier: Modifier = Modifier, data : People, context : Context) {
     Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
         Row {
             Text(
-                data.name ?: stringResource(R.string.unknown_name),
+                data.name ?: stringResource(R.string.error_unknown_name),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -178,7 +178,7 @@ fun Details(modifier: Modifier = Modifier, data : People, context : Context) {
         }
 
         Text(
-            "Alternate Names: ${data.alternate_names?.takeIf { it.isNotEmpty() }?.joinToString(", ") ?: "---"}",
+            "${ stringResource(R.string.label_alternate_names) }: ${data.alternate_names?.takeIf { it.isNotEmpty() }?.joinToString(", ") ?: "---"}",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Light
         )
@@ -261,7 +261,7 @@ fun Details(modifier: Modifier = Modifier, data : People, context : Context) {
             shape = MaterialTheme.shapes.medium,
             contentPadding = PaddingValues(vertical = 4.dp, horizontal = 2.dp)
         ) {
-            Text(if(isAboutContentExpanded) "Hide" else "See more")
+            Text(if(isAboutContentExpanded) stringResource(R.string.btn_hide) else stringResource(R.string.btn_see_more))
         }
     }
 }
@@ -270,7 +270,7 @@ fun Details(modifier: Modifier = Modifier, data : People, context : Context) {
 @Composable
 fun VoicesTab(modifier: Modifier = Modifier){
     var tabState by remember { mutableIntStateOf(0) }
-    val tabTitles = listOf("Voices")
+    val tabTitles = listOf(stringResource(R.string.label_voices))
     PrimaryTabRow(
         selectedTabIndex = tabState,
         indicator = {
@@ -309,9 +309,10 @@ fun LazyListScope.voicesList(voices : List<Voices>) {
         }
     } else { // if list is empty, then show an empty placeholder
         item {
-            Text("No voices found",  textAlign = TextAlign.Center,modifier = Modifier
-                .padding(vertical = 24.dp, horizontal = 8.dp)
-                .fillMaxWidth())
+            Text(
+                stringResource(R.string.error_no_voices_found),  textAlign = TextAlign.Center,modifier = Modifier
+                    .padding(vertical = 24.dp, horizontal = 8.dp)
+                    .fillMaxWidth())
         }
     }
 }

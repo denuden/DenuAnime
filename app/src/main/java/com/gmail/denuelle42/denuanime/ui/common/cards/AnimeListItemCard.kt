@@ -54,7 +54,8 @@ fun AnimeListItemCard(
             AsyncImageWithErrorHandler(
                 model = animeDetails.images?.jpg?.large_image_url,
                 shouldShowEnlargeButton = false,
-                modifier = Modifier .padding(end = 8.dp)
+                modifier = Modifier
+                    .padding(end = 8.dp)
                     .size(width = 74.dp, height = 96.dp)
                     .clip(MaterialTheme.shapes.small)
             )
@@ -67,7 +68,7 @@ fun AnimeListItemCard(
 
                 Text(
                     text = animeDetails.title.orEmpty()
-                        .ifEmpty { stringResource(R.string.no_title_specified) },
+                        .ifEmpty { stringResource(R.string.error_no_title_specified) },
                     style = MaterialTheme.typography.titleSmall)
 
                 if(recentEpisodesList.isNotEmpty()){
@@ -81,7 +82,7 @@ fun AnimeListItemCard(
                                 contentPadding = PaddingValues(vertical = 3.dp, horizontal = 10.dp),
                                 modifier = Modifier.height(28.dp),
                             ) {
-                                    Text(text = episode.title ?: "Unknown Episode")
+                                    Text(text = episode.title ?: stringResource(R.string.error_unknown_episode))
                             }
                         }
                     }

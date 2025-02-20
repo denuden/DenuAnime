@@ -41,6 +41,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -83,7 +84,7 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
     val recentSearches = listOf(
         "Shingeki", "Good life anime", "spice of life"
     )
-    var selectedListViewType by remember { mutableStateOf(ViewTypes.VIEW_TYPE_CARD_ROW) }
+    var selectedListViewType by remember { mutableIntStateOf(0) }
 
     ModalBottomSheetDialog(showDialog = showFilterDialog, onDismissRequest = {
         showFilterDialog = false
@@ -106,7 +107,7 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
                     onSearch = { expanded = false },
                     expanded = expanded,
                     onExpandedChange = { expanded = it },
-                    placeholder = { Text("Search Anime") },
+                    placeholder = { Text(stringResource(R.string.hint_search_anime)) },
                     leadingIcon = {
                         IconButton(onClick = {
                            showFilterDialog = true
@@ -126,9 +127,9 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
                         }else {
                             FilterDropdown(
                                 icon = Icons.Default.MoreVert,
-                                type = listOf(ViewTypes.VIEW_TYPE_CARD_ROW, ViewTypes.VIEW_TYPE_CARD_THUMBNAIL, ViewTypes.VIEW_TYPE_LIST),
-                                onFilterClick = { type, _ ->
-                                    selectedListViewType = type
+                                type = listOf("Card Row", "Card Thumbnail", "Card List"),
+                                onFilterClick = { typeIndex, _ ->
+                                    selectedListViewType = typeIndex
                                 }
                             )
                         }
@@ -141,7 +142,7 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
             //Recent Searches
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 Text(
-                    text = "Recent Searches",
+                    text = stringResource(R.string.label_recent_searches),
                     modifier = Modifier.height(4.dp)
                 )
                 repeat(recentSearches.size) { index ->
@@ -218,7 +219,7 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
                     .fillMaxWidth()
                     .background(color = Color.LightGray, shape = MaterialTheme.shapes.small)
             ) {
-                Text(text = stringResource(R.string.no_search_results_found))
+                Text(text = stringResource(R.string.text_no_search_results_found))
             }
         }
 
@@ -258,9 +259,9 @@ fun LazyListScope.cardList(list : List<String>){
 }
 
 object ViewTypes {
-    const val VIEW_TYPE_CARD_ROW = "Card Row"
-    const val VIEW_TYPE_CARD_THUMBNAIL = "Card Thumbnails"
-    const val VIEW_TYPE_LIST = "Card List"
+    const val VIEW_TYPE_CARD_ROW = 0
+    const val VIEW_TYPE_CARD_THUMBNAIL = 1
+    const val VIEW_TYPE_LIST = 2
 }
 
 @Preview

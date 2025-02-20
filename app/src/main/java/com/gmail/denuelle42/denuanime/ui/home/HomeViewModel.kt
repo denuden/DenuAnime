@@ -61,40 +61,40 @@ class HomeViewModel @Inject constructor(
     }
 
     //Formats Filter dropodown type for API Request
-    private fun formatType(type : String) : String {
+    private fun formatType(type : Int) : String {
        return when (type) {
-            "All" -> ""
-            "TV" -> "tv"
-            "Movie" -> "movie"
-            "OVA" -> "ova"
-            "Special" -> "special"
-            "ONA" -> "ona"
-            "Music" -> "music"
-            "CM" -> "cm"
-            "PV" -> "pv"
-            "TV Special" -> "tv_special"
+            0 -> ""
+            1 -> "tv"
+            2 -> "movie"
+            3 -> "ova"
+            4 -> "special"
+            5 -> "ona"
+            6 -> "music"
+            7 -> "cm"
+            8 -> "pv"
+            9 -> "tv_special"
             else -> ""
         }
     }
 
     //Formats Filter dropodown secondary type for API Request
-    private fun formatRating(rating : String) : String {
+    private fun formatRating(rating : Int) : String {
         return when (rating) {
-            "All" -> ""
-            "G" -> "g"
-            "PG" -> "pg"
-            "PG-13" -> "pg13"
-            "R-17+" -> "r17"
-            "R-Mild Nudity" -> "r"
-            "Rx-Hentai" -> "rx"
+            0 -> ""
+            1-> "g"
+            2 -> "pg"
+            3 -> "pg13"
+            4  -> "r17"
+            5 -> "r"
+            6 -> "rx"
             else -> ""
         }
     }
 
     //value holders to make calls across different API to persists its settings
     private val selectedGenre = mutableIntStateOf(-1)
-    private val selectedType = mutableStateOf("All")
-    private val selectedRating = mutableStateOf("All")
+    private val selectedType = mutableStateOf(0)
+    private val selectedRating = mutableStateOf(0)
     private val selectedEpisodesAndSeasonTab = mutableIntStateOf(0)
 
     fun getSelectedEpisodesAndSeasonTab() : Int {
@@ -205,8 +205,8 @@ class HomeViewModel @Inject constructor(
             }
 
             is HomeScreenEvents.OnChangeAnimeFilters -> {
-                selectedRating.value = event.rating
-                selectedType.value  = event.type
+                selectedRating.value = event.ratingIndex
+                selectedType.value  = event.typeIndex
 
                 //Recall Get Anime
                 if (selectedGenre.value == -1) {
@@ -214,8 +214,8 @@ class HomeViewModel @Inject constructor(
                         HomeScreenEvents.OnGetTopAnime(
                             GetTopAnimeRequest(
                                 filter = "bypopularity",
-                                type = formatType(event.type),
-                                rating = formatRating(event.rating)
+                                type = formatType(event.typeIndex),
+                                rating = formatRating(event.ratingIndex)
                             )
                         )
                     )
@@ -226,8 +226,8 @@ class HomeViewModel @Inject constructor(
                             GetAnimeSearchRequest(
                                 status = "upcoming",
                                 order_by = "popularity",
-                                type = formatType(event.type),
-                                rating = formatRating(event.rating)
+                                type = formatType(event.typeIndex),
+                                rating = formatRating(event.ratingIndex)
                             )
                         )
                     )
@@ -237,8 +237,8 @@ class HomeViewModel @Inject constructor(
                         .joinToString(separator = ",") { it.mal_id.toString() }
                     onEvent(HomeScreenEvents.OnGetAnimeSearch(GetAnimeSearchRequest(
                         genres = formattedGenres,
-                        type = formatType(event.type),
-                        rating = formatRating(event.rating))
+                        type = formatType(event.typeIndex),
+                        rating = formatRating(event.ratingIndex))
                     ))
                 }
             }

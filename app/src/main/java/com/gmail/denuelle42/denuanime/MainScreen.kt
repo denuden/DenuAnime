@@ -37,8 +37,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.gmail.denuelle42.denuanime.navigation.AnimeScreens
 import com.gmail.denuelle42.denuanime.navigation.AppNavigation
 import com.gmail.denuelle42.denuanime.navigation.MainScreens
+import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.navigation.getTopBarTitle
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.ObserveAsEvents
@@ -68,7 +70,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
     LaunchedEffect(currentRoute) {
         //will show topbarcontent if route is from mainscreens (E.G. Home)
         topBarState = currentRoute?.contains(screenType) == true
-        topBarTitle = getTopBarTitle(currentRoute.toString())
+        topBarTitle = getTopBarTitle(currentRoute.toString(), context = context)
     }
 
     //stating snackbar anywhere so it can be called from any screen
@@ -115,14 +117,20 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
                 TopAppBarContent(
                     title = topBarTitle,
                     onClickNavigationMenu = {
-                    scope.launch {
-                        drawerState.apply {
-                            if (isClosed) open() else close()
+                        scope.launch {
+                            drawerState.apply {
+                                if (isClosed) open() else close()
+                            }
                         }
+                    },
+                    topBarState = topBarState,
+                    onPopBackStack = {
+                        navController.popBackStack()
+                    },
+                    onNavigate = {
+                        navController.navigate(AnimeScreens.AnimeSearchNavigation)
                     }
-                }, topBarState = topBarState, onPopBackStack = {
-                    navController.popBackStack()
-                })
+                )
             },
         ) { contentPadding ->
             // Screen content
@@ -139,8 +147,9 @@ fun TopAppBarContent(
     modifier: Modifier = Modifier,
     onClickNavigationMenu: () -> Unit,
     topBarState: Boolean,
-    title : String,
-    onPopBackStack: () -> Unit
+    title: String,
+    onPopBackStack: () -> Unit,
+    onNavigate: (NavigationScreens) -> Unit
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -172,16 +181,16 @@ fun TopAppBarContent(
 
         actions = {
             if (topBarState) {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { onNavigate(AnimeScreens.AnimeSearchNavigation) }) {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = stringResource(R.string.search)
+                        contentDescription = stringResource(R.string.label_search)
                     )
                 }
                 IconButton(onClick = { /*TODO*/ }) {
                     Icon(
                         imageVector = Icons.Default.Favorite,
-                        contentDescription = stringResource(R.string.favorite)
+                        contentDescription = stringResource(R.string.label_favorite)
                     )
                 }
             }
@@ -199,7 +208,7 @@ private fun MainScreenPreview() {
         ) {
             TopAppBarContent(onClickNavigationMenu = {
 
-            }, topBarState = false, onPopBackStack = {}, title = "")
+            }, topBarState = false, onPopBackStack = {}, title = "", onNavigate = {})
         }
     }
 }

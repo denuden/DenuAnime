@@ -14,10 +14,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.gmail.denuelle42.denuanime.R
 
 @Composable
 fun SynopsisSection(modifier: Modifier = Modifier, synopsis: String?) {
@@ -46,7 +48,10 @@ fun SynopsisSection(modifier: Modifier = Modifier, synopsis: String?) {
             contentPadding = PaddingValues(vertical = 4.dp, horizontal = 2.dp),
             modifier = Modifier.align(Alignment.End)
         ) {
-            Text(if(isAboutContentExpanded) "Hide" else "See more")
+            Text(if(isAboutContentExpanded) stringResource(R.string.btn_hide) else stringResource(
+                R.string.btn_see_more
+            )
+            )
         }
     }
 }

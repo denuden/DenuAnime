@@ -52,12 +52,12 @@ fun AnimeVoicesItemCardList(modifier: Modifier = Modifier, voices: Voices) {
                 .weight(1f)
                 .padding(horizontal = 8.dp)) {
                 Text(
-                    text = voices.character?.name ?: stringResource(R.string.unknown_name),
+                    text = voices.character?.name ?: stringResource(R.string.error_unknown_name),
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.padding(vertical = 2.dp))
                 Text(
-                    text = voices.anime?.title ?: stringResource(R.string.unknown_anime_title),
+                    text = voices.anime?.title ?: stringResource(R.string.error_unknown_anime_title),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Normal
                 )

@@ -37,7 +37,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -64,10 +63,10 @@ import com.gmail.denuelle42.denuanime.data.repositories.anime.response.RecentEpi
 import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonNowRequest
 import com.gmail.denuelle42.denuanime.data.repositories.season.request.GetSeasonUpcomingRequest
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
-import com.gmail.denuelle42.denuanime.ui.common.cards.AnimeListItemCard
-import com.gmail.denuelle42.denuanime.ui.common.chips.GenreFilterChip
-import com.gmail.denuelle42.denuanime.ui.common.cards.DetailedAnimeItemCard
 import com.gmail.denuelle42.denuanime.ui.common.FilterDropdown
+import com.gmail.denuelle42.denuanime.ui.common.cards.AnimeListItemCard
+import com.gmail.denuelle42.denuanime.ui.common.cards.DetailedAnimeItemCard
+import com.gmail.denuelle42.denuanime.ui.common.chips.GenreFilterChip
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonAnimeDetailsCard
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonEpisodesAndSeasonsList
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonGenreList
@@ -211,7 +210,7 @@ fun TopPeopleSection(
             PeopleList(
                 modifier = modifier.fillMaxWidth(),
                 items = topPeopleList,
-                title = stringResource(R.string.top_poeple),
+                title = stringResource(R.string.label_top_poeple),
                 shouldShowBirthDate = true,
                 onClickSeeMore = onClickSeeMore,
                 onClickPersonItem = onClickPersonItem
@@ -228,7 +227,7 @@ fun TopPeopleSection(
                     )
                     .height(52.dp)
             ) {
-                Text(text = "No People Found")
+                Text(text = stringResource(R.string.error_no_people_found))
             }
         }
     }
@@ -263,36 +262,36 @@ fun AnimeGenresSection(
     ) {
         FilterDropdown(
             shape = RectangleShape,
-            buttonLabel = "Filter",
-            typeLabel = "Type",
-            secondaryTypeLabel = "Rating",
+            buttonLabel = stringResource(R.string.btn_filter),
+            typeLabel = stringResource(R.string.label_type),
+            secondaryTypeLabel = stringResource(R.string.label_rating),
             isEnabled = isEnabled,
-            type = listOf( //Type of anime
-                "All",
-                "TV",
-                "Movie",
-                "OVA",
-                "Special",
-                "ONA",
-                "Music",
-                "CM",
-                "PV",
-                "TV Special"
+            type =  listOf( //Type of anime
+                stringResource(R.string.type_all),
+                stringResource(R.string.type_tv),
+                stringResource(R.string.type_movie),
+                stringResource(R.string.type_ova),
+                stringResource(R.string.type_special),
+                stringResource(R.string.type_ona),
+                stringResource(R.string.type_music),
+                stringResource(R.string.type_cm),
+                stringResource(R.string.type_pv),
+                stringResource(R.string.type_tv_special)
             ),
-            secondaryType = listOf( //second column, rating of anie
-                "All",
-                "G",
-                "PG",
-                "PG-13",
-                "R-17+",
-                "R-Mild Nudity",
-                "Rx-Hentai"
+            secondaryType = listOf( //second column, rating of anime
+                stringResource(R.string.type_all),
+                stringResource(R.string.rating_g_all_ages),
+                stringResource(R.string.rating_pg_children),
+                stringResource(R.string.rating_pg_13_teens_13_or_older),
+                stringResource(R.string.rating_r_17_violence_profanity),
+                stringResource(R.string.rating_r_mild_nudity),
+                stringResource(R.string.rating_rx_hentai)
             ),
-        ) { type, secondaryType ->
+        ) { typeIndex, secondaryTypeIndex ->
             onEvent(
                 HomeScreenEvents.OnChangeAnimeFilters(
-                    type = type,
-                    rating = secondaryType.orEmpty()
+                    typeIndex = typeIndex,
+                    ratingIndex = secondaryTypeIndex ?: 0
                 )
             )
         }
@@ -334,7 +333,7 @@ fun AnimeGenresSection(
                             shape = MaterialTheme.shapes.small
                         )
                 ) {
-                    Text(stringResource(R.string.no_genres_found))
+                    Text(stringResource(R.string.error_no_genres_found))
                 }
             }
 
@@ -430,7 +429,7 @@ fun AnimeCardListSection(
                     .fillMaxWidth()
                     .background(color = Color.LightGray, shape = MaterialTheme.shapes.small)
             ) {
-                Text(text = stringResource(R.string.no_anime_found))
+                Text(text = stringResource(R.string.error_no_anime_found))
             }
         }
     }
@@ -463,7 +462,7 @@ fun RecommendationsSection(
      * RECOMMENDATIONS SECTION
      */
     var state by remember { mutableIntStateOf(0) }
-    val titles by remember { mutableStateOf(listOf("Anime", "Manga")) }
+    val titles = listOf(stringResource(R.string.label_anime), stringResource(R.string.label_manga))
 
     Column(
         modifier = modifier
@@ -540,7 +539,7 @@ fun RecommendationsSection(
                         )
                         .height(400.dp)
                 ) {
-                    Text(text = stringResource(R.string.no_recommendations_found))
+                    Text(text = stringResource(R.string.error_no_recommendations_found))
                 }
 
             }
@@ -612,7 +611,7 @@ fun LazyListScope.episodesAndSeasonsSection(
                             shape = MaterialTheme.shapes.small
                         )
                 ) {
-                    Text(text = stringResource(R.string.no_anime_found))
+                    Text(text = stringResource(R.string.error_no_anime_found))
                 }
             }
         }

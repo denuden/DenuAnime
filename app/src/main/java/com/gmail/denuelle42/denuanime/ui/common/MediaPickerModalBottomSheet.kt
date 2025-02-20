@@ -12,7 +12,9 @@ import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,10 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.ui.unit.dp
+import com.gmail.denuelle42.denuanime.R
 
 //https://medium.com/@jerry.cho.dev/jetpack-compose-take-photo-and-or-select-image-simplifying-image-handling-in-android-apps-21fca396481a
 @Composable
@@ -33,20 +35,20 @@ fun MediaPickerModalBottomSheet(
     onPhotoGalleryClick: () -> Unit
 ) {
     ModalBottomSheetContent(
-        header = "Choose Option",
+        header = stringResource(R.string.label_choose_option),
         onDismiss = {
             onDismiss.invoke()
         },
         items = listOf(
             BottomSheetItem(
-                title = "Take Photo",
+                title = stringResource(R.string.btn_take_photo),
                 icon = Icons.Filled.CameraAlt,
                 onClick = {
                     onTakePhotoClick.invoke()
                 }
             ),
             BottomSheetItem(
-                title = "Select Image",
+                title = stringResource(R.string.btn_select_image),
                 icon = Icons.Default.Image,
                 onClick = {
                     onPhotoGalleryClick.invoke()
@@ -61,7 +63,7 @@ fun MediaPickerModalBottomSheet(
 fun ModalBottomSheetContent(
     onDismiss: () -> Unit,
     //header
-    header: String = "Choose Option",
+    header: String = stringResource(R.string.label_choose_option),
 
     items: List<BottomSheetItem> = listOf(),
 ) {
@@ -79,7 +81,9 @@ fun ModalBottomSheetContent(
         sheetState = bottomSheetState,
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().navigationBarsPadding(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(

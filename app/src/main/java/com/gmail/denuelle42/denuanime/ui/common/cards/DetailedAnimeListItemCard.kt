@@ -35,7 +35,6 @@ import com.gmail.denuelle42.denuanime.utils.AsyncImageAvatarWithErrorHandler
 fun DetailedAnimeListItemCard(modifier: Modifier = Modifier) {
     DetailedAnimeListItemCardContent()
 }
-
 @Composable
 fun DetailedAnimeListItemCardContent(modifier: Modifier = Modifier) {
     Column(

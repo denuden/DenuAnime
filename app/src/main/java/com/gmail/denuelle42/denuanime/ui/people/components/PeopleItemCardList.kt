@@ -55,7 +55,7 @@ fun PeopleItemCardList(modifier: Modifier = Modifier, people: People, onClickIte
                 .weight(1f)
                 .padding(horizontal = 8.dp)) {
                 Text(
-                    text = people.name ?: stringResource(R.string.unknown_name),
+                    text = people.name ?: stringResource(R.string.error_unknown_name),
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.padding(vertical = 2.dp))
@@ -68,7 +68,7 @@ fun PeopleItemCardList(modifier: Modifier = Modifier, people: People, onClickIte
 
             Column(modifier) {
                 Text(
-                    text = stringResource(R.string.birthday),
+                    text = stringResource(R.string.label_birthday),
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier.align(Alignment.End)
