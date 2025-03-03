@@ -6,7 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.gmail.denuelle42.denuanime.ui.anime.AnimeDetailsScreen
-import com.gmail.denuelle42.denuanime.ui.anime.AnimeSearchScreen
+import com.gmail.denuelle42.denuanime.ui.anime.search.AnimeSearchScreen
 
 fun NavGraphBuilder.addAnimeNavGraph(
     navController: NavController

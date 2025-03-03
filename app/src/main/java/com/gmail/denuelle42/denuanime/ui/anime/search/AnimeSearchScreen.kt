@@ -1,4 +1,4 @@
-package com.gmail.denuelle42.denuanime.ui.anime
+package com.gmail.denuelle42.denuanime.ui.anime.search
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -40,6 +40,7 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,11 +49,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
@@ -86,10 +89,21 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
     )
     var selectedListViewType by remember { mutableIntStateOf(0) }
 
+    val animeSearchScreenViewModel = hiltViewModel<AnimeSearchScreenViewModel>()
+    val context = LocalContext.current
+    //Runs only once, initializer of state
+    LaunchedEffect(Unit) {
+        animeSearchScreenViewModel.getInitialState(
+            AnimeSearchScreenState(
+                typeFilter = context.getString(R.string.type_tv)
+            )
+        )
+    }
+
     ModalBottomSheetDialog(showDialog = showFilterDialog, onDismissRequest = {
         showFilterDialog = false
     }) {
-        FullSearchFilters(modifier = Modifier.padding(vertical = 16.dp, horizontal = 24.dp))
+        FullSearchFilters(modifier = Modifier.padding(vertical = 16.dp, horizontal = 24.dp), viewModel = animeSearchScreenViewModel)
     }
 
     Box(
@@ -97,7 +111,7 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .semantics { isTraversalGroup = true }) {
         SearchBar(
-            modifier = Modifier.align(Alignment.TopCenter),
+            modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth().padding(horizontal = 16.dp),
             inputField = {
                 SearchBarDefaults.InputField(
                     query = searchState,

@@ -96,7 +96,7 @@ fun AsyncImageAvatarWithErrorHandler(
             ) {
                 Icon(
                     imageVector = Icons.Default.OpenInFull,
-                    contentDescription = stringResource(R.string.enlarge_image),
+                    contentDescription = stringResource(R.string.btn_enlarge_image),
                     tint = Color.White,
                 )
             }
@@ -144,7 +144,7 @@ fun AsyncImageWithErrorHandler(
             ) {
                 Icon(
                     imageVector = Icons.Default.OpenInFull,
-                    contentDescription = stringResource(R.string.enlarge_image),
+                    contentDescription = stringResource(R.string.btn_enlarge_image),
                     tint = Color.White,
                 )
             }
@@ -212,7 +212,7 @@ fun AsyncImageWithBackgroundPalette(
             ) {
                 Icon(
                     imageVector = enlargeImageIcon,
-                    contentDescription = stringResource(R.string.enlarge_image),
+                    contentDescription = stringResource(R.string.btn_enlarge_image),
                     tint = Color.White,
                 )
             }

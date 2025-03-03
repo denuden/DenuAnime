@@ -32,6 +32,21 @@ fun formatTimestampAsLongDateTime(timestamp: Long): String {
     return dateFormat.format(Date(timestamp))
 }
 
+// Function to format the timestamp as "yyyy-MM"
+fun formatTimestampAsDashedMediumDate(timestamp: Long): String {
+    val dateFormat = SimpleDateFormat("yyyy-MM", Locale.getDefault())
+    dateFormat.timeZone = TimeZone.getDefault()
+    return dateFormat.format(Date(timestamp))
+}
+
+
+// Function to format the timestamp as "yyyy-MM-dd"
+fun formatTimestampAsDashedLongDate(timestamp: Long): String {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    dateFormat.timeZone = TimeZone.getDefault()
+    return dateFormat.format(Date(timestamp))
+}
+
 // Function to format the timesptamp as "MMMM dd"
 fun formatTimestampAsMonthDayNamed(timestamp: Long) : String {
     val dateFormat = SimpleDateFormat("MMMM dd", Locale.getDefault())

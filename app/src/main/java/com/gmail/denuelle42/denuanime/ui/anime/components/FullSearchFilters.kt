@@ -1,5 +1,7 @@
 package com.gmail.denuelle42.denuanime.ui.anime.components
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,6 +21,9 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,7 +33,10 @@ import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -38,26 +47,49 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
+import com.gmail.denuelle42.denuanime.ui.anime.search.AnimeSearchScreenEvents
+import com.gmail.denuelle42.denuanime.ui.anime.search.AnimeSearchScreenState
+import com.gmail.denuelle42.denuanime.ui.anime.search.AnimeSearchScreenViewModel
 import com.gmail.denuelle42.denuanime.ui.common.CustomSwitch
 import com.gmail.denuelle42.denuanime.ui.common.chips.GenreFilterChip
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.clickableDelayed
+import com.gmail.denuelle42.denuanime.utils.formatTimestampAsDashedLongDate
 import java.util.Locale
+
+@Composable
+fun FullSearchFilters(
+    modifier: Modifier = Modifier,
+    viewModel: AnimeSearchScreenViewModel,
+) {
+    val state by viewModel.stateFlow.collectAsState()
+    FullSearchFiltersContent(modifier = modifier, state = state, viewModel::onEvent)
+}
+
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun FullSearchFilters(modifier: Modifier = Modifier) {
+fun FullSearchFiltersContent(
+    modifier: Modifier = Modifier,
+    state : AnimeSearchScreenState,
+    onEvent : (AnimeSearchScreenEvents) -> Unit
+) {
     val scrollState = rememberScrollState()
     Column(modifier = modifier.verticalScroll(scrollState)) {
 
         //=============== Type
         TypeFilter(
-            onSelectType = { type -> }
+            selectedType = state.typeFilter.orEmpty(),
+            onSelectType = { type ->
+                onEvent(AnimeSearchScreenEvents.OnChangeTypeFilter(type))
+            }
         )
         Spacer(modifier = Modifier.height(16.dp))
         //===================== score
@@ -89,12 +121,53 @@ fun FullSearchFilters(modifier: Modifier = Modifier) {
         //=============== sort
         SortFilter(onSelectSort = { sort -> })
         Spacer(modifier = Modifier.height(16.dp))
+
+        val context = LocalContext.current
+
+        //=============== Start Date
+        var showStartDateDialog by remember { mutableStateOf(false) }
+        StartDateFilter(
+            onSelectedDate = { date ->
+                if (date != null) {
+                    Toast.makeText(
+                        context,
+                        formatTimestampAsDashedLongDate(date),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            },
+            showDialog = showStartDateDialog,
+            onDismiss = { showStartDateDialog = false },
+            onShowDialog = { showStartDateDialog = true },
+            context = context
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        //================= End Date
+        var showEndDateDialog by remember { mutableStateOf(false) }
+        EndDateFilter(
+            onSelectedDate = { date ->
+                if (date != null) {
+                    Toast.makeText(
+                        context,
+                        formatTimestampAsDashedLongDate(date),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            },
+            showDialog = showEndDateDialog,
+            onDismiss = { showEndDateDialog = false },
+            onShowDialog = { showEndDateDialog = true },
+            context = context
+        )
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TypeFilter(modifier: Modifier = Modifier, onSelectType: (String) -> Unit) {
+fun TypeFilter(modifier: Modifier = Modifier, selectedType : String, onSelectType: (String) -> Unit) {
     val listOfType = listOf(
         stringResource(R.string.type_tv),
         stringResource(R.string.type_movie),
@@ -106,8 +179,8 @@ fun TypeFilter(modifier: Modifier = Modifier, onSelectType: (String) -> Unit) {
         stringResource(R.string.type_pv),
         stringResource(R.string.type_tv_special)
     )
-    var selectedType by remember { mutableIntStateOf(0) }
-
+    var selectedIndex  by remember { mutableIntStateOf(0) }
+    selectedIndex  = listOfType.indexOf(selectedType)
     Column(modifier = modifier) {
         Title(title = stringResource(R.string.label_type), onClickInformation = { })
         FlowRow(
@@ -115,10 +188,10 @@ fun TypeFilter(modifier: Modifier = Modifier, onSelectType: (String) -> Unit) {
         ) {
             listOfType.forEachIndexed { index, type ->
                 FilterChip(
-                    selected = selectedType == index,
+                    selected = selectedIndex  == index,
                     onClick = {
-                        selectedType = index
-                        onSelectType(listOfType[selectedType])
+                        selectedIndex  = index
+                        onSelectType(listOfType[selectedIndex ])
                     },
                     label = { Text(type) },
                 )
@@ -142,7 +215,11 @@ fun ScoreFilter(
             modifier = modifier.padding(top = 6.dp)
         ) {
             Column {
-                Text(stringResource(R.string.label_fixed_score), style = MaterialTheme.typography.labelLarge, color = Color.Gray)
+                Text(
+                    stringResource(R.string.label_fixed_score),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.Gray
+                )
                 CustomSwitch(
                     checked = isScoreFixed,
                     onCheckedChange = { isScoreFixed = it }
@@ -220,7 +297,8 @@ fun ScoreFilter(
 
 @Composable
 fun StatusFilter(modifier: Modifier = Modifier, onSelectStatus: (String) -> Unit) {
-    val radioOptions = listOf(stringResource(R.string.status_airing),
+    val radioOptions = listOf(
+        stringResource(R.string.status_airing),
         stringResource(R.string.status_completed), stringResource(R.string.status_upcoming)
     )
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
@@ -282,7 +360,7 @@ fun RatingFilter(modifier: Modifier = Modifier, onSelectRating: (String) -> Unit
             maxLines = 1,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             modifier = Modifier
-                .horizontalScroll(scrollState,)
+                .horizontalScroll(scrollState)
                 .padding(top = 6.dp),
         ) {
             listOfRatings.forEachIndexed { index, rating ->
@@ -307,7 +385,7 @@ fun SFWFilter(modifier: Modifier = Modifier, onChange: (Boolean) -> Unit) {
         CustomSwitch(
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .padding(start = 64.dp), // Align switch to center of Box
+                .padding(start = 64.dp, top = 6.dp), // Align switch to center of Box
             checked = isSfw,
             onCheckedChange = {
                 isSfw = it
@@ -376,10 +454,11 @@ fun OrderByFilter(modifier: Modifier = Modifier, onSelectOrder: (String) -> Unit
 
 @Composable
 fun SortFilter(modifier: Modifier = Modifier, onSelectSort: (String) -> Unit) {
-    val radioOptions = listOf(stringResource(R.string.sort_ascending),
+    val radioOptions = listOf(
+        stringResource(R.string.sort_ascending),
         stringResource(R.string.sort_descending), stringResource(
-        R.string.sort_none
-    )
+            R.string.sort_none
+        )
     )
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
 
@@ -421,11 +500,111 @@ fun SortFilter(modifier: Modifier = Modifier, onSelectSort: (String) -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun StartDateFilter(
+    modifier: Modifier = Modifier,
+    onSelectedDate: (Long?) -> Unit,
+    onDismiss: () -> Unit,
+    showDialog: Boolean = false,
+    onShowDialog: () -> Unit,
+    context: Context,
+) {
+    val datePickerState = rememberDatePickerState()
+    val date =
+        if (datePickerState.selectedDateMillis == null) stringResource(R.string.label_select_start_date) else formatTimestampAsDashedLongDate(
+            datePickerState.selectedDateMillis!!
+        )
+    Box(modifier = modifier) {
+        Title(title = date, onClickInformation = { }, modifier = Modifier.clickableDelayed {
+            onShowDialog()
+        })
+
+        if (showDialog) {
+            DatePickerDialog(
+                onDismissRequest = { },
+                confirmButton = {
+                    TextButton(onClick = {
+                        if (datePickerState.selectedDateMillis == null) {
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.text_please_select_a_date),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@TextButton
+                        }
+                        onSelectedDate(datePickerState.selectedDateMillis)
+                        onDismiss()
+                    }) {
+                        Text(stringResource(R.string.btn_ok))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = onDismiss) {
+                        Text(stringResource(R.string.btn_cancel))
+                    }
+                }
+            ) {
+                DatePicker(state = datePickerState)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EndDateFilter(
+    modifier: Modifier = Modifier,
+    onSelectedDate: (Long?) -> Unit,
+    onDismiss: () -> Unit,
+    showDialog: Boolean = false,
+    onShowDialog: () -> Unit,
+    context: Context,
+) {
+    val datePickerState = rememberDatePickerState()
+    val date =
+        if (datePickerState.selectedDateMillis == null) stringResource(R.string.label_select_end_date) else formatTimestampAsDashedLongDate(
+            datePickerState.selectedDateMillis!!
+        )
+    Box(modifier = modifier) {
+        Title(title = date, onClickInformation = { }, modifier = Modifier.clickableDelayed {
+            onShowDialog()
+        })
+
+        if (showDialog) {
+            DatePickerDialog(
+                onDismissRequest = { },
+                confirmButton = {
+                    TextButton(onClick = {
+                        if (datePickerState.selectedDateMillis == null) {
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.text_please_select_a_date),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@TextButton
+                        }
+                        onSelectedDate(datePickerState.selectedDateMillis)
+                        onDismiss()
+                    }) {
+                        Text(stringResource(R.string.btn_ok))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = onDismiss) {
+                        Text(stringResource(R.string.btn_cancel))
+                    }
+                }
+            ) {
+                DatePicker(state = datePickerState)
+            }
+        }
+    }
+}
 
 @Composable
 private fun Title(modifier: Modifier = Modifier, onClickInformation: () -> Unit, title: String) {
-    Column( modifier = modifier ) {
-
+    Column(modifier = modifier) {
         Box(
             modifier = Modifier
                 .padding(bottom = 6.dp)
@@ -433,11 +612,14 @@ private fun Title(modifier: Modifier = Modifier, onClickInformation: () -> Unit,
                 .height(1.dp)
                 .background(color = Color.Gray)
         )
-        Row(verticalAlignment = Alignment.CenterVertically,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
+                .fillMaxHeight()
                 .clip(MaterialTheme.shapes.small)
                 .background(color = Color.LightGray.copy(alpha = 0.3f))
-                .padding(horizontal = 16.dp)) {
+                .padding(horizontal = 16.dp)
+        ) {
             Text(
                 title,
                 modifier = Modifier
@@ -459,7 +641,7 @@ private fun Title(modifier: Modifier = Modifier, onClickInformation: () -> Unit,
 private fun FullSearchFiltersPreview() {
     DenuAnimeTheme {
         Surface(modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceVariant)) {
-            FullSearchFilters(Modifier.padding(16.dp))
+            FullSearchFiltersContent(Modifier.padding(16.dp), state = AnimeSearchScreenState(),onEvent = {})
         }
     }
 }
