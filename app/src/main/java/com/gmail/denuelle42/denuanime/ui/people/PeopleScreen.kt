@@ -141,7 +141,6 @@ fun PeopleScreenContent(
                         people = it,
                         modifier = Modifier.padding(vertical = 4.dp)
                     ){
-                        //TODO
                         onEvent(PeopleEvents.OnNavigateToPersonDetailsScreen(it.mal_id ?: -1))
                     }
                 }

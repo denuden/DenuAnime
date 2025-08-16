@@ -28,32 +28,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.AsyncImageAvatarWithErrorHandler
 
 @Composable
-fun DetailedAnimeListItemCard(modifier: Modifier = Modifier) {
-    DetailedAnimeListItemCardContent()
+fun DetailedAnimeListItemCard(
+    modifier: Modifier = Modifier,
+    animeDetails : AnimeDetails
+) {
+    DetailedAnimeListItemCardContent(modifier = modifier, data = animeDetails)
 }
 @Composable
-fun DetailedAnimeListItemCardContent(modifier: Modifier = Modifier) {
+fun DetailedAnimeListItemCardContent(
+    modifier: Modifier = Modifier,
+    data: AnimeDetails
+
+) {
     Column(
-        modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.small).padding(8.dp)
+        modifier = modifier.background(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.small).padding(8.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AsyncImageAvatarWithErrorHandler(
-                model = "https://cdn.dribbble.com/userupload/15382945/file/original-d075517ff1d6d72e7d57d69eca231090.png?resize=752x&vertical=center",
+                model = "${data.images?.jpg?.small_image_url}",
                 shouldShowEnlargeButton = false,
                 modifier = Modifier
                     .size(50.dp)
                     .clip(CircleShape)
                     .padding(end = 8.dp)
             )
-
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "Kaguya Sama : Love is war",
+                        text = data.title_english.orEmpty().ifEmpty { "No Title" },
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.weight(1f)
                     )
@@ -67,7 +74,7 @@ fun DetailedAnimeListItemCardContent(modifier: Modifier = Modifier) {
                                         .padding(end = 2.dp)
                                         .size(12.dp)
                                 )
-                                Text("4.9", style = MaterialTheme.typography.labelSmall)
+                                Text("${data.score}", style = MaterialTheme.typography.labelSmall)
                             }
                         },
                         onClick = { },
@@ -78,9 +85,8 @@ fun DetailedAnimeListItemCardContent(modifier: Modifier = Modifier) {
                             .height(24.dp)
                     )
                 }
-
                 Text(
-                    text = "SPRING 2013 | FINISHED AIRING",
+                    text = "${data.season.orEmpty().uppercase()} ${data.year} | ${data.status.orEmpty().uppercase()}",
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -105,8 +111,8 @@ fun DetailedAnimeListItemCardContent(modifier: Modifier = Modifier) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.weight(1f),
                 ) {
-                    Text("Rank: 119", style = MaterialTheme.typography.labelMedium)
-                    Text("Popularity: 1", style = MaterialTheme.typography.labelMedium)
+                    Text("Rank: ${data.rank}", style = MaterialTheme.typography.labelMedium)
+                    Text("Popularity: ${data.popularity}", style = MaterialTheme.typography.labelMedium)
                 }
                 VerticalDivider(
                     modifier = Modifier
@@ -118,8 +124,8 @@ fun DetailedAnimeListItemCardContent(modifier: Modifier = Modifier) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("25 Episodes", style = MaterialTheme.typography.labelMedium)
-                    Text("24 min per ep", style = MaterialTheme.typography.labelMedium)
+                    Text("${data.episodes} Episodes", style = MaterialTheme.typography.labelMedium)
+                    Text("${data.duration}", style = MaterialTheme.typography.labelMedium)
                 }
             }
 
@@ -132,7 +138,7 @@ fun DetailedAnimeListItemCardContent(modifier: Modifier = Modifier) {
                     .fillMaxWidth()
             ) {
                 Text(
-                    "R-17+ (Violence & Profanity)".uppercase(),
+                    "${data.rating}".uppercase(),
                     style = MaterialTheme.typography.labelMedium
                 )
             }
@@ -147,7 +153,9 @@ private fun DetailedAnimeListItemCardPreview() {
         Surface(
             modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)
         ) {
-            DetailedAnimeListItemCardContent()
+            DetailedAnimeListItemCardContent(
+                data = AnimeDetails()
+            )
         }
     }
 }

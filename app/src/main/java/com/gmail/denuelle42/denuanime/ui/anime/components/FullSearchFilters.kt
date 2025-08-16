@@ -36,12 +36,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,10 +56,10 @@ import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.ui.anime.search.AnimeSearchScreenEvents
 import com.gmail.denuelle42.denuanime.ui.anime.search.AnimeSearchScreenState
-import com.gmail.denuelle42.denuanime.ui.anime.search.AnimeSearchScreenViewModel
 import com.gmail.denuelle42.denuanime.ui.common.CustomSwitch
 import com.gmail.denuelle42.denuanime.ui.common.chips.GenreFilterChip
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.CoroutineHelper
 import com.gmail.denuelle42.denuanime.utils.clickableDelayed
 import com.gmail.denuelle42.denuanime.utils.formatTimestampAsDashedLongDate
 import java.util.Locale
@@ -67,28 +67,35 @@ import java.util.Locale
 @Composable
 fun FullSearchFilters(
     modifier: Modifier = Modifier,
-    viewModel: AnimeSearchScreenViewModel,
+    animeSearchScreenState: AnimeSearchScreenState,
+    onTriggerSearch : () -> Unit,
+    onEvent: (AnimeSearchScreenEvents) -> Unit,
 ) {
-    val state by viewModel.stateFlow.collectAsState()
-    FullSearchFiltersContent(modifier = modifier, state = state, viewModel::onEvent)
+    FullSearchFiltersContent(
+        modifier = modifier,
+        state = animeSearchScreenState,
+        onTriggerSearch = onTriggerSearch,
+        onEvent
+    )
 }
 
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FullSearchFiltersContent(
     modifier: Modifier = Modifier,
-    state : AnimeSearchScreenState,
-    onEvent : (AnimeSearchScreenEvents) -> Unit
+    state: AnimeSearchScreenState,
+    onTriggerSearch : () -> Unit,
+    onEvent: (AnimeSearchScreenEvents) -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(modifier = modifier.verticalScroll(scrollState)) {
-
         //=============== Type
         TypeFilter(
             selectedType = state.typeFilter.orEmpty(),
             onSelectType = { type ->
+                onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
                 onEvent(AnimeSearchScreenEvents.OnChangeTypeFilter(type))
+                onTriggerSearch()
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -167,7 +174,11 @@ fun FullSearchFiltersContent(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TypeFilter(modifier: Modifier = Modifier, selectedType : String, onSelectType: (String) -> Unit) {
+fun TypeFilter(
+    modifier: Modifier = Modifier,
+    selectedType: String,
+    onSelectType: (String) -> Unit
+) {
     val listOfType = listOf(
         stringResource(R.string.type_tv),
         stringResource(R.string.type_movie),
@@ -179,8 +190,8 @@ fun TypeFilter(modifier: Modifier = Modifier, selectedType : String, onSelectTyp
         stringResource(R.string.type_pv),
         stringResource(R.string.type_tv_special)
     )
-    var selectedIndex  by remember { mutableIntStateOf(0) }
-    selectedIndex  = listOfType.indexOf(selectedType)
+    var selectedIndex by remember { mutableIntStateOf(0) }
+    selectedIndex = listOfType.indexOf(selectedType)
     Column(modifier = modifier) {
         Title(title = stringResource(R.string.label_type), onClickInformation = { })
         FlowRow(
@@ -188,10 +199,10 @@ fun TypeFilter(modifier: Modifier = Modifier, selectedType : String, onSelectTyp
         ) {
             listOfType.forEachIndexed { index, type ->
                 FilterChip(
-                    selected = selectedIndex  == index,
+                    selected = selectedIndex == index,
                     onClick = {
-                        selectedIndex  = index
-                        onSelectType(listOfType[selectedIndex ])
+                        selectedIndex = index
+                        onSelectType(listOfType[selectedIndex])
                     },
                     label = { Text(type) },
                 )
@@ -641,7 +652,11 @@ private fun Title(modifier: Modifier = Modifier, onClickInformation: () -> Unit,
 private fun FullSearchFiltersPreview() {
     DenuAnimeTheme {
         Surface(modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceVariant)) {
-            FullSearchFiltersContent(Modifier.padding(16.dp), state = AnimeSearchScreenState(),onEvent = {})
+            FullSearchFiltersContent(
+                Modifier.padding(16.dp),
+                state = AnimeSearchScreenState(),
+                onTriggerSearch = {},
+                onEvent = {})
         }
     }
 }

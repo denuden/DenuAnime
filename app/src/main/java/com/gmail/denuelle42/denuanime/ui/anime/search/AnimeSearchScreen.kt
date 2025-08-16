@@ -43,8 +43,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,6 +58,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gmail.denuelle42.denuanime.R
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
@@ -65,66 +68,107 @@ import com.gmail.denuelle42.denuanime.ui.common.cards.AnimeItemCard
 import com.gmail.denuelle42.denuanime.ui.common.cards.AnimeListItemCard
 import com.gmail.denuelle42.denuanime.ui.common.cards.DetailedAnimeListItemCard
 import com.gmail.denuelle42.denuanime.ui.common.dialog.ModalBottomSheetDialog
+import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonAnimeList
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
+import com.gmail.denuelle42.denuanime.utils.CoroutineHelper
 
 @Composable
 fun AnimeSearchScreen(
     onPopBackStack: () -> Unit,
-    onNavigate: (route: NavigationScreens) -> Unit
+    onNavigate: (route: NavigationScreens) -> Unit,
+    viewModel: AnimeSearchScreenViewModel = hiltViewModel()
 ) {
+    val animeSearchScreenState by viewModel.stateFlow.collectAsStateWithLifecycle()
 
-    AnimeSearchScreenContent(modifier = Modifier.fillMaxSize())
+    AnimeSearchScreenContent(
+        modifier = Modifier.fillMaxSize(),
+        state = animeSearchScreenState,
+        onEvent = viewModel::onEvent
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
+fun AnimeSearchScreenContent(
+    modifier: Modifier = Modifier,
+    state: AnimeSearchScreenState,
+    onEvent: (AnimeSearchScreenEvents) -> Unit
+) {
     var searchState by remember { mutableStateOf("") }
     val lazyState = rememberLazyListState()
     var expanded by remember { mutableStateOf(false) }
 
     var showFilterDialog by remember { mutableStateOf(false) }
-    val recentSearches = listOf(
-        "Shingeki", "Good life anime", "spice of life"
-    )
+    val recentSearches = remember { mutableStateListOf<String>() }
+
     var selectedListViewType by remember { mutableIntStateOf(0) }
 
-    val animeSearchScreenViewModel = hiltViewModel<AnimeSearchScreenViewModel>()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val coroutineHelper = remember { CoroutineHelper(coroutineScope) }
+
     //Runs only once, initializer of state
     LaunchedEffect(Unit) {
-        animeSearchScreenViewModel.getInitialState(
+        //set State for filters
+        onEvent(AnimeSearchScreenEvents.OnSetInitialState(
             AnimeSearchScreenState(
-                typeFilter = context.getString(R.string.type_tv)
+                typeFilter = "TV",
             )
-        )
+        ))
     }
 
+    //shows filters
     ModalBottomSheetDialog(showDialog = showFilterDialog, onDismissRequest = {
         showFilterDialog = false
     }) {
-        FullSearchFilters(modifier = Modifier.padding(vertical = 16.dp, horizontal = 24.dp), viewModel = animeSearchScreenViewModel)
+        FullSearchFilters(
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 24.dp),
+            animeSearchScreenState = state,
+            onTriggerSearch = {
+                //trigger search anime after debouncing delay
+                coroutineHelper.debouncer {
+                    onEvent(AnimeSearchScreenEvents.OnSearchAnime)
+                }
+            },
+            onEvent = onEvent
+        )
     }
 
+    //shows results
     Box(
         Modifier
             .fillMaxSize()
             .semantics { isTraversalGroup = true }) {
         SearchBar(
-            modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             inputField = {
                 SearchBarDefaults.InputField(
                     query = searchState,
                     onQueryChange = {
                         searchState = it
+                        onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
+                        onEvent(AnimeSearchScreenEvents.OnChangeSearchQuery(searchState))
+                        coroutineHelper.debouncer(delayMs = 1000) {
+                            if (searchState.isNotEmpty()) {
+                                onEvent(AnimeSearchScreenEvents.OnSearchAnime)
+                            }
+                        }
                     },
-                    onSearch = { expanded = false },
+                    onSearch = {
+                        onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
+                        expanded = false
+                        onEvent(AnimeSearchScreenEvents.OnChangeSearchQuery(searchState))
+                        onEvent(AnimeSearchScreenEvents.OnSearchAnime)
+                    },
                     expanded = expanded,
                     onExpandedChange = { expanded = it },
                     placeholder = { Text(stringResource(R.string.hint_search_anime)) },
                     leadingIcon = {
                         IconButton(onClick = {
-                           showFilterDialog = true
+                            showFilterDialog = true
                         }) {
                             Icon(Icons.Default.FilterAlt, contentDescription = null)
                         }
@@ -132,13 +176,13 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
                     trailingIcon = {
                         //If search bar is expanded, show close icon to close it
                         //else show menu icon for filter
-                        if(expanded){
+                        if (expanded) {
                             IconButton(
-                                onClick = {expanded = false}
+                                onClick = { expanded = false }
                             ) {
                                 Icon(imageVector = Icons.Default.Close, contentDescription = null)
                             }
-                        }else {
+                        } else {
                             FilterDropdown(
                                 icon = Icons.Default.MoreVert,
                                 type = listOf("Card Row", "Card Thumbnail", "Card List"),
@@ -167,39 +211,45 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
                         leadingContent = { Icon(Icons.Filled.Schedule, contentDescription = null) },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         modifier =
-                        Modifier
-                            .clickable {
-                                expanded = false
-                            }
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
+                            Modifier
+                                .clickable {
+                                    expanded = false
+                                }
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
                     )
                 }
             }
         }
 
-        val list = List(0) { "Text $it" }
+        val list = state.animeList
 
         //================== List of Searches ====================
 
         //Only visible for non thumbnail view type
         AnimatedVisibility(
-            visible = selectedListViewType != ViewTypes.VIEW_TYPE_CARD_THUMBNAIL && list.isNotEmpty(),
+            visible = selectedListViewType != ViewTypes.VIEW_TYPE_CARD_THUMBNAIL && list.orEmpty().isNotEmpty() && !state.isGetAnimeSearchLoading,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
             LazyColumn(
                 state = lazyState,
-                contentPadding = PaddingValues(start = 16.dp, top = 72.dp, end = 16.dp, bottom = 16.dp),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    top = 72.dp,
+                    end = 16.dp,
+                    bottom = 16.dp
+                ),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier,
             ) {
                 when (selectedListViewType) {
                     ViewTypes.VIEW_TYPE_CARD_ROW -> {
-                        cardRow(list)
+                        cardRow(list.orEmpty())
                     }
+
                     ViewTypes.VIEW_TYPE_LIST -> {
-                        cardList(list)
+                        cardList(list.orEmpty())
                     }
                 }
             }
@@ -207,7 +257,7 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
 
         //Only visible for thumbnail view type (Grid cells)
         AnimatedVisibility(
-            visible = selectedListViewType == ViewTypes.VIEW_TYPE_CARD_THUMBNAIL && list.isNotEmpty(),
+            visible = selectedListViewType == ViewTypes.VIEW_TYPE_CARD_THUMBNAIL && list.orEmpty().isNotEmpty() && !state.isGetAnimeSearchLoading,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -215,13 +265,34 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
                 columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(top = 72.dp, bottom = 16.dp),
             ) {
-                cardThumbnail(list)
+                cardThumbnail(list.orEmpty())
             }
+        }
+
+        //if list is loading
+        AnimatedVisibility(
+            enter = fadeIn(),
+            exit = fadeOut(),
+            visible = state.isGetAnimeSearchLoading
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(top = 72.dp)
+            ) {
+                repeat(5){
+                    SkeletonAnimeList(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
+
         }
 
         //if list is empty
         AnimatedVisibility(
-            visible = list.isEmpty(),
+            visible = list.isNullOrEmpty() && !state.isGetAnimeSearchLoading,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -243,9 +314,11 @@ fun AnimeSearchScreenContent(modifier: Modifier = Modifier) {
 /**
  * View Type Card Row
  */
-fun LazyListScope.cardRow(list : List<String>){
+fun LazyListScope.cardRow(list: List<AnimeDetails>) {
     items(list) {
-        DetailedAnimeListItemCard()
+        DetailedAnimeListItemCard(
+            animeDetails = it
+        )
         Spacer(Modifier.height(4.dp))
     }
 }
@@ -253,19 +326,19 @@ fun LazyListScope.cardRow(list : List<String>){
 /**
  * View Type Card Thumbnail
  */
-fun LazyGridScope.cardThumbnail(list : List<String>){
-    items(list){
+fun LazyGridScope.cardThumbnail(list: List<AnimeDetails>) {
+    items(list) {
         AnimeItemCard(
-            image = "sample",
-            title = it,
+            image = it.images?.jpg?.medium_image_url.orEmpty(),
+            title = it.title_japanese.orEmpty(),
         )
     }
 }
 
-fun LazyListScope.cardList(list : List<String>){
+fun LazyListScope.cardList(list: List<AnimeDetails>) {
     items(list) {
         AnimeListItemCard(
-            animeDetails = AnimeDetails(),
+            animeDetails = it,
             onClick = {
             }
         )
@@ -285,7 +358,10 @@ private fun AnimeSearchScreenPreview() {
         Surface(
             modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)
         ) {
-            AnimeSearchScreenContent()
+            AnimeSearchScreenContent(
+                state = AnimeSearchScreenState(),
+                onEvent = {}
+            )
         }
     }
 }
