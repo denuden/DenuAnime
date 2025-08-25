@@ -8,6 +8,11 @@ data class AnimeSearchScreenState(
     //filters
     val typeFilter : String? = null,
     val searchQuery : String? = null,
+    val scoreFilter : String? = null,
+    val minScoreFilter : String? = null,
+    val maxScoreFilter : String? = null,
+
+    val toggleScoreFilter : Boolean = false,
 
     val animeList: List<AnimeDetails>? = null,
     val isGetAnimeSearchLoading : Boolean = false,

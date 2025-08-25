@@ -70,6 +70,21 @@ class AnimeSearchScreenViewModel @Inject constructor(
                     it.copy(typeFilter = event.value)
                 }
             }
+            is AnimeSearchScreenEvents.OnChangeScoreFilter -> {
+                _stateFlow.update {
+                    it.copy(scoreFilter = event.value)
+                }
+            }
+            is AnimeSearchScreenEvents.OnToggleScoreFilter -> {
+                _stateFlow.update {
+                    it.copy(toggleScoreFilter = event.value)
+                }
+            }
+            is AnimeSearchScreenEvents.OnChangeMinMaxScoreFilter -> {
+                _stateFlow.update {
+                    it.copy(minScoreFilter = event.minValue, maxScoreFilter = event.maxValue)
+                }
+            }
             is AnimeSearchScreenEvents.OnChangeSearchQuery -> {
                 _stateFlow.update {
                     it.copy(searchQuery = event.value)
@@ -79,7 +94,10 @@ class AnimeSearchScreenViewModel @Inject constructor(
                 viewModelScope.launch {
                     val request = GetAnimeSearchRequest(
                         type = formatTypeFilter(_stateFlow.value.typeFilter.orEmpty()),
-                        q = _stateFlow.value.searchQuery
+                        q = _stateFlow.value.searchQuery,
+                        score = _stateFlow.value.scoreFilter?.ifEmpty { null }?.toDouble(),
+                        max_score = _stateFlow.value.maxScoreFilter?.ifEmpty{ null }?.toDouble(),
+                        min_score = _stateFlow.value.minScoreFilter?.ifEmpty{ null }?.toDouble()
                     )
                     animeUseCase.getAnimeSearch(request).asResult().onEach { res ->
                         when(res) {

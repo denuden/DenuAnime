@@ -152,9 +152,7 @@ fun AnimeSearchScreenContent(
                         onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
                         onEvent(AnimeSearchScreenEvents.OnChangeSearchQuery(searchState))
                         coroutineHelper.debouncer(delayMs = 1000) {
-                            if (searchState.isNotEmpty()) {
-                                onEvent(AnimeSearchScreenEvents.OnSearchAnime)
-                            }
+                            onEvent(AnimeSearchScreenEvents.OnSearchAnime)
                         }
                     },
                     onSearch = {

@@ -53,9 +53,9 @@ fun DetailedAnimeListItemCardContent(
                 model = "${data.images?.jpg?.small_image_url}",
                 shouldShowEnlargeButton = false,
                 modifier = Modifier
+                    .padding(end = 8.dp)
                     .size(50.dp)
                     .clip(CircleShape)
-                    .padding(end = 8.dp)
             )
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically) {

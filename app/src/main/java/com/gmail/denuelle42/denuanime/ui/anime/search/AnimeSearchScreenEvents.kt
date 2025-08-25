@@ -4,7 +4,10 @@ sealed class AnimeSearchScreenEvents {
     object OnSearchAnime : AnimeSearchScreenEvents()
     data class OnChangeTypeFilter(val value : String) : AnimeSearchScreenEvents()
     data class OnChangeSearchQuery(val value : String) : AnimeSearchScreenEvents()
+    data class OnChangeScoreFilter(val value : String) : AnimeSearchScreenEvents()
+    data class OnChangeMinMaxScoreFilter(val minValue : String, val maxValue : String) : AnimeSearchScreenEvents()
 
     object OnSetLoadingSearchAnime : AnimeSearchScreenEvents()
+    data class OnToggleScoreFilter(val value : Boolean) : AnimeSearchScreenEvents()
     data class OnSetInitialState(val value : AnimeSearchScreenState) : AnimeSearchScreenEvents()
 }

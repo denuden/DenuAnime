@@ -41,7 +41,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,7 +58,6 @@ import com.gmail.denuelle42.denuanime.ui.anime.search.AnimeSearchScreenState
 import com.gmail.denuelle42.denuanime.ui.common.CustomSwitch
 import com.gmail.denuelle42.denuanime.ui.common.chips.GenreFilterChip
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
-import com.gmail.denuelle42.denuanime.utils.CoroutineHelper
 import com.gmail.denuelle42.denuanime.utils.clickableDelayed
 import com.gmail.denuelle42.denuanime.utils.formatTimestampAsDashedLongDate
 import java.util.Locale
@@ -101,8 +99,29 @@ fun FullSearchFiltersContent(
         Spacer(modifier = Modifier.height(16.dp))
         //===================== score
         ScoreFilter(
-            onFixedSliderChange = { score -> },
-            onRangeSliderChange = { start, end -> }
+            score = if (state.scoreFilter.isNullOrEmpty()) 0f else state.scoreFilter.toFloat(),
+            maxScore = if (state.maxScoreFilter.isNullOrEmpty()) 10f else state.maxScoreFilter.toFloat(),
+            minScore = if (state.minScoreFilter.isNullOrEmpty()) 0f else state.minScoreFilter.toFloat(),
+            toggle = state.toggleScoreFilter,
+            onToggleChange = { onEvent(AnimeSearchScreenEvents.OnToggleScoreFilter(it)) },
+            onFixedSliderChange = { score ->
+                onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
+                onEvent(AnimeSearchScreenEvents.OnChangeMinMaxScoreFilter(
+                    minValue = "",
+                    maxValue = ""
+                ))
+                onEvent(AnimeSearchScreenEvents.OnChangeScoreFilter(score))
+                onTriggerSearch()
+            },
+            onRangeSliderChange = { start, end ->
+                onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
+                onEvent(AnimeSearchScreenEvents.OnChangeScoreFilter(""))
+                onEvent(AnimeSearchScreenEvents.OnChangeMinMaxScoreFilter(
+                    minValue = start,
+                    maxValue = end
+                ))
+                onTriggerSearch()
+            }
         )
         Spacer(modifier = Modifier.height(16.dp))
         //=============== status
@@ -214,12 +233,17 @@ fun TypeFilter(
 @Composable
 fun ScoreFilter(
     modifier: Modifier = Modifier,
+    score: Float,
+    maxScore: Float,
+    minScore: Float,
+    toggle: Boolean,
+    onToggleChange: (Boolean) -> Unit,
     onFixedSliderChange: (String) -> Unit,
     onRangeSliderChange: (String, String) -> Unit
 ) {
-    var fixedScoreSliderPosition by remember { mutableFloatStateOf(0f) }
-    var rangeScoreSliderPosition by remember { mutableStateOf(0f..10f) }
-    var isScoreFixed by remember { mutableStateOf(true) }
+    var tempFixedScore by remember { mutableFloatStateOf(score) }
+    var tempRange by remember { mutableStateOf(minScore..maxScore) }
+
     Column {
         Title(title = stringResource(R.string.label_score), onClickInformation = { })
         Row(
@@ -232,8 +256,8 @@ fun ScoreFilter(
                     color = Color.Gray
                 )
                 CustomSwitch(
-                    checked = isScoreFixed,
-                    onCheckedChange = { isScoreFixed = it }
+                    checked = toggle,
+                    onCheckedChange = onToggleChange
                 )
             }
             Column(
@@ -243,67 +267,43 @@ fun ScoreFilter(
                     .padding(start = 8.dp)
             ) {
                 Text(
-                    text = if (isScoreFixed) String.format(
-                        Locale.US,
-                        "%.2f",
-                        fixedScoreSliderPosition
-                    ) else "${
-                        String.format(
-                            Locale.US,
-                            "%.2f",
-                            rangeScoreSliderPosition.start
-                        )
-                    } - ${
-                        String.format(
-                            Locale.US,
-                            "%.2f",
-                            rangeScoreSliderPosition.endInclusive
-                        )
-                    }",
+                    text = if (toggle) {
+                        String.format(Locale.US, "%.2f", tempFixedScore)
+                    } else {
+                        "${String.format(Locale.US, "%.2f", tempRange.start)} - " +
+                                String.format(Locale.US, "%.2f", tempRange.endInclusive)
+                    },
                     style = MaterialTheme.typography.labelLarge,
                     color = Color.Gray
                 )
-                if (isScoreFixed) {
+
+                if (toggle) {
                     Slider(
-                        value = fixedScoreSliderPosition,
-                        onValueChange = {
-                            fixedScoreSliderPosition = it
-                        },
+                        value = tempFixedScore,
+                        onValueChange = { tempFixedScore = it },
                         valueRange = 0f..10f,
                         onValueChangeFinished = {
                             onFixedSliderChange(
-                                String.format(
-                                    Locale.US,
-                                    "%.2f",
-                                    fixedScoreSliderPosition
-                                )
+                                String.format(Locale.US, "%.2f", tempFixedScore)
                             )
                         }
                     )
                 } else {
                     RangeSlider(
-                        value = rangeScoreSliderPosition,
-                        onValueChange = { range -> rangeScoreSliderPosition = range },
+                        value = tempRange,
+                        onValueChange = { tempRange = it },
                         valueRange = 0f..10f,
                         onValueChangeFinished = {
                             onRangeSliderChange(
-                                String.format(
-                                    Locale.US,
-                                    "%.2f",
-                                    rangeScoreSliderPosition.start
-                                ), String.format(
-                                    Locale.US,
-                                    "%.2f",
-                                    rangeScoreSliderPosition.endInclusive
-                                )
+                                String.format(Locale.US, "%.2f", tempRange.start),
+                                String.format(Locale.US, "%.2f", tempRange.endInclusive)
                             )
-                        },
+                        }
                     )
                 }
             }
         }
     }
-
 }
 
 @Composable
