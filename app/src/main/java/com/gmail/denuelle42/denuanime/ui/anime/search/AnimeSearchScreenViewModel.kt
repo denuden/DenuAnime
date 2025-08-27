@@ -55,6 +55,20 @@ class AnimeSearchScreenViewModel @Inject constructor(
         }
     }
 
+    private fun formatRatingFilter(rating : String) : String {
+        return when (rating) {
+            "" -> ""
+            "G - All Ages"-> "g"
+            "PG - Children" -> "pg"
+            "PG-13 - Teens 13 or older" -> "pg13"
+            "R - 17+ (violence & profanity)"  -> "r17"
+            "R+ - Mild Nudity" -> "r"
+            "Rx - Hentai" -> "rx"
+            else -> ""
+        }
+    }
+
+
     fun onEvent(event : AnimeSearchScreenEvents) {
         when(event) {
             is AnimeSearchScreenEvents.OnSetLoadingSearchAnime -> {
@@ -85,6 +99,21 @@ class AnimeSearchScreenViewModel @Inject constructor(
                     it.copy(minScoreFilter = event.minValue, maxScoreFilter = event.maxValue)
                 }
             }
+            is AnimeSearchScreenEvents.OnChangeStatusFilter -> {
+                _stateFlow.update {
+                    it.copy(statusFilter = event.value)
+                }
+            }
+            is AnimeSearchScreenEvents.OnChangeRatingFilter -> {
+                _stateFlow.update {
+                    it.copy(ratingFilter = event.value)
+                }
+            }
+            is AnimeSearchScreenEvents.OnChangeSFWFilter -> {
+                _stateFlow.update {
+                    it.copy(sfwFilter = event.value)
+                }
+            }
             is AnimeSearchScreenEvents.OnChangeSearchQuery -> {
                 _stateFlow.update {
                     it.copy(searchQuery = event.value)
@@ -97,7 +126,10 @@ class AnimeSearchScreenViewModel @Inject constructor(
                         q = _stateFlow.value.searchQuery,
                         score = _stateFlow.value.scoreFilter?.ifEmpty { null }?.toDouble(),
                         max_score = _stateFlow.value.maxScoreFilter?.ifEmpty{ null }?.toDouble(),
-                        min_score = _stateFlow.value.minScoreFilter?.ifEmpty{ null }?.toDouble()
+                        min_score = _stateFlow.value.minScoreFilter?.ifEmpty{ null }?.toDouble(),
+                        status = _stateFlow.value.statusFilter,
+                        rating = formatRatingFilter(_stateFlow.value.ratingFilter.orEmpty()),
+                        sfw = _stateFlow.value.sfwFilter
                     )
                     animeUseCase.getAnimeSearch(request).asResult().onEach { res ->
                         when(res) {

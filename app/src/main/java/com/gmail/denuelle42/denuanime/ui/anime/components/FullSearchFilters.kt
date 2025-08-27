@@ -125,15 +125,31 @@ fun FullSearchFiltersContent(
         )
         Spacer(modifier = Modifier.height(16.dp))
         //=============== status
-        StatusFilter(onSelectStatus = { status -> })
+        StatusFilter(
+            status = state.statusFilter.orEmpty(),
+            onSelectStatus = { status ->
+                onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
+                onEvent(AnimeSearchScreenEvents.OnChangeStatusFilter(status.lowercase()))
+                onTriggerSearch()
+        })
         Spacer(modifier = Modifier.height(16.dp))
 
         //=============== rating
-        RatingFilter(onSelectRating = { rating -> })
+        RatingFilter(
+            rating = state.ratingFilter.orEmpty(),
+            onSelectRating = { rating ->
+                onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
+                onEvent(AnimeSearchScreenEvents.OnChangeRatingFilter(rating))
+                onTriggerSearch()
+        })
         Spacer(modifier = Modifier.height(16.dp))
 
         //=============== is SFW
-        SFWFilter { }
+        SFWFilter(sfw = state.sfwFilter.orEmpty()) {
+            onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
+            onEvent(AnimeSearchScreenEvents.OnChangeSFWFilter(it))
+            onTriggerSearch()
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
         //=============== genre
@@ -307,12 +323,13 @@ fun ScoreFilter(
 }
 
 @Composable
-fun StatusFilter(modifier: Modifier = Modifier, onSelectStatus: (String) -> Unit) {
+fun StatusFilter(modifier: Modifier = Modifier, status : String, onSelectStatus: (String) -> Unit) {
     val radioOptions = listOf(
         stringResource(R.string.status_airing),
-        stringResource(R.string.status_completed), stringResource(R.string.status_upcoming)
+        stringResource(R.string.status_completed),
+        stringResource(R.string.status_upcoming)
     )
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+    val (tempSelectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions.find{ it == status}) }
 
     Column(modifier = modifier) {
         Title(title = stringResource(R.string.label_status), onClickInformation = { })
@@ -327,7 +344,7 @@ fun StatusFilter(modifier: Modifier = Modifier, onSelectStatus: (String) -> Unit
                         .fillMaxWidth()
                         .height(42.dp)
                         .selectable(
-                            selected = (text == selectedOption),
+                            selected = (text == tempSelectedOption),
                             onClick = {
                                 onOptionSelected(text)
                                 onSelectStatus(text)
@@ -338,7 +355,7 @@ fun StatusFilter(modifier: Modifier = Modifier, onSelectStatus: (String) -> Unit
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     RadioButton(
-                        selected = (text == selectedOption),
+                        selected = (text == tempSelectedOption),
                         onClick = null // null recommended for accessibility with screen readers
                     )
                     Text(
@@ -354,7 +371,7 @@ fun StatusFilter(modifier: Modifier = Modifier, onSelectStatus: (String) -> Unit
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun RatingFilter(modifier: Modifier = Modifier, onSelectRating: (String) -> Unit) {
+fun RatingFilter(modifier: Modifier = Modifier, rating : String, onSelectRating: (String) -> Unit) {
     val listOfRatings = listOf(
         stringResource(R.string.rating_g_all_ages),
         stringResource(R.string.rating_pg_children),
@@ -363,7 +380,7 @@ fun RatingFilter(modifier: Modifier = Modifier, onSelectRating: (String) -> Unit
         stringResource(R.string.rating_r_mild_nudity),
         stringResource(R.string.rating_rx_hentai)
     )
-    var selectedRating by remember { mutableIntStateOf(0) }
+    var selectedRating by remember { mutableIntStateOf(listOfRatings.indexOf(rating)) }
     val scrollState = rememberScrollState()
     Column(modifier = modifier) {
         Title(title = stringResource(R.string.label_rating), onClickInformation = { })
@@ -389,8 +406,8 @@ fun RatingFilter(modifier: Modifier = Modifier, onSelectRating: (String) -> Unit
 }
 
 @Composable
-fun SFWFilter(modifier: Modifier = Modifier, onChange: (Boolean) -> Unit) {
-    var isSfw by remember { mutableStateOf(false) }
+fun SFWFilter(modifier: Modifier = Modifier, sfw : String, onChange: (String) -> Unit) {
+    var isSfw by remember { mutableStateOf(sfw == "true") }
     Box(modifier = modifier) {
         Title(title = stringResource(R.string.label_sfw), onClickInformation = { })
         CustomSwitch(
@@ -400,7 +417,7 @@ fun SFWFilter(modifier: Modifier = Modifier, onChange: (Boolean) -> Unit) {
             checked = isSfw,
             onCheckedChange = {
                 isSfw = it
-                onChange(isSfw)
+                onChange(if(isSfw) "true" else "false")
             }
         )
     }

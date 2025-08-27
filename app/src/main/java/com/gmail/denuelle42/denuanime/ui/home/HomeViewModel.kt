@@ -77,7 +77,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    //Formats Filter dropodown secondary type for API Request
+    //Formats Filter dropdown secondary type for API Request
     private fun formatRating(rating : Int) : String {
         return when (rating) {
             0 -> ""

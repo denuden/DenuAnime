@@ -11,6 +11,9 @@ data class AnimeSearchScreenState(
     val scoreFilter : String? = null,
     val minScoreFilter : String? = null,
     val maxScoreFilter : String? = null,
+    val statusFilter : String? = null,
+    val ratingFilter : String? = null,
+    val sfwFilter : String? = null, //true or false
 
     val toggleScoreFilter : Boolean = false,
 

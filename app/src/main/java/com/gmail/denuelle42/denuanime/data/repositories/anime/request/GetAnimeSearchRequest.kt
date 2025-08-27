@@ -14,7 +14,7 @@ data class GetAnimeSearchRequest(
     val max_score : Double? = null,
     val status : String? = null, // airing, complete, upcoming,
     val rating : String? = null, // g, pg, pg13, r17, r, rx
-    val sfw : Boolean? = null,
+    val sfw : String? = null, //true or false
     val genres : String? = null, // Comma Separated ID's  1,2,3
     val genres_exclude : String? = null, // Comma Separated ID's  1,2,3
     val order_by : String? = null, // mal_id, title, start_date, end_date, score, episodes, scored_by, rank, popularity, members, favorites
