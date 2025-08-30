@@ -37,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -67,6 +68,7 @@ import com.gmail.denuelle42.denuanime.ui.common.FilterDropdown
 import com.gmail.denuelle42.denuanime.ui.common.cards.AnimeListItemCard
 import com.gmail.denuelle42.denuanime.ui.common.cards.DetailedAnimeItemCard
 import com.gmail.denuelle42.denuanime.ui.common.chips.GenreFilterChip
+import com.gmail.denuelle42.denuanime.ui.common.dialog.ErrorDialog
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonAnimeDetailsCard
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonEpisodesAndSeasonsList
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonGenreList
@@ -81,6 +83,7 @@ import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
 import com.gmail.denuelle42.denuanime.utils.SnackBarController
 import com.gmail.denuelle42.denuanime.utils.calculateScrolledDistance
 import com.gmail.denuelle42.denuanime.utils.clickableDelayed
+import com.gmail.denuelle42.denuanime.utils.handleInputError
 import kotlinx.coroutines.launch
 
 @Composable
@@ -96,6 +99,9 @@ fun HomeScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
     HomeScreenContent(
         homeScreenState = homeScreenState,
         peopleState = peopleState,
@@ -104,6 +110,13 @@ fun HomeScreen(
         updateCurrentStartPage = { viewModel.updateCurrentStartPage(it) }, // for recommendation page state
         selectedEpisodesAndSeasonTab = viewModel.getSelectedEpisodesAndSeasonTab()  // tab for episodes and season state
     )
+
+    ErrorDialog(
+        text = errorMessage,
+        showDialog = showErrorDialog
+    ) {
+        showErrorDialog = false
+    }
 
     //One time events listener
     ObserveAsEvents(flow = viewModel.channel) { event ->
@@ -117,6 +130,10 @@ fun HomeScreen(
             }
             is OneTimeEvents.ShowToast -> {
                 Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+            }
+            is OneTimeEvents.ShowInputError -> {
+                showErrorDialog = true
+                errorMessage = handleInputError(event.errors)
             }
         }
     }
@@ -231,17 +248,17 @@ fun TopPeopleSection(
             }
         }
     }
-    AnimatedVisibility(
-        enter = fadeIn(),
-        exit = fadeOut(),
-        visible = isLoading
-    ) {
-        SkeletonPeopleList(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 4.dp)
-        )
-    }
+        AnimatedVisibility(
+            enter = fadeIn(),
+            exit = fadeOut(),
+            visible = isLoading
+        ) {
+            SkeletonPeopleList(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            )
+        }
     HorizontalDivider(modifier = Modifier.padding(top = 10.dp, end = 16.dp, start = 16.dp))
 }
 

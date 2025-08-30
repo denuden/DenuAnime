@@ -225,7 +225,7 @@ fun TypeFilter(
         stringResource(R.string.type_pv),
         stringResource(R.string.type_tv_special)
     )
-    var selectedIndex by remember { mutableIntStateOf(0) }
+    var selectedIndex by remember { mutableIntStateOf(-1) }
     selectedIndex = listOfType.indexOf(selectedType)
     Column(modifier = modifier) {
         Title(title = stringResource(R.string.label_type), onClickInformation = { })

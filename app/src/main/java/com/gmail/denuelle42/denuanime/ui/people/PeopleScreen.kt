@@ -77,6 +77,9 @@ fun PeopleScreen(
             is OneTimeEvents.ShowToast -> {
                 Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
             }
+            is OneTimeEvents.ShowInputError -> {
+
+            }
         }
     }
     PeopleScreenContent(

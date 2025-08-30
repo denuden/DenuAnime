@@ -94,9 +94,11 @@ fun AnimeDetailsScreen(
                     SnackBarController.sendEvent(event.snackbarEvent)
                 }
             }
-
             is OneTimeEvents.ShowToast -> {
                 Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+            }
+            is OneTimeEvents.ShowInputError -> {
+
             }
         }
     }

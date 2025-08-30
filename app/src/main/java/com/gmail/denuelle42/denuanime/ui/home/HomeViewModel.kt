@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gmail.denuelle42.denuanime.data.remote.error.ErrorModel
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetAnimeSearchRequest
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetTopAnimeRequest
@@ -20,6 +21,8 @@ import com.gmail.denuelle42.denuanime.navigation.PeopleScreens
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
 import com.gmail.denuelle42.denuanime.utils.ResultState
 import com.gmail.denuelle42.denuanime.utils.asResult
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -30,6 +33,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -418,6 +422,22 @@ class HomeViewModel @Inject constructor(
             }
             is HomeScreenEvents.OnNavigateToAnimeSearch -> {
                 sendEvent(OneTimeEvents.OnNavigate(AnimeScreens.AnimeSearchNavigation))
+            }
+        }
+    }
+
+    private fun onError(e : Throwable?){
+        when (e) {
+            is HttpException -> {
+                val errorBody = e.response()?.errorBody()
+                val gson = Gson()
+                val type = object : TypeToken<ErrorModel>() {}.type
+                val errorResponse: ErrorModel? = gson.fromJson(errorBody?.charStream(), type)
+
+                //if this is not null, then there is a message regarding bad request of params
+                if (errorResponse?.messages != null){
+                    sendEvent(OneTimeEvents.ShowInputError(errorResponse.messages))
+                }
             }
         }
     }

@@ -127,7 +127,7 @@
 
 <!--    ANIME STATUS-->
     <string name="status_airing">Airing</string>
-    <string name="status_completed">Completed</string>
+    <string name="status_completed">Complete</string>
     <string name="status_upcoming">Upcoming</string>
 
 

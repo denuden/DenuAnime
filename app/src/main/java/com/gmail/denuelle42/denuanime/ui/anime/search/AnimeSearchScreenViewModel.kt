@@ -1,13 +1,15 @@
 package com.gmail.denuelle42.denuanime.ui.anime.search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gmail.denuelle42.denuanime.data.remote.error.ErrorModel
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetAnimeSearchRequest
 import com.gmail.denuelle42.denuanime.domain.repositories.anime.AnimeUseCase
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
 import com.gmail.denuelle42.denuanime.utils.ResultState
 import com.gmail.denuelle42.denuanime.utils.asResult
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -134,11 +137,27 @@ class AnimeSearchScreenViewModel @Inject constructor(
                     animeUseCase.getAnimeSearch(request).asResult().onEach { res ->
                         when(res) {
                             ResultState.Completed -> _stateFlow.update {it.copy(isGetAnimeSearchLoading = false)}
-                            is ResultState.Error -> Log.e(TAG, res.exception.toString())
+                            is ResultState.Error -> onError(res.exception)
                             ResultState.Loading -> _stateFlow.update {it.copy(isGetAnimeSearchLoading = true)}
                             is ResultState.Success -> _stateFlow.update { it.copy(animeList = res.data.data) }
                         }
                     }.collect()
+                }
+            }
+        }
+    }
+
+    private fun onError(e : Throwable?){
+        when (e) {
+            is HttpException -> {
+                val errorBody = e.response()?.errorBody()
+                val gson = Gson()
+                val type = object : TypeToken<ErrorModel>() {}.type
+                val errorResponse: ErrorModel? = gson.fromJson(errorBody?.charStream(), type)
+
+                //if this is not null, then there is a message regarding bad request of params
+                if (errorResponse?.messages != null){
+                    sendEvent(OneTimeEvents.ShowInputError(errorResponse.messages))
                 }
             }
         }

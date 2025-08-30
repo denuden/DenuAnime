@@ -1,5 +1,6 @@
 package com.gmail.denuelle42.denuanime.ui.anime.search
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -67,10 +68,16 @@ import com.gmail.denuelle42.denuanime.ui.common.FilterDropdown
 import com.gmail.denuelle42.denuanime.ui.common.cards.AnimeItemCard
 import com.gmail.denuelle42.denuanime.ui.common.cards.AnimeListItemCard
 import com.gmail.denuelle42.denuanime.ui.common.cards.DetailedAnimeListItemCard
+import com.gmail.denuelle42.denuanime.ui.common.dialog.ErrorDialog
 import com.gmail.denuelle42.denuanime.ui.common.dialog.ModalBottomSheetDialog
 import com.gmail.denuelle42.denuanime.ui.common.skeleton.SkeletonAnimeList
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.CoroutineHelper
+import com.gmail.denuelle42.denuanime.utils.ObserveAsEvents
+import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
+import com.gmail.denuelle42.denuanime.utils.SnackBarController
+import com.gmail.denuelle42.denuanime.utils.handleInputError
+import kotlinx.coroutines.launch
 
 @Composable
 fun AnimeSearchScreen(
@@ -85,6 +92,40 @@ fun AnimeSearchScreen(
         state = animeSearchScreenState,
         onEvent = viewModel::onEvent
     )
+
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    ErrorDialog(
+        text = errorMessage,
+        showDialog = showErrorDialog
+    ) {
+        showErrorDialog = false
+    }
+
+    //One time events listener
+    ObserveAsEvents(flow = viewModel.channel) { event ->
+        when (event) {
+            is OneTimeEvents.OnNavigate -> onNavigate(event.route)
+            OneTimeEvents.OnPopBackStack -> onPopBackStack()
+            is OneTimeEvents.ShowSnackbar ->  {
+                scope.launch {
+                    SnackBarController.sendEvent(event.snackbarEvent)
+                }
+            }
+            is OneTimeEvents.ShowToast -> {
+                Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+            }
+            is OneTimeEvents.ShowInputError -> {
+                showErrorDialog = true
+                errorMessage = handleInputError(event.errors)
+            }
+        }
+    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -103,7 +144,6 @@ fun AnimeSearchScreenContent(
 
     var selectedListViewType by remember { mutableIntStateOf(0) }
 
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val coroutineHelper = remember { CoroutineHelper(coroutineScope) }
 
