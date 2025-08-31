@@ -35,7 +35,7 @@ import com.gmail.denuelle42.denuanime.utils.AsyncImageAvatarWithErrorHandler
 @Composable
 fun DetailedAnimeListItemCard(
     modifier: Modifier = Modifier,
-    animeDetails : AnimeDetails
+    animeDetails : AnimeDetails,
 ) {
     DetailedAnimeListItemCardContent(modifier = modifier, data = animeDetails)
 }
@@ -43,7 +43,6 @@ fun DetailedAnimeListItemCard(
 fun DetailedAnimeListItemCardContent(
     modifier: Modifier = Modifier,
     data: AnimeDetails
-
 ) {
     Column(
         modifier = modifier.background(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.small).padding(8.dp)

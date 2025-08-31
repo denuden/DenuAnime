@@ -39,7 +39,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.gmail.denuelle42.denuanime.navigation.AnimeScreens
 import com.gmail.denuelle42.denuanime.navigation.AppNavigation
-import com.gmail.denuelle42.denuanime.navigation.MainScreens
 import com.gmail.denuelle42.denuanime.navigation.NavigationScreens
 import com.gmail.denuelle42.denuanime.navigation.getTopBarTitle
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
@@ -57,7 +56,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
     // Checks current type to determine which component should be shown or not from the scaffold
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val screenType = (MainScreens::class.java.toString()).substringAfterLast(" ")
+    val screenType =  "MainScreens"
 
     // holds state if topborcontent should be shown
     var topBarState by rememberSaveable { (mutableStateOf(false)) }

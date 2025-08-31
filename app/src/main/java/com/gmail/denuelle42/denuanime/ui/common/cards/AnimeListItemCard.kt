@@ -93,7 +93,8 @@ fun AnimeListItemCard(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                 contentDescription = null,
-                tint = Color.LightGray
+                tint = Color.LightGray,
+                modifier = Modifier.padding(end = 4.dp)
             )
         }
     }

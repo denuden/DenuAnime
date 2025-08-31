@@ -2,6 +2,7 @@ package com.gmail.denuelle42.denuanime.ui.anime.search
 
 import androidx.annotation.Keep
 import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.AnimeDetails
+import com.gmail.denuelle42.denuanime.data.remote.models.animedetails.Genre
 
 @Keep
 data class AnimeSearchScreenState(
@@ -14,9 +15,13 @@ data class AnimeSearchScreenState(
     val statusFilter : String? = null,
     val ratingFilter : String? = null,
     val sfwFilter : String? = null, //true or false
+    val orderByFilter : String? = null,
 
     val toggleScoreFilter : Boolean = false,
 
     val animeList: List<AnimeDetails>? = null,
     val isGetAnimeSearchLoading : Boolean = false,
+
+    val genreList : List<Genre>? = null,
+    val isGetGenreLoading : Boolean = false,
 )

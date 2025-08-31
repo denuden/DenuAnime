@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
  * Main Destinations for nested graph, like a web link  E.G. auth/login, auth/register. main/home. main/profile
  * article/home, article/view
  */
+
+@Serializable
 sealed class RootGraphs {
     @Serializable
     data object SampleGraph : RootGraphs()
@@ -21,8 +23,10 @@ sealed class RootGraphs {
 /**
  *  General or shared type of all screens
  */
+@Serializable
 sealed interface NavigationScreens
 
+@Serializable
 sealed class SampleScreens : NavigationScreens {
     @Serializable
     data object SampleNavigation : SampleScreens()
@@ -30,6 +34,7 @@ sealed class SampleScreens : NavigationScreens {
     data class SampleDetailsNavigation(val sampleModel: SampleModel) : SampleScreens()
 }
 
+@Serializable
 sealed class MainScreens : NavigationScreens {
     @Serializable
     data object HomeNavigation : MainScreens()
@@ -39,6 +44,7 @@ sealed class MainScreens : NavigationScreens {
     data object SettingsNavigation : MainScreens()
 }
 
+@Serializable
 sealed class PeopleScreens : NavigationScreens {
     @Serializable
     data object PeopleNavigation : PeopleScreens()
@@ -46,11 +52,11 @@ sealed class PeopleScreens : NavigationScreens {
     data class PeopleDetailsNavigation(val id : Int) : PeopleScreens()
 }
 
+@Serializable
 sealed class AnimeScreens : NavigationScreens {
     @Serializable
     data class AnimeDetailsNavigation(val id : Int) : AnimeScreens()
 
     @Serializable
     data object AnimeSearchNavigation : AnimeScreens()
-
 }

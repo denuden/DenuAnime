@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gmail.denuelle42.denuanime.data.remote.error.ErrorModel
 import com.gmail.denuelle42.denuanime.data.repositories.anime.request.GetAnimeSearchRequest
+import com.gmail.denuelle42.denuanime.data.repositories.genre.request.GetAnimeGenresRequest
 import com.gmail.denuelle42.denuanime.domain.repositories.anime.AnimeUseCase
+import com.gmail.denuelle42.denuanime.domain.repositories.genre.GenreUseCase
+import com.gmail.denuelle42.denuanime.navigation.AnimeScreens
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
 import com.gmail.denuelle42.denuanime.utils.ResultState
 import com.gmail.denuelle42.denuanime.utils.asResult
@@ -24,7 +27,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AnimeSearchScreenViewModel @Inject constructor(
-    private val animeUseCase: AnimeUseCase
+    private val animeUseCase: AnimeUseCase,
+    private val genreUseCase: GenreUseCase
 ) : ViewModel(){
     private val TAG = AnimeSearchScreenViewModel::class.java.simpleName
 
@@ -35,13 +39,6 @@ class AnimeSearchScreenViewModel @Inject constructor(
 
     private val _channel = Channel<OneTimeEvents>()
     val channel = _channel.receiveAsFlow()
-
-    private fun getInitialState(state: AnimeSearchScreenState) {
-        if (initialState == null) { // Ensure it is set only once
-            initialState = state
-            _stateFlow.value = state
-        }
-    }
 
     private fun formatTypeFilter(type : String) : String {
         return when(type) {
@@ -71,6 +68,34 @@ class AnimeSearchScreenViewModel @Inject constructor(
         }
     }
 
+    private fun formatOrderByFilter(rating : String) : String {
+        return when (rating) {
+            "" -> ""
+            "Title"-> "title"
+            "Released Date" -> "start_date"
+            "End Date" -> "end_date"
+            "Episode Count"  -> "episodes"
+            "Score" -> "score"
+            "Rank" -> "rank"
+            "Popularity" -> "popularity"
+            "Favorites" -> "favorites"
+            else -> ""
+        }
+    }
+
+
+    init {
+        viewModelScope.launch {
+            genreUseCase.getAnimeGenres(GetAnimeGenresRequest()).asResult().onEach { res ->
+                when(res) {
+                    ResultState.Completed -> _stateFlow.update {it.copy(isGetGenreLoading = false)}
+                    is ResultState.Error -> onError(res.exception)
+                    ResultState.Loading -> _stateFlow.update {it.copy(isGetGenreLoading = true)}
+                    is ResultState.Success -> _stateFlow.update { it.copy(genreList = res.data.data) }
+                }
+            }.collect()
+        }
+    }
 
     fun onEvent(event : AnimeSearchScreenEvents) {
         when(event) {
@@ -80,7 +105,15 @@ class AnimeSearchScreenViewModel @Inject constructor(
                 }
             }
             is AnimeSearchScreenEvents.OnSetInitialState -> {
-                getInitialState(event.value)
+                _stateFlow.update {
+                    //retain genre list since it came from API but reset isSelected value
+                    val genreList = _stateFlow.value.genreList?.map {
+                        it.copy(isSelected = false)
+                    }
+                    AnimeSearchScreenState(
+                        genreList = genreList
+                    )
+                }
             }
             is AnimeSearchScreenEvents.OnChangeTypeFilter -> {
                 _stateFlow.update {
@@ -117,6 +150,25 @@ class AnimeSearchScreenViewModel @Inject constructor(
                     it.copy(sfwFilter = event.value)
                 }
             }
+            is AnimeSearchScreenEvents.OnChangeGenreFilter -> {
+                _stateFlow.update { currentState ->
+                    val updatedGenreList = currentState.genreList?.map { genreItem ->
+                        if (genreItem.mal_id.toString() == event.value) {
+                            //set isSelected to true.
+                            genreItem.copy(isSelected = !genreItem.isSelected)
+                        } else {
+                            // keep them as they are.
+                            genreItem
+                        }
+                    }
+                    currentState.copy(genreList = updatedGenreList)
+                }
+            }
+            is AnimeSearchScreenEvents.OnChangeOrderByFilter -> {
+                _stateFlow.update {
+                    it.copy(orderByFilter = event.value)
+                }
+            }
             is AnimeSearchScreenEvents.OnChangeSearchQuery -> {
                 _stateFlow.update {
                     it.copy(searchQuery = event.value)
@@ -130,9 +182,12 @@ class AnimeSearchScreenViewModel @Inject constructor(
                         score = _stateFlow.value.scoreFilter?.ifEmpty { null }?.toDouble(),
                         max_score = _stateFlow.value.maxScoreFilter?.ifEmpty{ null }?.toDouble(),
                         min_score = _stateFlow.value.minScoreFilter?.ifEmpty{ null }?.toDouble(),
-                        status = _stateFlow.value.statusFilter,
+                        status = _stateFlow.value.statusFilter?.lowercase(),
                         rating = formatRatingFilter(_stateFlow.value.ratingFilter.orEmpty()),
-                        sfw = _stateFlow.value.sfwFilter
+                        sfw = _stateFlow.value.sfwFilter,
+                        genres = _stateFlow.value.genreList?.filter { it.isSelected }
+                            ?.joinToString(",") { it.mal_id.toString() },
+                        order_by = formatOrderByFilter(_stateFlow.value.orderByFilter.orEmpty()),
                     )
                     animeUseCase.getAnimeSearch(request).asResult().onEach { res ->
                         when(res) {
@@ -143,6 +198,10 @@ class AnimeSearchScreenViewModel @Inject constructor(
                         }
                     }.collect()
                 }
+            }
+
+            is AnimeSearchScreenEvents.OnNavigateToAnimeDetails -> {
+                sendEvent(OneTimeEvents.OnNavigate(AnimeScreens.AnimeDetailsNavigation(event.value)))
             }
         }
     }

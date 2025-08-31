@@ -39,7 +39,9 @@ fun getTopBarTitle(currentRoute : String, context : Context) : String{
    return when(cleaned){
       context.getString(R.string.nav_peoplenavigation) -> context.getString(R.string.screen_search_people)
       context.getString(R.string.nav_peopledetailsnavigation) -> context.getString(R.string.screen_details)
+      context.getString(R.string.nav_peopledetailsnavigation) -> context.getString(R.string.screen_details)
       context.getString(R.string.nav_animesearchnavigation) -> context.getString(R.string.screen_search_anime)
+      context.getString(R.string.nav_animedetailsnavigation) -> context.getString(R.string.screen_details)
       else ->  context.getString(R.string.app_name)
    }
 }

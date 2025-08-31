@@ -19,7 +19,7 @@
     <string name="screen_favorites">Favorites</string>
     <string name="screen_characters">Characters</string>
     <string name="screen_voice_actor_actress">Voice Actor/Actress</string>
-    <string name="screen_details">Details</string>
+    <string name="screen_details">Anime Details</string>
     <string name="screen_search_people">Search People</string>
     <string name="screen_search_anime">Search Anime</string>
     <string name="screen_schedules">Schedules</string>
@@ -33,6 +33,7 @@
     <string name="nav_peoplenavigation">PeopleNavigation</string>
     <string name="nav_peopledetailsnavigation">PeopleDetailsNavigation</string>
     <string name="nav_animesearchnavigation">AnimeSearchNavigation</string>
+    <string name="nav_animedetailsnavigation">AnimeDetailsNavigation</string>
 
 
 <!--    LABELS-->
@@ -100,6 +101,7 @@
     <string name="btn_enlarge_image">Enlarge Image</string>
     <string name="btn_ok">OK</string>
     <string name="btn_cancel">Cancel</string>
+    <string name="btn_apply">Apply</string>
 
     <!--    ERRORS-->
     <string name="error_nondescript">Nondescript</string>
@@ -159,11 +161,14 @@
     <string name="orderby_score">Score</string>
     <string name="orderby_rank">Rank</string>
     <string name="orderby_popularity">Popularity</string>
+    <string name="orderby_favorites">Favorites</string>
 
 <!--    ANIME SORTING-->
     <string name="sort_ascending">Ascending</string>
     <string name="sort_none">None</string>
     <string name="sort_descending">Descending</string>
+    <string name="btn_clear">Clear</string>
+    <string name="btn_reset_filters">Reset filters</string>
 
 
 </resources>

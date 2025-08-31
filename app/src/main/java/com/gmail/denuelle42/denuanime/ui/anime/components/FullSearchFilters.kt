@@ -1,6 +1,7 @@
 package com.gmail.denuelle42.denuanime.ui.anime.components
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -66,13 +67,11 @@ import java.util.Locale
 fun FullSearchFilters(
     modifier: Modifier = Modifier,
     animeSearchScreenState: AnimeSearchScreenState,
-    onTriggerSearch : () -> Unit,
     onEvent: (AnimeSearchScreenEvents) -> Unit,
 ) {
     FullSearchFiltersContent(
         modifier = modifier,
         state = animeSearchScreenState,
-        onTriggerSearch = onTriggerSearch,
         onEvent
     )
 }
@@ -82,18 +81,16 @@ fun FullSearchFilters(
 fun FullSearchFiltersContent(
     modifier: Modifier = Modifier,
     state: AnimeSearchScreenState,
-    onTriggerSearch : () -> Unit,
     onEvent: (AnimeSearchScreenEvents) -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(modifier = modifier.verticalScroll(scrollState)) {
+
         //=============== Type
         TypeFilter(
             selectedType = state.typeFilter.orEmpty(),
             onSelectType = { type ->
-                onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
                 onEvent(AnimeSearchScreenEvents.OnChangeTypeFilter(type))
-                onTriggerSearch()
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -105,22 +102,18 @@ fun FullSearchFiltersContent(
             toggle = state.toggleScoreFilter,
             onToggleChange = { onEvent(AnimeSearchScreenEvents.OnToggleScoreFilter(it)) },
             onFixedSliderChange = { score ->
-                onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
                 onEvent(AnimeSearchScreenEvents.OnChangeMinMaxScoreFilter(
                     minValue = "",
                     maxValue = ""
                 ))
                 onEvent(AnimeSearchScreenEvents.OnChangeScoreFilter(score))
-                onTriggerSearch()
             },
             onRangeSliderChange = { start, end ->
-                onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
                 onEvent(AnimeSearchScreenEvents.OnChangeScoreFilter(""))
                 onEvent(AnimeSearchScreenEvents.OnChangeMinMaxScoreFilter(
                     minValue = start,
                     maxValue = end
                 ))
-                onTriggerSearch()
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -128,9 +121,7 @@ fun FullSearchFiltersContent(
         StatusFilter(
             status = state.statusFilter.orEmpty(),
             onSelectStatus = { status ->
-                onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
-                onEvent(AnimeSearchScreenEvents.OnChangeStatusFilter(status.lowercase()))
-                onTriggerSearch()
+                onEvent(AnimeSearchScreenEvents.OnChangeStatusFilter(status))
         })
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -138,26 +129,29 @@ fun FullSearchFiltersContent(
         RatingFilter(
             rating = state.ratingFilter.orEmpty(),
             onSelectRating = { rating ->
-                onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
                 onEvent(AnimeSearchScreenEvents.OnChangeRatingFilter(rating))
-                onTriggerSearch()
         })
         Spacer(modifier = Modifier.height(16.dp))
 
         //=============== is SFW
         SFWFilter(sfw = state.sfwFilter.orEmpty()) {
-            onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
             onEvent(AnimeSearchScreenEvents.OnChangeSFWFilter(it))
-            onTriggerSearch()
         }
         Spacer(modifier = Modifier.height(16.dp))
 
         //=============== genre
-        GenreFilter()
+        GenreFilter(
+            genres = state.genreList.orEmpty(),
+            onGenreSelected = { genreId ->
+                onEvent(AnimeSearchScreenEvents.OnChangeGenreFilter(genreId.toString()))
+            }
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
         //=============== order
-        OrderByFilter(onSelectOrder = { order -> })
+        OrderByFilter(order = state.orderByFilter.orEmpty(), onSelectOrder = { order ->
+            onEvent(AnimeSearchScreenEvents.OnChangeOrderByFilter(order))
+        })
         Spacer(modifier = Modifier.height(16.dp))
 
         //=============== sort
@@ -227,6 +221,8 @@ fun TypeFilter(
     )
     var selectedIndex by remember { mutableIntStateOf(-1) }
     selectedIndex = listOfType.indexOf(selectedType)
+    Log.d("TAG21", "TypeFilter: $selectedIndex")
+    Log.d("TAG21", "type: $selectedType")
     Column(modifier = modifier) {
         Title(title = stringResource(R.string.label_type), onClickInformation = { })
         FlowRow(
@@ -424,20 +420,19 @@ fun SFWFilter(modifier: Modifier = Modifier, sfw : String, onChange: (String) ->
 }
 
 @Composable
-fun GenreFilter(modifier: Modifier = Modifier) {
+fun GenreFilter(
+    modifier: Modifier = Modifier,
+    genres : List<Genre>,
+    onGenreSelected : (Int) -> Unit
+) {
     Column(
         modifier = modifier,
     ) {
         Title(title = stringResource(R.string.label_genre), onClickInformation = {})
         GenreFilterChip(
-            categoryList = listOf(
-                Genre(name = "Action"),
-                Genre(name = "Romance"),
-                Genre(name = "Comedy"),
-                Genre(name = "Comedy"),
-            ),
+            categoryList = genres,
             onSelectedCategory = { genre ->
-
+                onGenreSelected(genre.mal_id ?: -1)
             }
         )
     }
@@ -445,8 +440,8 @@ fun GenreFilter(modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun OrderByFilter(modifier: Modifier = Modifier, onSelectOrder: (String) -> Unit) {
-    val listOfRatings = listOf(
+fun OrderByFilter(modifier: Modifier = Modifier, order: String, onSelectOrder: (String) -> Unit) {
+    val listOfOrder = listOf(
         stringResource(R.string.orderby_title),
         stringResource(R.string.orderby_released_date),
         stringResource(R.string.orderby_end_date),
@@ -454,8 +449,9 @@ fun OrderByFilter(modifier: Modifier = Modifier, onSelectOrder: (String) -> Unit
         stringResource(R.string.orderby_score),
         stringResource(R.string.orderby_rank),
         stringResource(R.string.orderby_popularity),
+        stringResource(R.string.label_favorite),
     )
-    var selectedOrder by remember { mutableIntStateOf(0) }
+    var selectedOrder by remember { mutableIntStateOf(listOfOrder.indexOf(order)) }
     val scrollState = rememberScrollState()
     Column(modifier = modifier) {
         Title(title = stringResource(R.string.label_order_by), onClickInformation = { })
@@ -466,12 +462,12 @@ fun OrderByFilter(modifier: Modifier = Modifier, onSelectOrder: (String) -> Unit
                 .horizontalScroll(scrollState)
                 .padding(top = 6.dp),
         ) {
-            listOfRatings.forEachIndexed { index, order ->
+            listOfOrder.forEachIndexed { index, order ->
                 FilterChip(
                     selected = selectedOrder == index,
                     onClick = {
                         selectedOrder = index
-                        onSelectOrder(listOfRatings[selectedOrder])
+                        onSelectOrder(listOfOrder[selectedOrder])
                     },
                     label = { Text(order) },
                 )
@@ -672,7 +668,6 @@ private fun FullSearchFiltersPreview() {
             FullSearchFiltersContent(
                 Modifier.padding(16.dp),
                 state = AnimeSearchScreenState(),
-                onTriggerSearch = {},
                 onEvent = {})
         }
     }

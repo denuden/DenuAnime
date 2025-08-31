@@ -9,8 +9,12 @@ sealed class AnimeSearchScreenEvents {
     data class OnChangeStatusFilter(val value : String) : AnimeSearchScreenEvents()
     data class OnChangeRatingFilter(val value : String) : AnimeSearchScreenEvents()
     data class OnChangeSFWFilter(val value : String) : AnimeSearchScreenEvents()
+    data class OnChangeGenreFilter(val value : String) : AnimeSearchScreenEvents()
+    data class OnChangeOrderByFilter(val value : String) : AnimeSearchScreenEvents()
 
     object OnSetLoadingSearchAnime : AnimeSearchScreenEvents()
     data class OnToggleScoreFilter(val value : Boolean) : AnimeSearchScreenEvents()
     data class OnSetInitialState(val value : AnimeSearchScreenState) : AnimeSearchScreenEvents()
+
+    data class OnNavigateToAnimeDetails(val value : Int) : AnimeSearchScreenEvents()
 }
