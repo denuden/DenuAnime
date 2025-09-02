@@ -102,6 +102,9 @@
     <string name="btn_ok">OK</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_apply">Apply</string>
+    <string name="btn_clear">Clear</string>
+    <string name="btn_reset_filters">Reset filters</string>
+
 
     <!--    ERRORS-->
     <string name="error_nondescript">Nondescript</string>
@@ -167,8 +170,6 @@
     <string name="sort_ascending">Ascending</string>
     <string name="sort_none">None</string>
     <string name="sort_descending">Descending</string>
-    <string name="btn_clear">Clear</string>
-    <string name="btn_reset_filters">Reset filters</string>
 
 
 </resources>

@@ -11,6 +11,9 @@ sealed class AnimeSearchScreenEvents {
     data class OnChangeSFWFilter(val value : String) : AnimeSearchScreenEvents()
     data class OnChangeGenreFilter(val value : String) : AnimeSearchScreenEvents()
     data class OnChangeOrderByFilter(val value : String) : AnimeSearchScreenEvents()
+    data class OnChangeSortFilter(val value : String) : AnimeSearchScreenEvents()
+    data class OnChangeStartDateFilter(val value : Long) : AnimeSearchScreenEvents()
+    data class OnChangeEndDateFilter(val value : Long) : AnimeSearchScreenEvents()
 
     object OnSetLoadingSearchAnime : AnimeSearchScreenEvents()
     data class OnToggleScoreFilter(val value : Boolean) : AnimeSearchScreenEvents()

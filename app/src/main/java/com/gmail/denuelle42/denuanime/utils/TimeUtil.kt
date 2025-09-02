@@ -54,6 +54,13 @@ fun formatTimestampAsMonthDayNamed(timestamp: Long) : String {
     return dateFormat.format(Date(timestamp))
 }
 
+// Function to format the timesptamp as customized param
+fun formatTimeStamp(timestamp: Long, format : String = "yyyy-MM-dd") : String {
+    val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+    dateFormat.timeZone = TimeZone.getDefault()
+    return dateFormat.format(Date(timestamp))
+}
+
 // ======================= Counterpart Functions of Timestamp to ISO 8601 Date Formats ==================
 fun formatIsoDateAsDateTime(isoDate: String?, customMessage : String = "Invalid Date"): String {
     if (isoDate == null) return customMessage
@@ -95,3 +102,13 @@ fun formatIsoDateAsMonthDayNamed(isoDate: String?, customMessage : String = "Inv
     return if (date != null) dateFormat.format(date) else customMessage
 }
 
+//================================= Customized Format
+fun formatIsoDate(isoDate: String?, customMessage : String = "Invalid Date", format : String = "MMMM dd, yyyy hh:mm a"): String {
+    if (isoDate == null) return customMessage
+    val isoDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
+    isoDateFormat.timeZone = TimeZone.getTimeZone("UTC")
+    val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+    dateFormat.timeZone = TimeZone.getDefault()
+    val date = isoDateFormat.parse(isoDate)
+    return if (date != null) dateFormat.format(date) else customMessage
+}

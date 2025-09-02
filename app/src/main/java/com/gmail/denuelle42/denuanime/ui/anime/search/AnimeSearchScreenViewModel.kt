@@ -11,6 +11,7 @@ import com.gmail.denuelle42.denuanime.navigation.AnimeScreens
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
 import com.gmail.denuelle42.denuanime.utils.ResultState
 import com.gmail.denuelle42.denuanime.utils.asResult
+import com.gmail.denuelle42.denuanime.utils.formatTimeStamp
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -79,6 +80,15 @@ class AnimeSearchScreenViewModel @Inject constructor(
             "Rank" -> "rank"
             "Popularity" -> "popularity"
             "Favorites" -> "favorites"
+            else -> ""
+        }
+    }
+
+    private fun formatSortFilter(rating : String) : String {
+        return when (rating) {
+            "None" -> ""
+            "Ascending"-> "asc"
+            "Descending" -> "desc"
             else -> ""
         }
     }
@@ -169,6 +179,21 @@ class AnimeSearchScreenViewModel @Inject constructor(
                     it.copy(orderByFilter = event.value)
                 }
             }
+            is AnimeSearchScreenEvents.OnChangeSortFilter -> {
+                _stateFlow.update {
+                    it.copy(sortFilter = event.value)
+                }
+            }
+            is AnimeSearchScreenEvents.OnChangeStartDateFilter -> {
+                _stateFlow.update {
+                    it.copy(startDateFilter = event.value)
+                }
+            }
+            is AnimeSearchScreenEvents.OnChangeEndDateFilter -> {
+                _stateFlow.update {
+                    it.copy(endDateFilter = event.value)
+                }
+            }
             is AnimeSearchScreenEvents.OnChangeSearchQuery -> {
                 _stateFlow.update {
                     it.copy(searchQuery = event.value)
@@ -176,18 +201,25 @@ class AnimeSearchScreenViewModel @Inject constructor(
             }
             is AnimeSearchScreenEvents.OnSearchAnime -> {
                 viewModelScope.launch {
+                    val state = _stateFlow.value
+
                     val request = GetAnimeSearchRequest(
-                        type = formatTypeFilter(_stateFlow.value.typeFilter.orEmpty()),
-                        q = _stateFlow.value.searchQuery,
-                        score = _stateFlow.value.scoreFilter?.ifEmpty { null }?.toDouble(),
-                        max_score = _stateFlow.value.maxScoreFilter?.ifEmpty{ null }?.toDouble(),
-                        min_score = _stateFlow.value.minScoreFilter?.ifEmpty{ null }?.toDouble(),
-                        status = _stateFlow.value.statusFilter?.lowercase(),
-                        rating = formatRatingFilter(_stateFlow.value.ratingFilter.orEmpty()),
-                        sfw = _stateFlow.value.sfwFilter,
-                        genres = _stateFlow.value.genreList?.filter { it.isSelected }
+                        type = state.typeFilter?.takeIf { it.isNotEmpty() }?.let { formatTypeFilter(it) },
+                        q = state.searchQuery?.takeIf { it.isNotEmpty() },
+                        score = state.scoreFilter?.takeIf { it.isNotEmpty() }?.toDouble(),
+                        max_score = state.maxScoreFilter?.takeIf { it.isNotEmpty() }?.toDouble(),
+                        min_score = state.minScoreFilter?.takeIf { it.isNotEmpty() }?.toDouble(),
+                        status = state.statusFilter?.takeIf { it.isNotEmpty() }?.lowercase(),
+                        rating = state.ratingFilter?.takeIf { it.isNotEmpty() }?.let { formatRatingFilter(it) },
+                        sfw = state.sfwFilter,
+                        genres = state.genreList
+                            ?.filter { it.isSelected }
+                            ?.takeIf { it.isNotEmpty() }
                             ?.joinToString(",") { it.mal_id.toString() },
-                        order_by = formatOrderByFilter(_stateFlow.value.orderByFilter.orEmpty()),
+                        order_by = state.orderByFilter?.takeIf { it.isNotEmpty() }?.let { formatOrderByFilter(it) },
+                        sort = state.sortFilter?.takeIf { it.isNotEmpty() }?.let { formatSortFilter(it) },
+                        start_date = state.startDateFilter?.let { formatTimeStamp(it, format = "yyyy-MM-dd") },
+                        end_date = state.endDateFilter?.let { formatTimeStamp(it, format = "yyyy-MM-dd") },
                     )
                     animeUseCase.getAnimeSearch(request).asResult().onEach { res ->
                         when(res) {

@@ -155,22 +155,21 @@ fun FullSearchFiltersContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         //=============== sort
-        SortFilter(onSelectSort = { sort -> })
+        SortFilter(
+            sort = state.sortFilter.orEmpty(),
+            onSelectSort = { sort ->
+                onEvent(AnimeSearchScreenEvents.OnChangeSortFilter(sort))
+            })
         Spacer(modifier = Modifier.height(16.dp))
 
-        val context = LocalContext.current
 
+        val context = LocalContext.current
         //=============== Start Date
         var showStartDateDialog by remember { mutableStateOf(false) }
         StartDateFilter(
             onSelectedDate = { date ->
                 if (date != null) {
-                    Toast.makeText(
-                        context,
-                        formatTimestampAsDashedLongDate(date),
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
+                    onEvent(AnimeSearchScreenEvents.OnChangeStartDateFilter(date))
                 }
             },
             showDialog = showStartDateDialog,
@@ -477,14 +476,13 @@ fun OrderByFilter(modifier: Modifier = Modifier, order: String, onSelectOrder: (
 }
 
 @Composable
-fun SortFilter(modifier: Modifier = Modifier, onSelectSort: (String) -> Unit) {
+fun SortFilter(modifier: Modifier = Modifier, sort : String, onSelectSort: (String) -> Unit) {
     val radioOptions = listOf(
         stringResource(R.string.sort_ascending),
-        stringResource(R.string.sort_descending), stringResource(
-            R.string.sort_none
-        )
+        stringResource(R.string.sort_descending),
+        stringResource(R.string.sort_none)
     )
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions.find { it == sort }) }
 
     Column(modifier = modifier) {
         Title(title = stringResource(R.string.label_sort), onClickInformation = { })
@@ -533,8 +531,11 @@ private fun StartDateFilter(
     showDialog: Boolean = false,
     onShowDialog: () -> Unit,
     context: Context,
+    startDate : Long? = null
 ) {
-    val datePickerState = rememberDatePickerState()
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = startDate,
+    )
     val date =
         if (datePickerState.selectedDateMillis == null) stringResource(R.string.label_select_start_date) else formatTimestampAsDashedLongDate(
             datePickerState.selectedDateMillis!!
