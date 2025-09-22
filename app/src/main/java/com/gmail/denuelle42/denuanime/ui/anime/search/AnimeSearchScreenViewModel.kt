@@ -96,6 +96,7 @@ class AnimeSearchScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            //get genre
             genreUseCase.getAnimeGenres(GetAnimeGenresRequest()).asResult().onEach { res ->
                 when(res) {
                     ResultState.Completed -> _stateFlow.update {it.copy(isGetGenreLoading = false)}
@@ -104,6 +105,17 @@ class AnimeSearchScreenViewModel @Inject constructor(
                     is ResultState.Success -> _stateFlow.update { it.copy(genreList = res.data.data) }
                 }
             }.collect()
+
+            //set initial search list of anime
+            animeUseCase.getAnimeSearch(GetAnimeSearchRequest()).asResult().onEach { res ->
+                when(res) {
+                    ResultState.Completed -> _stateFlow.update {it.copy(isGetAnimeSearchLoading = false)}
+                    is ResultState.Error -> onError(res.exception)
+                    ResultState.Loading -> _stateFlow.update {it.copy(isGetAnimeSearchLoading = true)}
+                    is ResultState.Success -> _stateFlow.update { it.copy(animeList = res.data.data) }
+                }
+            }.collect()
+
         }
     }
 

@@ -107,6 +107,7 @@ fun AnimeDetailsScreen(
         when (lifecycleEvent) {
             Lifecycle.Event.ON_RESUME -> {
                 viewModel.onEvent(AnimeEvents.OnGetAnimeFullById(id))
+                viewModel.onEvent(AnimeEvents.OnGetAnimeCharacters(id))
             }
 
             else -> Unit
@@ -215,10 +216,12 @@ fun AnimeDetailsScreenContent(
 private fun AnimeDetailsScreenPreview() {
     DenuAnimeTheme {
         Surface(
+
             modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)
         ) {
             AnimeDetailsScreenContent(
                 uiState = AnimeState(
+                    isGetAnimeFullByIdLoading = false,
                     animeDetails = AnimeDetails(
                         mal_id = 37999,
                         images = ImageType(

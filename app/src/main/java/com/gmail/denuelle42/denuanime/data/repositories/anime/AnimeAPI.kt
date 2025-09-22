@@ -1,5 +1,6 @@
 package com.gmail.denuelle42.denuanime.data.repositories.anime
 
+import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetAnimeCharactersResponse
 import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetAnimeFullByIdResponse
 import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetAnimeSearchResponse
 import com.gmail.denuelle42.denuanime.data.repositories.anime.response.GetRecentEpisodesResponse
@@ -21,4 +22,7 @@ interface AnimeAPI {
 
     @GET("anime/{id}/full")
     suspend fun getAnimeFullById(@Path("id") id : Int) : Response<GetAnimeFullByIdResponse>
+
+    @GET("anime/{id}/characters")
+    suspend fun getAnimeCharacters(@Path("id") id : Int) : Response<GetAnimeCharactersResponse>
 }

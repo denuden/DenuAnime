@@ -31,6 +31,18 @@ class AnimeViewModel @Inject constructor(
 
     fun onEvent(event: AnimeEvents) {
         when (event) {
+            is AnimeEvents.OnGetAnimeCharacters -> {
+                viewModelScope.launch {
+                    animeUseCase.getAnimeCharacters(event.id).asResult().onEach { res ->
+                        when (res) {
+                            ResultState.Completed -> _stateFlow.update {it.copy(isGetAnimeCharactersLoading = false)}
+                            is ResultState.Error -> Log.e(TAG, res.exception.toString())
+                            ResultState.Loading -> _stateFlow.update {it.copy(isGetAnimeCharactersLoading = true)}
+                            is ResultState.Success -> _stateFlow.update { it.copy(listOfAnimeCharacters = res.data.data) }
+                        }
+                    }.collect()
+                }
+            }
             is AnimeEvents.OnGetAnimeFullById -> {
                 viewModelScope.launch {
                     animeUseCase.getAnimeFullById(event.id).asResult().onEach { res ->

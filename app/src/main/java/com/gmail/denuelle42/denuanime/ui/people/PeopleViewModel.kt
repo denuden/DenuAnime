@@ -3,6 +3,7 @@ package com.gmail.denuelle42.denuanime.ui.people
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gmail.denuelle42.denuanime.data.repositories.people.request.GetPeopleSearchRequest
 import com.gmail.denuelle42.denuanime.domain.repositories.people.PeopleUseCase
 import com.gmail.denuelle42.denuanime.navigation.PeopleScreens
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
@@ -46,6 +47,10 @@ class PeopleViewModel @Inject constructor(
         .distinctUntilChanged() // Ignore if the new query is the same as the last
         .filter { it.isNotEmpty() } // Skip empty inputs
 
+
+    init {
+        onEvent(PeopleEvents.OnGetPeopleSearch(GetPeopleSearchRequest()))
+    }
 
     fun onEvent(event: PeopleEvents) {
         when(event){

@@ -248,6 +248,7 @@ fun AnimeSearchScreenContent(
                     onSearch = {
                         onEvent(AnimeSearchScreenEvents.OnSetLoadingSearchAnime)
                         expanded = false
+                        recentSearches.add(searchState)
                         onEvent(AnimeSearchScreenEvents.OnChangeSearchQuery(searchState))
                         onEvent(AnimeSearchScreenEvents.OnSearchAnime)
                     },
@@ -429,7 +430,7 @@ fun LazyListScope.cardRow(list: List<AnimeDetails>, onClickItem : (Int) -> Unit)
 fun LazyGridScope.cardThumbnail(list: List<AnimeDetails>, onClickItem : (Int) -> Unit) {
     items(list) {
         AnimeItemCard(
-            image = it.images?.jpg?.medium_image_url.orEmpty(),
+            image = it.images?.jpg?.large_image_url.orEmpty(),
             title = it.title_japanese.orEmpty(),
             modifier = Modifier
                 .clickableDelayed {
