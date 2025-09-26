@@ -36,7 +36,7 @@ fun CharacterItem(
             model = data.character?.images?.jpg?.image_url,
             contentDescription = data.character?.name,
             shouldShowEnlargeButton = false,
-            modifier = Modifier.size(80.dp)
+            modifier = Modifier.size(70.dp)
                 .clip(CircleShape)
         )
         Column(
@@ -44,7 +44,7 @@ fun CharacterItem(
         ) {
             Text(
                 text = if (data.character?.url.isNullOrEmpty()) "No external link" else "External site",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.labelMedium,
                 color = Color.Blue,
                 textDecoration = TextDecoration.Underline,
                 fontWeight = FontWeight.Normal,
@@ -59,7 +59,7 @@ fun CharacterItem(
             )
             Text(
                 text = data.role.orEmpty().ifEmpty { "No role" },
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Normal,
             )
         }

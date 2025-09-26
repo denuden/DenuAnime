@@ -30,12 +30,13 @@ fun PersonItem(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
     ) {
         AsyncImageAvatarWithErrorHandler(
             model = data.person?.images?.jpg?.image_url,
             contentDescription = data.person?.name,
             shouldShowEnlargeButton = false,
-            modifier = Modifier.size(80.dp)
+            modifier = Modifier.size(70.dp)
                 .clip(CircleShape)
         )
         Column(
@@ -43,7 +44,7 @@ fun PersonItem(
         ) {
             Text(
                 text = if (data.person?.url.isNullOrEmpty()) "No external link" else "External site",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.labelMedium,
                 color = Color.Blue,
                 textDecoration = TextDecoration.Underline,
                 fontWeight = FontWeight.Normal,
@@ -59,7 +60,7 @@ fun PersonItem(
             Text(
                 text = data.language.orEmpty().ifEmpty { "----" },
                 fontWeight = FontWeight.Normal,
-                style = MaterialTheme.typography.labelMedium
+                style = MaterialTheme.typography.bodySmall
             )
         }
     }
