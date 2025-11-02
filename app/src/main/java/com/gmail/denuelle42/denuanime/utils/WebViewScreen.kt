@@ -38,4 +38,6 @@ fun Context.goURL(url: String) : Boolean{
         Toast.makeText(this, "No application can handle this request. Please install a web browser", Toast.LENGTH_SHORT).show()
         false
     }
+
+    //sample commit
 }
