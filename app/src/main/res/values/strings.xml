@@ -19,7 +19,8 @@
     <string name="screen_favorites">Favorites</string>
     <string name="screen_characters">Characters</string>
     <string name="screen_voice_actor_actress">Voice Actor/Actress</string>
-    <string name="screen_details">Anime Details</string>
+    <string name="screen_anime_details">Anime Details</string>
+    <string name="screen_person_details">VA Details</string>
     <string name="screen_search_people">Search People</string>
     <string name="screen_search_anime">Search Anime</string>
     <string name="screen_schedules">Schedules</string>
