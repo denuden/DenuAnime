@@ -1,4 +1,4 @@
-package com.gmail.denuelle42.denuanime.ui.anime.characters
+package com.gmail.denuelle42.denuanime.ui.anime.characters.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -32,8 +32,6 @@ import com.gmail.denuelle42.denuanime.data.remote.models.animecharacters.AnimeCh
 import com.gmail.denuelle42.denuanime.data.remote.models.animecharacters.Character
 import com.gmail.denuelle42.denuanime.data.remote.models.animecharacters.Person
 import com.gmail.denuelle42.denuanime.data.remote.models.animecharacters.VoiceActor
-import com.gmail.denuelle42.denuanime.ui.anime.characters.components.CharacterItem
-import com.gmail.denuelle42.denuanime.ui.anime.characters.components.PersonItem
 import com.gmail.denuelle42.denuanime.ui.common.SimpleSwipeableRow
 import com.gmail.denuelle42.denuanime.ui.theme.DenuAnimeTheme
 import com.gmail.denuelle42.denuanime.utils.AsyncImageAvatarWithErrorHandler

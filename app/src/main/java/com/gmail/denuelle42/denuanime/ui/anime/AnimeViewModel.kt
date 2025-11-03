@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gmail.denuelle42.denuanime.domain.repositories.anime.AnimeUseCase
+import com.gmail.denuelle42.denuanime.navigation.CharacterScreens
 import com.gmail.denuelle42.denuanime.utils.OneTimeEvents
 import com.gmail.denuelle42.denuanime.utils.ResultState
 import com.gmail.denuelle42.denuanime.utils.asResult
@@ -54,6 +55,9 @@ class AnimeViewModel @Inject constructor(
                         }
                     }.collect()
                 }
+            }
+            is AnimeEvents.OnNavigateToCharacterList -> {
+                sendEvent(OneTimeEvents.OnNavigate(CharacterScreens.CharacterListNavigation(event.id)))
             }
         }
     }

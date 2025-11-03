@@ -28,6 +28,7 @@
     <string name="screen_seasons">Seasons</string>
     <string name="screen_episodes">Episodes</string>
     <string name="screen_manga">Manga</string>
+    <string name="screen_character_list">Character List</string>
 
 
 <!--    NAVIGATION-->
@@ -35,6 +36,7 @@
     <string name="nav_peopledetailsnavigation">PeopleDetailsNavigation</string>
     <string name="nav_animesearchnavigation">AnimeSearchNavigation</string>
     <string name="nav_animedetailsnavigation">AnimeDetailsNavigation</string>
+    <string name="nav_characterslistnavigation">CharacterListNavigation</string>
 
 
 <!--    LABELS-->
