@@ -1,4 +1,4 @@
 # DenuAnime
 
-A brief description of what this project does and who it's for
+An Anime Collection Mobile Android Application built using Jetpack Compose and Jikan API (https://jikan.moe/)
 
